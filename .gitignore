@@ -130,3 +130,7 @@ dmypy.json
 
 # IDE
 .idea/
+
+# Test files
+toy*
+test*
