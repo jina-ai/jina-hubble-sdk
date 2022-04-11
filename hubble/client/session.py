@@ -21,7 +21,7 @@ class HubbleAPISession(Session):
 
     def init_jwt_auth(self, api_token):
         self.headers.update({'Authorization': f'token {api_token}'})
-        self._validate_api_token()
+        assert self._validate_api_token().ok
 
     def _validate_api_token(self):
         import requests
