@@ -1,4 +1,5 @@
-from typing import IO, Any, MutableMapping, Optional, Text
+import json
+from typing import IO, Any, MutableMapping, Optional, Text, Union
 
 import requests
 
@@ -12,6 +13,7 @@ class BaseClient(object):
     :param api_token: The api token user get from webpage.
     :param max_retries: Number of allowed maximum retries.
     :param timeout: Number of timeout, in seconds.
+    :param jsonify: Convert `requests.Response` object to json.
     """
 
     def __init__(
@@ -19,12 +21,14 @@ class BaseClient(object):
         api_token: str,
         max_retries: Optional[int] = None,
         timeout: Optional[int] = None,
+        jsonify: bool = False,
     ):
         self._api_token = api_token
         self._session = HubbleAPISession()
         self._session.init_jwt_auth(api_token=api_token)
         self._timeout = timeout
         self._base_url = get_base_url()
+        self._jsonify = jsonify
         if max_retries:
             from requests.adapters import HTTPAdapter
 
@@ -41,7 +45,7 @@ class BaseClient(object):
         method='POST',
         data: Optional[dict] = None,
         files: Optional[MutableMapping[Text, IO[Any]]] = None,
-    ) -> requests.Response:
+    ) -> Union[requests.Response, dict]:
         """The basis request handler.
 
         Hubble API consider all requests as POST requests.
@@ -52,7 +56,8 @@ class BaseClient(object):
         :param method: The request type, fow v2 always set to POST.
         :param data: Optional data payloads to be send along with request.
         :param files: Optional files to be uploaded.
-        :returns: `requests.Response` object as returned value.
+        :returns: `requests.Response` object as returned value
+            or indented json if jsonify.
         """
         resp = self._session.request(
             method=method,
@@ -63,5 +68,8 @@ class BaseClient(object):
         )
         if resp.status_code >= 400:
             self._handle_error_request(resp)
+
+        if self._jsonify:
+            resp = json.dumps(resp.json(), indent=2)
 
         return resp

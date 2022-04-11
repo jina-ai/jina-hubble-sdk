@@ -1,5 +1,5 @@
 import shutil
-from typing import Optional
+from typing import Optional, Union
 
 import requests
 
@@ -10,7 +10,7 @@ from .endpoints import Endpoints
 class Client(BaseClient):
     def create_personal_access_token(
         self, name: str, expiration_days: int = 30
-    ) -> requests.Response:
+    ) -> Union[requests.Response, dict]:
         """Create a personal access token.
 
         Personal Access Token (refer as PAT) is same as `api_token`
@@ -20,26 +20,28 @@ class Client(BaseClient):
 
         :param name: The name of the personal access token.
         :param expiration_days: Number of days to be valid, by default 30 days.
-        :returns: `requests.Response` object as returned value.
+        :returns: `requests.Response` object as returned value
+            or indented json if jsonify.
         """
         return self.handle_request(
             url=self._base_url + Endpoints.create_pat,
             data={'name': name, 'expirationDays': expiration_days},
         )
 
-    def list_personal_access_tokens(self) -> requests.Response:
+    def list_personal_access_tokens(self) -> Union[requests.Response, dict]:
         """List all created personal access tokens.
 
         All expired PATs will be automatically deleted.
         The list function only shows valid PATs.
 
-        :returns: `requests.Response` object as returned value.
+        :returns: `requests.Response` object as returned value
+            or indented json if jsonify.
         """
         return self.handle_request(url=self._base_url + Endpoints.list_pats)
 
     def delete_personal_access_token(
         self, personal_access_token_id: str
-    ) -> requests.Response:
+    ) -> Union[requests.Response, dict]:
         """Delete personal access token by id.
 
         # TODO: bo refactor this, it makes no sense to delete PAT by
@@ -47,17 +49,19 @@ class Client(BaseClient):
 
         :param personal_access_token_id: Id of the personal access token
           to be deleted.
-        :returns: `requests.Response` object as returned value.
+        :returns: `requests.Response` object as returned value
+            or indented json if jsonify.
         """
         return self.handle_request(
             url=self._base_url + Endpoints.delete_pat,
             data={'id': personal_access_token_id},
         )
 
-    def get_user_info(self) -> requests.Response:
+    def get_user_info(self) -> Union[requests.Response, dict]:
         """Get current logged in user information.
 
-        :returns: `requests.Response` object as returned value.
+        :returns: `requests.Response` object as returned value
+            or indented json if jsonify.
         """
         return self.handle_request(url=self._base_url + Endpoints.get_user_info)
 
@@ -67,7 +71,7 @@ class Client(BaseClient):
         id: Optional[str] = None,
         metadata: Optional[dict] = None,
         is_public=False,
-    ) -> requests.Response:
+    ) -> Union[requests.Response, dict]:
         """Upload artifact to Hubble Artifact Storage.
 
         :param path: The full path of the file to be uploaded.
@@ -75,7 +79,8 @@ class Client(BaseClient):
         :param metadata: Optional value, the metadata of the artifact.
         :param is_public: Optional value, if this artifact is public or not,
           default not public.
-        :returns: `requests.Response` object as returned value.
+        :returns: `requests.Response` object as returned value
+            or indented json if jsonify.
         """
         return self.handle_request(
             url=self._base_url + Endpoints.upload_artifact,
@@ -87,11 +92,12 @@ class Client(BaseClient):
             files={'upload_file': open(path, 'rb')},
         )
 
-    def download_artifact(self, id: str) -> requests.Response:
+    def download_artifact(self, id: str) -> Union[requests.Response, dict]:
         """Download artifact from Hubble Artifact Storage to localhost.
 
         :param id: The id of the artifact to be downloaded.
-        :returns: `requests.Response` object as returned value.
+        :returns: `requests.Response` object as returned value
+            or indented json if jsonify.
         """
         # first get download uri.
         resp = self.handle_request(
@@ -107,22 +113,24 @@ class Client(BaseClient):
 
         return local_filename
 
-    def delete_artifact(self, id: str) -> requests.Response:
+    def delete_artifact(self, id: str) -> Union[requests.Response, dict]:
         """Delete the artifact from Hubble Artifact Storage.
 
         :param id: The id of the artifact to be deleted.
-        :returns: `requests.Response` object as returned value.
+        :returns: `requests.Response` object as returned value
+            or indented json if jsonify.
         """
         return self.handle_request(
             url=self._base_url + Endpoints.delete_artifact,
             data={'id': id},
         )
 
-    def get_artifact_info(self, id: str) -> requests.Response:
+    def get_artifact_info(self, id: str) -> Union[requests.Response, dict]:
         """Get the metadata of the artifact.
 
         :param id: The id of the artifact to be deleted.
-        :returns: `requests.Response` object as returned value.
+        :returns: `requests.Response` object as returned value
+            or indented json if jsonify.
         """
         return self.handle_request(
             url=self._base_url + Endpoints.get_artifact_info,
