@@ -4,7 +4,7 @@ from typing import Optional
 import requests
 
 from .base import BaseClient
-from .endpoints import HubbleAPIEndpoints
+from .endpoints import Endpoints
 
 
 class Client(BaseClient):
@@ -13,16 +13,17 @@ class Client(BaseClient):
     ) -> requests.Response:
         """Create a personal access token.
 
-        Personal Access Token (refer as PAT) is same as `api_token` where you get from
-        UI. The main difference is that you can set a ``expiration_days`` for PAT while
-        ``api_token`` becomes invalid as soon as user logout.
+        Personal Access Token (refer as PAT) is same as `api_token`
+        where you get from the UI.
+        The main difference is that you can set a ``expiration_days``
+        for PAT while ``api_token`` becomes invalid as soon as user logout.
 
         :param name: The name of the personal access token.
         :param expiration_days: Number of days to be valid, by default 30 days.
         :returns: `requests.Response` object as returned value.
         """
         return self.handle_request(
-            url=self._base_url + HubbleAPIEndpoints.create_pat,
+            url=self._base_url + Endpoints.create_pat,
             data={'name': name, 'expirationDays': expiration_days},
         )
 
@@ -34,20 +35,22 @@ class Client(BaseClient):
 
         :returns: `requests.Response` object as returned value.
         """
-        return self.handle_request(url=self._base_url + HubbleAPIEndpoints.list_pats)
+        return self.handle_request(url=self._base_url + Endpoints.list_pats)
 
     def delete_personal_access_token(
         self, personal_access_token_id: str
     ) -> requests.Response:
         """Delete personal access token by id.
 
-        # TODO: bo refactor this, it makes no sense to delete PAT by id while create by name.
+        # TODO: bo refactor this, it makes no sense to delete PAT by
+        # TODO id while create by name.
 
-        :param personal_access_token_id: Id of the personal access token to be deleted.
+        :param personal_access_token_id: Id of the personal access token
+          to be deleted.
         :returns: `requests.Response` object as returned value.
         """
         return self.handle_request(
-            url=self._base_url + HubbleAPIEndpoints.delete_pat,
+            url=self._base_url + Endpoints.delete_pat,
             data={'id': personal_access_token_id},
         )
 
@@ -56,9 +59,7 @@ class Client(BaseClient):
 
         :returns: `requests.Response` object as returned value.
         """
-        return self.handle_request(
-            url=self._base_url + HubbleAPIEndpoints.get_user_info
-        )
+        return self.handle_request(url=self._base_url + Endpoints.get_user_info)
 
     def upload_artifact(
         self,
@@ -72,11 +73,12 @@ class Client(BaseClient):
         :param path: The full path of the file to be uploaded.
         :param id: Optional value, the id of the artifact.
         :param metadata: Optional value, the metadata of the artifact.
-        :param is_public: Optional value, if this artifact is public or not, default not public.
+        :param is_public: Optional value, if this artifact is public or not,
+          default not public.
         :returns: `requests.Response` object as returned value.
         """
         return self.handle_request(
-            url=self._base_url + HubbleAPIEndpoints.upload_artifact,
+            url=self._base_url + Endpoints.upload_artifact,
             data={
                 'id': id,
                 'metaData': metadata,
@@ -93,7 +95,7 @@ class Client(BaseClient):
         """
         # first get download uri.
         resp = self.handle_request(
-            url=self._base_url + HubbleAPIEndpoints.download_artifact,
+            url=self._base_url + Endpoints.download_artifact,
             data={'id': id},
         )
         # Second download artifact.
@@ -112,7 +114,7 @@ class Client(BaseClient):
         :returns: `requests.Response` object as returned value.
         """
         return self.handle_request(
-            url=self._base_url + HubbleAPIEndpoints.delete_artifact,
+            url=self._base_url + Endpoints.delete_artifact,
             data={'id': id},
         )
 
@@ -123,6 +125,6 @@ class Client(BaseClient):
         :returns: `requests.Response` object as returned value.
         """
         return self.handle_request(
-            url=self._base_url + HubbleAPIEndpoints.get_artifact_info,
+            url=self._base_url + Endpoints.get_artifact_info,
             data={'id': id},
         )
