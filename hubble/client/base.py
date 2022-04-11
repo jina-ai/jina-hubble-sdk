@@ -1,19 +1,25 @@
-from typing import Optional, Text, Any, IO, MutableMapping
+from typing import IO, Any, MutableMapping, Optional, Text
 
 import requests
 
-from .session import HubbleAPISession
 from ..utils.api_utils import get_base_url
+from .session import HubbleAPISession
 
 
 class BaseClient(object):
+    """Base Hubble Python API client.
+
+    :param api_token: The api token user get from webpage.
+    :param max_retries: Number of allowed maximum retries.
+    :param timeout: Number of timeout, in seconds.
+    """
+
     def __init__(
         self,
         api_token: str,
         max_retries: Optional[int] = None,
         timeout: Optional[int] = None,
     ):
-        """"""
         self._api_token = api_token
         self._session = HubbleAPISession()
         self._session.init_jwt_auth(api_token=api_token)
@@ -34,8 +40,20 @@ class BaseClient(object):
         url: str,
         method='POST',
         data: Optional[dict] = None,
-        files: MutableMapping[Text, IO[Any]] = None,
-    ):
+        files: Optional[MutableMapping[Text, IO[Any]]] = None,
+    ) -> requests.Response:
+        """The basis request handler.
+
+        Hubble API consider all requests as POST requests.
+        The method leverage the ``HubbleAPISession`` to send
+        POST requests based on parameters.
+
+        :param url: The url of the request.
+        :param method: The request type, fow v2 always set to POST.
+        :param data: Optional data payloads to be send along with request.
+        :param files: Optional files to be uploaded.
+        :returns: `requests.Response` object as returned value.
+        """
         resp = self._session.request(
             method=method,
             url=url,
@@ -46,4 +64,4 @@ class BaseClient(object):
         if resp.status_code >= 400:
             self._handle_error_request(resp)
 
-        return resp.json()
+        return resp
