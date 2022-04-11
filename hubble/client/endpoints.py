@@ -1,7 +1,7 @@
-import dataclasses
+from dataclasses import dataclass
 
 
-@dataclasses(frozen=True)
+@dataclass(frozen=True)
 class Endpoints(object):
     """All available Hubble API endpoints."""
 

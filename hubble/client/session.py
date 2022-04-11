@@ -1,6 +1,7 @@
 import requests
 
 from ..utils import get_base_url
+from .endpoints import Endpoints
 
 __all__ = ['HubbleAPISession']
 
@@ -13,13 +14,10 @@ class HubbleAPISession(requests.Session):
 
     The ``HubbleAPISession`` is initialized in the ``hubble.client.Client``
     constructor.
-
-    :param *args: additional arguments.
-    :param **kwargs: additional keyword arguments.
     """
 
-    def __init__(self, *args, **kwargs):
-        super(HubbleAPISession, self).__init__(*args, **kwargs)
+    def __init__(self):
+        super().__init__()
 
         self.headers.update(
             {
@@ -46,7 +44,7 @@ class HubbleAPISession(requests.Session):
         """
         import requests
 
-        url = get_base_url() + 'user.identity.whoami'
+        url = get_base_url() + Endpoints.get_user_info
         try:
             resp = requests.post(url, headers=self.headers)
             resp.raise_for_status()
