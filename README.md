@@ -2,7 +2,7 @@
 
 Python Hubble SDK.
 
-This package has implemented the hubble auth endpoints and artifact endpoints.
+This package implements a client for the Hubble authentication and artifact endpoints.
 
 ```python
 from hubble import Client

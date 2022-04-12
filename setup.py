@@ -4,7 +4,9 @@ from os import path
 from setuptools import find_packages, setup
 
 if sys.version_info < (3, 7, 0):
-    raise OSError(f'clip-as-service requires Python >=3.7, but yours is {sys.version}')
+    raise OSError(
+        f'hubble-python-client requires Python >=3.7, but yours is {sys.version}'
+    )
 
 try:
     pkg_name = 'hubble-python-client'
@@ -20,7 +22,7 @@ except FileNotFoundError as ex:
     __version__ = '0.0.0'
 
 try:
-    with open('../README.md', encoding='utf8') as fp:
+    with open('./README.md', encoding='utf8') as fp:
         _long_description = fp.read()
 except FileNotFoundError:
     _long_description = ''

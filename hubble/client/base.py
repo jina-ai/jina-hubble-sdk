@@ -13,7 +13,7 @@ class BaseClient(object):
 
     :param api_token: The api token user get from webpage.
     :param max_retries: Number of allowed maximum retries.
-    :param timeout: Number of timeout, in seconds.
+    :param timeout: Request timeout, in seconds.
     :param jsonify: Convert `requests.Response` object to json.
     """
 
@@ -21,7 +21,7 @@ class BaseClient(object):
         self,
         api_token: str,
         max_retries: Optional[int] = None,
-        timeout: Optional[int] = None,
+        timeout: int = 10,
         jsonify: bool = False,
     ):
         self._api_token = api_token
@@ -52,18 +52,18 @@ class BaseClient(object):
     def handle_request(
         self,
         url: str,
-        method='POST',
+        method: str = 'POST',
         data: Optional[dict] = None,
         files: Optional[MutableMapping[Text, IO[Any]]] = None,
     ) -> Union[requests.Response, dict]:
         """The basis request handler.
 
         Hubble API consider all requests as POST requests.
-        The method leverage the ``HubbleAPISession`` to send
+        The method leverages the ``HubbleAPISession`` to send
         POST requests based on parameters.
 
         :param url: The url of the request.
-        :param method: The request type, fow v2 always set to POST.
+        :param method: The request type, for v2 always set to POST.
         :param data: Optional data payloads to be send along with request.
         :param files: Optional files to be uploaded.
         :returns: `requests.Response` object as returned value

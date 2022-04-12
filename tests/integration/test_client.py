@@ -12,7 +12,7 @@ def client():
     token = os.environ.get('HUBBLE_ACCESS_TOKEN')
     if not token:
         raise ValueError(
-            'Please set `Hubble_ACCESS_TOKEN` before starting integration test'
+            'Please set `HUBBLE_ACCESS_TOKEN` before starting integration test'
         )
     return Client(api_token=token)
 
