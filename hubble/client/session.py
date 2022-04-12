@@ -22,7 +22,6 @@ class HubbleAPISession(requests.Session):
         self.headers.update(
             {
                 'Accept-Charset': 'utf-8',
-                'Content-Type': 'application/json',
             }
         )
 

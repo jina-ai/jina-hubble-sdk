@@ -34,4 +34,11 @@ def test_get_user_info(client):
 
 
 def test_upload_get_delete_artifact(client):
-    pass
+    artifact_dir = os.path.join(cur_dir, '../resources/model')
+    resp = client.upload_artifact(path=artifact_dir)
+    assert resp.ok
+    artifact_id = resp.json()['data']['_id']
+    resp = client.get_artifact_info(id=artifact_id)
+    assert resp.ok
+    resp = client.delete_artifact(id=artifact_id)
+    assert resp.ok

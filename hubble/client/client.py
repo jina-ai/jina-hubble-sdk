@@ -90,7 +90,7 @@ class Client(BaseClient):
                 'metaData': json.dumps(metadata) if metadata else None,
                 'public': is_public,
             },
-            files=[{'upload_file': open(path, 'rb')}],
+            files={'file': open(path, 'rb')},
         )
 
     def download_artifact(self, id: str) -> Union[requests.Response, dict]:
