@@ -1,6 +1,7 @@
 """
 The Hubble Python Client
 """
+from .client.client import Client  # noqa F401
 
 __title__ = 'hubble-client-python'
 __version__ = '0.1.0'

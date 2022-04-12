@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class Endpoints(object):
+class EndpointsV2(object):
     """All available Hubble API endpoints."""
 
     create_pat: str = 'user.pat.create'

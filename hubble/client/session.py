@@ -1,7 +1,7 @@
 import requests
 
 from ..utils import get_base_url
-from .endpoints import Endpoints
+from .endpoints import EndpointsV2
 
 __all__ = ['HubbleAPISession']
 
@@ -22,7 +22,7 @@ class HubbleAPISession(requests.Session):
         self.headers.update(
             {
                 'Accept-Charset': 'utf-8',
-                'Content-Type': 'text/json',
+                'Content-Type': 'application/json',
             }
         )
 
@@ -44,7 +44,7 @@ class HubbleAPISession(requests.Session):
         """
         import requests
 
-        url = get_base_url() + Endpoints.get_user_info
+        url = get_base_url() + EndpointsV2.get_user_info
         try:
             resp = requests.post(url, headers=self.headers)
             resp.raise_for_status()

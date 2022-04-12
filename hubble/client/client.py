@@ -1,10 +1,11 @@
+import json
 import shutil
 from typing import Optional, Union
 
 import requests
 
 from .base import BaseClient
-from .endpoints import Endpoints
+from .endpoints import EndpointsV2
 
 
 class Client(BaseClient):
@@ -24,7 +25,7 @@ class Client(BaseClient):
             or indented json if jsonify.
         """
         return self.handle_request(
-            url=self._base_url + Endpoints.create_pat,
+            url=self._base_url + EndpointsV2.create_pat,
             data={'name': name, 'expirationDays': expiration_days},
         )
 
@@ -37,7 +38,7 @@ class Client(BaseClient):
         :returns: `requests.Response` object as returned value
             or indented json if jsonify.
         """
-        return self.handle_request(url=self._base_url + Endpoints.list_pats)
+        return self.handle_request(url=self._base_url + EndpointsV2.list_pats)
 
     def delete_personal_access_token(
         self, personal_access_token_id: str
@@ -53,7 +54,7 @@ class Client(BaseClient):
             or indented json if jsonify.
         """
         return self.handle_request(
-            url=self._base_url + Endpoints.delete_pat,
+            url=self._base_url + EndpointsV2.delete_pat,
             data={'id': personal_access_token_id},
         )
 
@@ -63,7 +64,7 @@ class Client(BaseClient):
         :returns: `requests.Response` object as returned value
             or indented json if jsonify.
         """
-        return self.handle_request(url=self._base_url + Endpoints.get_user_info)
+        return self.handle_request(url=self._base_url + EndpointsV2.get_user_info)
 
     def upload_artifact(
         self,
@@ -83,13 +84,13 @@ class Client(BaseClient):
             or indented json if jsonify.
         """
         return self.handle_request(
-            url=self._base_url + Endpoints.upload_artifact,
+            url=self._base_url + EndpointsV2.upload_artifact,
             data={
                 'id': id,
-                'metaData': metadata,
+                'metaData': json.dumps(metadata) if metadata else None,
                 'public': is_public,
             },
-            files={'upload_file': open(path, 'rb')},
+            files=[{'upload_file': open(path, 'rb')}],
         )
 
     def download_artifact(self, id: str) -> Union[requests.Response, dict]:
@@ -101,7 +102,7 @@ class Client(BaseClient):
         """
         # first get download uri.
         resp = self.handle_request(
-            url=self._base_url + Endpoints.download_artifact,
+            url=self._base_url + EndpointsV2.download_artifact,
             data={'id': id},
         )
         # Second download artifact.
@@ -121,7 +122,7 @@ class Client(BaseClient):
             or indented json if jsonify.
         """
         return self.handle_request(
-            url=self._base_url + Endpoints.delete_artifact,
+            url=self._base_url + EndpointsV2.delete_artifact,
             data={'id': id},
         )
 
@@ -133,6 +134,6 @@ class Client(BaseClient):
             or indented json if jsonify.
         """
         return self.handle_request(
-            url=self._base_url + Endpoints.get_artifact_info,
+            url=self._base_url + EndpointsV2.get_artifact_info,
             data={'id': id},
         )
