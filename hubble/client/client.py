@@ -93,10 +93,11 @@ class Client(BaseClient):
             files={'file': open(path, 'rb')},
         )
 
-    def download_artifact(self, id: str) -> Union[requests.Response, dict]:
+    def download_artifact(self, id: str, path: str) -> str:
         """Download artifact from Hubble Artifact Storage to localhost.
 
         :param id: The id of the artifact to be downloaded.
+        :param path: The path and name of the file to be stored in localhost.
         :returns: `requests.Response` object as returned value
             or indented json if jsonify.
         """
@@ -106,13 +107,14 @@ class Client(BaseClient):
             data={'id': id},
         )
         # Second download artifact.
-        # TODO: BO fix this with jsonify.
-        local_filename = resp.split('/')[-1]
-        with requests.get(resp, stream=True) as r:
-            with open(local_filename, 'wb') as f:
+        if isinstance(resp, requests.Response):
+            resp = resp.json()
+        download_url = resp['data']['download']
+        with requests.get(download_url, stream=True) as r:
+            with open(path, 'wb') as f:
                 shutil.copyfileobj(r.raw, f)
 
-        return local_filename
+        return path
 
     def delete_artifact(self, id: str) -> Union[requests.Response, dict]:
         """Delete the artifact from Hubble Artifact Storage.

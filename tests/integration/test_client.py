@@ -33,12 +33,16 @@ def test_get_user_info(client):
     assert resp.ok
 
 
-def test_upload_get_delete_artifact(client):
+def test_upload_get_delete_artifact(client, tmpdir):
     artifact_dir = os.path.join(cur_dir, '../resources/model')
     resp = client.upload_artifact(path=artifact_dir)
     assert resp.ok
     artifact_id = resp.json()['data']['_id']
     resp = client.get_artifact_info(id=artifact_id)
     assert resp.ok
+    downloaded_artifact = client.download_artifact(
+        id=artifact_id, path=os.path.join(tmpdir, 'model')
+    )
+    assert os.path.isfile(downloaded_artifact)
     resp = client.delete_artifact(id=artifact_id)
     assert resp.ok
