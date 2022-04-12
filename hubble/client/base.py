@@ -42,7 +42,7 @@ class BaseClient(object):
             resp = resp.json()
 
         message = resp.get('message', None)
-        code = resp.get('code', -1)
+        code = resp.get('status', -1)
         data = resp.get('data', {})
 
         ExceptionCls = errorcodes[code]

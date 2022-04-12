@@ -31,9 +31,8 @@ class HubbleAPISession(requests.Session):
         :param api_token: The api token user get from webpage.
         """
         self.headers.update({'Authorization': f'token {api_token}'})
-        assert self._validate_api_token().ok
 
-    def _validate_api_token(self) -> requests.Response:
+    def validate_api_token(self) -> requests.Response:
         """Valid if the api token.
 
         This function will call the whoami endpoint from Hubble API
@@ -44,9 +43,7 @@ class HubbleAPISession(requests.Session):
         import requests
 
         url = get_base_url() + EndpointsV2.get_user_info
-        try:
-            resp = requests.post(url, headers=self.headers)
-            resp.raise_for_status()
-        except requests.exceptions.HTTPError as e:
-            raise e
+        resp = requests.post(url, headers=self.headers)
+        resp.raise_for_status()
+
         return resp
