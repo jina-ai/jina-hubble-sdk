@@ -5,6 +5,7 @@ import requests
 
 from ..utils.api_utils import get_base_url
 from .session import HubbleAPISession
+from ..excepts import errorcodes
 
 
 class BaseClient(object):
@@ -36,8 +37,17 @@ class BaseClient(object):
                 prefix=self._base_url, adapter=HTTPAdapter(max_retries=max_retries)
             )
 
-    def _handle_error_request(self, resp: requests.Response):
-        pass
+    def _handle_error_request(self, resp: Union[requests.Response, dict]):
+        if isinstance(resp, requests.Response):
+            resp = resp.json()
+
+        message = resp.get('message', None)
+        code = resp.get('code', -1)
+        data = resp.get('data', {})
+
+        ExceptionCls = errorcodes[code]
+
+        raise ExceptionCls(response=resp, data=data, message=message, code=code)
 
     def handle_request(
         self,
