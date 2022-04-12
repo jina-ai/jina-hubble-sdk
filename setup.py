@@ -1,85 +1,100 @@
-import sys
-from os import path
+import os
 
 from setuptools import find_packages, setup
 
-if sys.version_info < (3, 7, 0):
-    raise OSError(
-        f'hubble-python-client requires Python >=3.7, but yours is {sys.version}'
-    )
+# package name
+_name = 'hubble-python-client'
 
+
+# package version
+__version__ = '0.0.0'
 try:
-    pkg_name = 'hubble-python-client'
-    libinfo_py = path.join(
-        path.dirname(__file__), pkg_name.replace('-', '_'), '__init__.py'
-    )
+    libinfo_py = os.path.join('hubble', '__init__.py')
     libinfo_content = open(libinfo_py, 'r', encoding='utf8').readlines()
-    version_line = [l.strip() for l in libinfo_content if l.startswith('__version__')][
-        0
-    ]
+    version_line = [
+        line.strip() for line in libinfo_content if line.startswith('__version__')
+    ][0]
     exec(version_line)  # gives __version__
-except FileNotFoundError as ex:
-    __version__ = '0.0.0'
+except FileNotFoundError:
+    pass
+
+# package metadata
+_description = (
+    'Hubble-python-client is a SDK for Hubble API at Jina AI.'
+)
+_setup_requires = ['setuptools>=18.0', 'wheel']
+_python_requires = '>=3.7.0'
+_author = 'Jina AI'
+_email = 'hello@jina.ai'
+_keywords = (
+    'jina neural-search neural-network deep-learning pretraining '
+    'fine-tuning pretrained-models triplet-loss metric-learning '
+    'siamese-network few-shot-learning'
+)
+_url = 'https://github.com/jina-ai/hubble-python-client/'
+_download_url = 'https://github.com/jina-ai/hubble-python-client/tags'
+_classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'Intended Audience :: Developers',
+    'Intended Audience :: Education',
+    'Intended Audience :: Science/Research',
+    'Programming Language :: Python :: 3.9',
+    'Environment :: Console',
+    'Operating System :: OS Independent',
+    'Topic :: Scientific/Engineering :: Artificial Intelligence',
+]
+_project_urls = {
+    'Source': 'https://github.com/jina-ai/hubble-python-client/',
+    'Tracker': 'https://github.com/jina-ai/hubble-python-client/issues',
+}
+_license = 'Proprietary'
+_package_exclude = ['*.tests', '*.tests.*', 'tests.*', 'tests']
+
+
+# package requirements
+try:
+    with open('requirements.txt', 'r') as f:
+        _main_deps = f.readlines()
+except FileNotFoundError:
+    _main_deps = []
+
 
 try:
-    with open('./README.md', encoding='utf8') as fp:
+    with open('requirements-dev.txt', 'r') as f:
+        _extra_deps = {'full': f.read().splitlines()}
+        _extra_deps['full'].remove('-r requirements.txt')
+        _extra_deps['full'].extend(_main_deps)
+except FileNotFoundError:
+    _extra_deps = {}
+
+# package long description
+try:
+    with open('README.md', encoding='utf8') as fp:
         _long_description = fp.read()
 except FileNotFoundError:
     _long_description = ''
 
-setup(
-    name=pkg_name,
-    packages=find_packages(),
-    version=__version__,
-    include_package_data=True,
-    description='Jina Hubble API Python SDK',
-    author='Jina AI',
-    author_email='hello@jina.ai',
-    license='Apache 2.0',
-    url='https://github.com/jina-ai/hubble-client-python',
-    download_url='https://github.com/jina-ai/hubble-client-python/tags',
-    long_description=_long_description,
-    long_description_content_type='text/markdown',
-    zip_safe=False,
-    setup_requires=['setuptools>=18.0', 'wheel'],
-    install_requires=['requests>=2.27.1'],
-    extras_require={
-        'test': [
-            'pytest',
-            'pytest-cov',
-            'black',
-            'isort',
-            'flake8',
-            'click',
-        ],
-    },
-    classifiers=[
-        'Development Status :: 5 - Production/Stable',
-        'Intended Audience :: Developers',
-        'Intended Audience :: Education',
-        'Intended Audience :: Science/Research',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9',
-        'Programming Language :: Python :: 3.10',
-        'Programming Language :: Unix Shell',
-        'Environment :: Console',
-        'License :: OSI Approved :: Apache Software License',
-        'Operating System :: OS Independent',
-        'Topic :: Database :: Database Engines/Servers',
-        'Topic :: Scientific/Engineering :: Artificial Intelligence',
-        'Topic :: Internet :: WWW/HTTP :: Indexing/Search',
-        'Topic :: Scientific/Engineering :: Image Recognition',
-        'Topic :: Multimedia :: Video',
-        'Topic :: Scientific/Engineering',
-        'Topic :: Scientific/Engineering :: Mathematics',
-        'Topic :: Software Development',
-        'Topic :: Software Development :: Libraries',
-        'Topic :: Software Development :: Libraries :: Python Modules',
-    ],
-    project_urls={
-        'Source': 'https://github.com/jina-ai/hubble-python-client/',
-        'Tracker': 'https://github.com/jina-ai/hubble-python-client/issues',
-    },
-    keywords='jina hubble api sdk python client',
-)
+
+if __name__ == '__main__':
+    setup(
+        name=_name,
+        packages=find_packages(exclude=_package_exclude),
+        version=__version__,
+        include_package_data=True,
+        description=_description,
+        author=_author,
+        author_email=_email,
+        url=_url,
+        license=_license,
+        download_url=_download_url,
+        long_description=_long_description,
+        long_description_content_type='text/markdown',
+        zip_safe=False,
+        setup_requires=_setup_requires,
+        install_requires=_main_deps,
+        extras_require=_extra_deps,
+        python_requires=_python_requires,
+        classifiers=_classifiers,
+        project_urls=_project_urls,
+        keywords=_keywords,
+    )
