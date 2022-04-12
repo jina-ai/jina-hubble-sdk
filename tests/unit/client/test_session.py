@@ -1,5 +1,4 @@
 import pytest
-import requests
 from hubble.client.endpoints import EndpointsV2
 from hubble.client.session import HubbleAPISession
 from hubble.utils.api_utils import get_base_url
@@ -25,5 +24,5 @@ def test_init_jwt_auth_success_given_valid_api_token(
 
 
 def test_init_jwt_auth_fail_given_invalid_api_token(test_session):
-    with pytest.raises(requests.exceptions.HTTPError):
-        test_session.init_jwt_auth(api_token='fake_token')
+    test_session.init_jwt_auth(api_token='fake-token')
+    assert test_session.headers['Authorization'] == 'token fake-token'
