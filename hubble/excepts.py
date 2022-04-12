@@ -1,7 +1,5 @@
 """Note, this should be consistent with hubble errors."""
-from typing import Optional, Union
-
-import requests
+from typing import Optional
 
 
 class BaseError(Exception):
