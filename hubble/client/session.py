@@ -26,7 +26,7 @@ class HubbleAPISession(requests.Session):
         )
 
     def init_jwt_auth(self, api_token: str):
-        """Initialize the jwt token and perform validation.
+        """Initialize the jwt token.
 
         :param api_token: The api token user get from webpage.
         """

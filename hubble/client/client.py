@@ -98,8 +98,7 @@ class Client(BaseClient):
 
         :param id: The id of the artifact to be downloaded.
         :param path: The path and name of the file to be stored in localhost.
-        :returns: `requests.Response` object as returned value
-            or indented json if jsonify.
+        :returns: A str object indicates the download path on localhost.
         """
         # first get download uri.
         resp = self.handle_request(

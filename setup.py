@@ -19,9 +19,7 @@ except FileNotFoundError:
     pass
 
 # package metadata
-_description = (
-    'Hubble-python-client is a SDK for Hubble API at Jina AI.'
-)
+_description = 'Hubble-python-client is a SDK for Hubble API at Jina AI.'
 _setup_requires = ['setuptools>=18.0', 'wheel']
 _python_requires = '>=3.7.0'
 _author = 'Jina AI'
