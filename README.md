@@ -5,9 +5,11 @@ Python Hubble SDK.
 This package implements a client for the Hubble authentication and artifact endpoints.
 
 ```python
-from hubble import Client
+import hubble
 
-client = Client(api_token='your-token', jsonify=True)  # return resp as json rather than requests.Response
+hubble.login()
+
+client = hubble.Client(jsonify=True)  # return resp as json rather than requests.Response
 # user and auth related
 client.get_user_info()  # Get current user information.
 client.create_personal_access_token(name='my-pat', expiration_days=30)
