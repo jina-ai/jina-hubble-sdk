@@ -5,13 +5,13 @@ import requests
 
 from ..excepts import errorcodes
 from ..utils.api_utils import get_base_url
+from ..utils.auth import Auth
 from .session import HubbleAPISession
 
 
 class BaseClient(object):
     """Base Hubble Python API client.
 
-    :param api_token: The api token user get from webpage.
     :param max_retries: Number of allowed maximum retries.
     :param timeout: Request timeout, in seconds.
     :param jsonify: Convert `requests.Response` object to json.
@@ -19,14 +19,17 @@ class BaseClient(object):
 
     def __init__(
         self,
-        api_token: str,
         max_retries: Optional[int] = None,
         timeout: int = 10,
         jsonify: bool = False,
     ):
-        self._api_token = api_token
+        self._api_token = Auth.get_auth_token()
+        if not self._api_token:
+            raise ValueError(
+                'We can not get the token, please call `hubble.login()` first.'
+            )
         self._session = HubbleAPISession()
-        self._session.init_jwt_auth(api_token=api_token)
+        self._session.init_jwt_auth(api_token=self._api_token)
         self._timeout = timeout
         self._base_url = get_base_url()
         self._jsonify = jsonify
