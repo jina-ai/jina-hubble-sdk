@@ -12,7 +12,6 @@ from .session import HubbleAPISession
 class BaseClient(object):
     """Base Hubble Python API client.
 
-    :param api_token: The api token user get from webpage.
     :param max_retries: Number of allowed maximum retries.
     :param timeout: Request timeout, in seconds.
     :param jsonify: Convert `requests.Response` object to json.
