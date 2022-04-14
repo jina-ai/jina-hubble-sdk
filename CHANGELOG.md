@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Project setup, add `Client` with auth and artifact support. ([#1](https://github.com/jina-ai/hubble-client-python/pull/1))
 
+- Added `auth` class to perform user authentication. ([#7](https://github.com/jina-ai/hubble-client-python/pull/7))
+
 ### Changed
 
 ### Removed
