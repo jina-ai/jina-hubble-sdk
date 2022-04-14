@@ -24,6 +24,10 @@ class BaseClient(object):
         jsonify: bool = False,
     ):
         self._api_token = Auth.get_auth_token()
+        if not self._api_token:
+            raise ValueError(
+                'We can not get the token, please call `hubble.login()` first.'
+            )
         self._session = HubbleAPISession()
         self._session.init_jwt_auth(api_token=self._api_token)
         self._timeout = timeout
