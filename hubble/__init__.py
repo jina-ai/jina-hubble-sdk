@@ -13,6 +13,6 @@ __author__ = 'Jina AI'
 __email__ = 'hello@jina.ai'
 
 
-def init():
+def login():
     """This function guide user to browser log-in and get token."""
     asyncio.run(Auth.login())

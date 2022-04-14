@@ -8,7 +8,13 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 
 @pytest.fixture
-def client():
+def client(mocker):
+    # note this token is set in secrets.
+    # to run it locally please replace it with your token.
+    mocker.patch(
+        'hubble.utils.auth.Auth.get_auth_token',
+        return_value=os.environ.get('HUBBLE_ACCESS_TOKEN'),
+    )
     return Client()
 
 
