@@ -1,7 +1,7 @@
 from ..settings import ENVIRONMENT, PROTOCOL, VERSION
 
-HUBBLE_API_PREFIX = 'https://apihubble'
-HUBBLE_API_ENDFIX = 'jina.ai'
+JINA_HUBBLE_API_PREFIX = 'https://apihubble'
+JINA_HUBBLE_API_ENDFIX = 'jina.ai'
 
 
 def get_base_url():
@@ -13,10 +13,10 @@ def get_base_url():
     else:
         raise f'{ENVIRONMENT} is invalid, use either `PRODUCTION` or `STAGING`'
     return (
-        HUBBLE_API_PREFIX
+        JINA_HUBBLE_API_PREFIX
         + '.'
         + env
-        + HUBBLE_API_ENDFIX
+        + JINA_HUBBLE_API_ENDFIX
         + '/'
         + VERSION
         + '/'

@@ -9,12 +9,7 @@ cur_dir = os.path.dirname(os.path.abspath(__file__))
 
 @pytest.fixture
 def client():
-    token = os.environ.get('HUBBLE_ACCESS_TOKEN')
-    if not token:
-        raise ValueError(
-            'Please set `HUBBLE_ACCESS_TOKEN` before starting integration test'
-        )
-    return Client(api_token=token)
+    return Client()
 
 
 def test_create_list_delete_personal_access_token(client):

@@ -5,6 +5,7 @@ import requests
 
 from ..excepts import errorcodes
 from ..utils.api_utils import get_base_url
+from ..utils.auth import Auth
 from .session import HubbleAPISession
 
 
@@ -19,14 +20,17 @@ class BaseClient(object):
 
     def __init__(
         self,
-        api_token: str,
         max_retries: Optional[int] = None,
         timeout: int = 10,
         jsonify: bool = False,
     ):
-        self._api_token = api_token
+        self._api_token = Auth.get_auth_token()
+        if not self._api_token:
+            raise ValueError(
+                'Can not fetch your token, please run `hubble.login()` first.'
+            )
         self._session = HubbleAPISession()
-        self._session.init_jwt_auth(api_token=api_token)
+        self._session.init_jwt_auth(api_token=self._api_token)
         self._timeout = timeout
         self._base_url = get_base_url()
         self._jsonify = jsonify
