@@ -11,7 +11,7 @@
 ```shell
 pip install -e .
 # or
-pip install git+https://github.com/jina-ai/hubble-client-python.git@v0.1
+pip install git+https://github.com/jina-ai/hubble-client-python.git@v0.1.0
 ```
 
 ## Core functionality
