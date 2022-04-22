@@ -1,23 +1,96 @@
-# hubble-client-python
+<p align="center">
+<a href="https://jina.ai/"><img src="https://github.com/jina-ai/hubble/blob/master/.github/logos/hubble-colorful.png?raw=true" alt="Hubble logo" width="200px"></a>
+</p>
 
-Python Hubble SDK.
+<p align="center">
+<b>Hubble Python SDK: Talk with Hubble in a Pythonic Way</b>
+</p>
 
-This package implements a client for the Hubble authentication and artifact endpoints.
+## Install
+
+```shell
+pip install -e .
+# or
+pip install git+https://github.com/jina-ai/hubble-client-python.git@v0.1
+```
+
+## Core functionality
+
+* Authentification and token management.
+* Artifact management.
+
+## Usage
+
+### Login to Hubble
 
 ```python
 import hubble
 
+# Open browser automatically and login via 3rd party.
+# Token will be saved locally.
 hubble.login()
-
-client = hubble.Client(jsonify=True)  # return resp as json rather than requests.Response
-# user and auth related
-client.get_user_info()  # Get current user information.
-client.create_personal_access_token(name='my-pat', expiration_days=30)
-client.list_personal_access_tokens()
-client.delete_artifact(id='my-pat-id')
-# artifact related
-client.upload_artifact(path='my-model', is_public=True)
-client.get_artifact_info(id='my-artifact-id')
-client.download_artifact(id='my-artifact-id', path='my-local-filepath')
-client.delete_artifact(id='my-artifact-id')
 ```
+
+### Authentification and Token Management
+
+After calling `hubble.login()`, you can use the client with:
+
+```python
+import hubble
+
+client = hubble.Client(
+    max_retries=None,
+    timeout=10,
+    jsonify=True
+)
+# Get current user information.
+response = client.get_user_info()
+# Create a new personally access token for longer expiration period.
+response = client.create_personal_access_token(
+    name='my-pat',
+    expiration_days=30
+)
+# Query all personal access tokens.
+response = client.list_personal_access_tokens()
+```
+
+### Artifact Management
+```python
+import hubble
+
+client = hubble.Client(
+    max_retries=None,
+    timeout=10,
+    jsonify=True
+)
+# Upload artifact to Hubble Artifact Storage.
+response = client.upload_artifact(
+    path='my-model.onnx',
+    is_public=False
+)
+# Get current artifact information.
+response = client.get_artifact_info(id='my-artifact-id')
+# Download artifact to local directory.
+response = client.download_artifact(id='my-artifact-id', path='my-local-filepath')
+# Delete the artifact.
+response = client.delete_artifact(id='my-artifact-id')
+```
+
+<!-- start support-pitch -->
+## Support
+
+- Use [Discussions](https://github.com/jina-ai/finetuner/discussions) to talk about your use cases, questions, and
+  support queries.
+- Join our [Slack community](https://slack.jina.ai) and chat with other Jina community members about ideas.
+- Join our [Engineering All Hands](https://youtube.com/playlist?list=PL3UBBWOUVhFYRUa_gpYYKBqEAkO4sxmne) meet-up to discuss your use case and learn Jina's new features.
+    - **When?** The second Tuesday of every month
+    - **Where?**
+      Zoom ([see our public events calendar](https://calendar.google.com/calendar/embed?src=c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com&ctz=Europe%2FBerlin)/[.ical](https://calendar.google.com/calendar/ical/c_1t5ogfp2d45v8fit981j08mcm4%40group.calendar.google.com/public/basic.ics))
+      and [live stream on YouTube](https://youtube.com/c/jina-ai)
+- Subscribe to the latest video tutorials on our [YouTube channel](https://youtube.com/c/jina-ai)
+
+## Join Us
+
+Finetuner is backed by [Jina AI](https://jina.ai) and licensed under [Apache-2.0](./LICENSE). [We are actively hiring](https://jobs.jina.ai) AI engineers, solution engineers to build the next neural search ecosystem in opensource.
+
+<!-- end support-pitch -->
