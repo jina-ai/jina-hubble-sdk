@@ -71,7 +71,10 @@ response = client.upload_artifact(
 # Get current artifact information.
 response = client.get_artifact_info(id='my-artifact-id')
 # Download artifact to local directory.
-response = client.download_artifact(id='my-artifact-id', path='my-local-filepath')
+response = client.download_artifact(
+    id='my-artifact-id',
+    path='my-local-filepath'
+)
 # Delete the artifact.
 response = client.delete_artifact(id='my-artifact-id')
 ```
