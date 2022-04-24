@@ -79,6 +79,11 @@ response = client.download_artifact(
 response = client.delete_artifact(id='my-artifact-id')
 ```
 
+## Release cycle
+
+Each time new commits come into `main` branch, the pre-release procedure will be started. 
+It will generate a pre-release in Pypi.
+
 <!-- start support-pitch -->
 ## Support
 
