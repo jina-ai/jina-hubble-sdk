@@ -69,7 +69,7 @@ except FileNotFoundError:
 
 if __name__ == '__main__':
     setup(
-        name='hubble_client_python',
+        name='jina-hubble-sdk',
         packages=find_packages(exclude=_package_exclude),
         version=__version__,
         include_package_data=True,
