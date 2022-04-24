@@ -2,12 +2,6 @@ import os
 
 from setuptools import find_packages, setup
 
-# package name
-_name = 'hubble-client-python'
-
-
-# package version
-__version__ = '0.0.0'
 try:
     libinfo_py = os.path.join('hubble', '__init__.py')
     libinfo_content = open(libinfo_py, 'r', encoding='utf8').readlines()
@@ -16,7 +10,7 @@ try:
     ][0]
     exec(version_line)  # gives __version__
 except FileNotFoundError:
-    pass
+    __version__ = '0.0.0'
 
 # package metadata
 _description = 'Hubble-python-client is a SDK for Hubble API at Jina AI.'
@@ -75,7 +69,7 @@ except FileNotFoundError:
 
 if __name__ == '__main__':
     setup(
-        name=_name,
+        name='hubble_client_python',
         packages=find_packages(exclude=_package_exclude),
         version=__version__,
         include_package_data=True,
