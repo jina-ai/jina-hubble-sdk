@@ -3,7 +3,7 @@ import os
 from setuptools import find_packages, setup
 
 # package name
-_name = 'hubble-python-client'
+_name = 'hubble-client-python'
 
 
 # package version
