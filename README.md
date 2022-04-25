@@ -1,22 +1,22 @@
 <p align="center">
-<a href="https://jina.ai/"><img src="https://github.com/jina-ai/hubble/blob/master/.github/logos/hubble-colorful.png?raw=true" alt="Hubble logo" width="200px"></a>
+    <a href="https://jina.ai/">
+        <img src="https://github.com/jina-ai/hubble-client-python/blob/main/.github/logos/hubble-colorful.png?raw=true" alt="Hubble python SDK logo" width="200px">
+    </a>
 </p>
 
 <p align="center">
-<b>Hubble Python SDK: Talk with Hubble in a Pythonic Way</b>
+    <b>Hubble Python SDK: Talk with Hubble in a Pythonic Way</b>
 </p>
 
 ## Install
 
 ```shell
-pip install -e .
-# or
-pip install git+https://github.com/jina-ai/hubble-client-python.git@v0.1.0
+pip install --pre jina-hubble-sdk
 ```
 
 ## Core functionality
 
-* Authentification and token management.
+* Authentication and token management.
 * Artifact management.
 
 ## Usage
@@ -31,7 +31,7 @@ import hubble
 hubble.login()
 ```
 
-### Authentification and Token Management
+### Authentication and Token Management
 
 After calling `hubble.login()`, you can use the client with:
 

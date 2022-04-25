@@ -13,7 +13,7 @@ except FileNotFoundError:
     __version__ = '0.0.0'
 
 # package metadata
-_description = 'Hubble-python-client is a SDK for Hubble API at Jina AI.'
+_description = 'SDK for Hubble API at Jina AI.'
 _setup_requires = ['setuptools>=18.0', 'wheel']
 _python_requires = '>=3.7.0'
 _author = 'Jina AI'
@@ -23,8 +23,8 @@ _keywords = (
     'fine-tuning pretrained-models triplet-loss metric-learning '
     'siamese-network few-shot-learning'
 )
-_url = 'https://github.com/jina-ai/hubble-python-client/'
-_download_url = 'https://github.com/jina-ai/hubble-python-client/tags'
+_url = 'https://github.com/jina-ai/hubble-client-python/'
+_download_url = 'https://github.com/jina-ai/hubble-client-python/tags'
 _classifiers = [
     'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
@@ -36,8 +36,8 @@ _classifiers = [
     'Topic :: Scientific/Engineering :: Artificial Intelligence',
 ]
 _project_urls = {
-    'Source': 'https://github.com/jina-ai/hubble-python-client/',
-    'Tracker': 'https://github.com/jina-ai/hubble-python-client/issues',
+    'Source': 'https://github.com/jina-ai/hubble-client-python/',
+    'Tracker': 'https://github.com/jina-ai/hubble-client-python/issues',
 }
 _license = 'Proprietary'
 _package_exclude = ['*.tests', '*.tests.*', 'tests.*', 'tests']
