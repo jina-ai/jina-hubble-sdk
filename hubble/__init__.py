@@ -12,3 +12,8 @@ __version__ = '0.1.3'
 def login():
     """This function guide user to browser log-in and get token."""
     asyncio.run(Auth.login())
+
+
+def logout():
+    """Logout."""
+    asyncio.run(Auth.logout())
