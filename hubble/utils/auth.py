@@ -5,9 +5,9 @@ from functools import lru_cache
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs
 from urllib.request import Request, urlopen
-from hubble.utils.config import config
 
 import aiohttp
+from hubble.utils.config import config
 
 
 @lru_cache()

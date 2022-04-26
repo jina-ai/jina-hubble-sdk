@@ -1,7 +1,8 @@
-import pytest
 import os
 from pathlib import Path
-from hubble.utils.config import Config, CONFIG_FILE_NAME, ROOT_ENV_NAME
+
+import pytest
+from hubble.utils.config import CONFIG_FILE_NAME, ROOT_ENV_NAME, Config
 
 
 @pytest.fixture

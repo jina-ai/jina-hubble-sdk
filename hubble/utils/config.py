@@ -10,6 +10,7 @@ class Config:
     """
     This class is used to store the configuration of the application.
     """
+
     def __init__(
         self,
         config_file_name: str = CONFIG_FILE_NAME,
