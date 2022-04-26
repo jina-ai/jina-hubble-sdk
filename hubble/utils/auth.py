@@ -90,3 +90,17 @@ class Auth:
                 token = json_response['data']['token']
 
         config.set('auth_token', token)
+
+    @staticmethod
+    async def logout():
+        api_host = _get_cloud_api_url()
+
+        async with aiohttp.ClientSession() as session:
+            session.headers.update({'Authorization': f'token {Auth.get_auth_token()}'})
+
+            async with session.post(
+                url=f'{api_host}/v2/rpc/user.session.dismiss',
+            ) as response:
+                response.raise_for_status()
+
+        config.delete('auth_token')
