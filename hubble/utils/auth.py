@@ -3,40 +3,11 @@ import os
 import webbrowser
 from functools import lru_cache
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from pathlib import Path
-from typing import Dict
 from urllib.parse import parse_qs
 from urllib.request import Request, urlopen
+from hubble.utils.config import config
 
 import aiohttp
-
-JINA_CLOUD_CONFIG = 'config.json'
-
-
-def _get_hub_config() -> Dict:
-    hub_root = Path(os.environ.get('JINA_HUB_ROOT', Path.home().joinpath('.jina')))
-
-    if not hub_root.exists():
-        hub_root.mkdir(parents=True, exist_ok=True)
-
-    config_file = hub_root.joinpath(JINA_CLOUD_CONFIG)
-    if config_file.exists():
-        with open(config_file) as f:
-            return json.load(f)
-
-    return {}
-
-
-def _save_hub_config(config: Dict):
-    hub_root = Path(os.environ.get('JINA_HUB_ROOT', Path.home().joinpath('.jina')))
-
-    if not hub_root.exists():
-        hub_root.mkdir(parents=True, exist_ok=True)
-
-    config_file = hub_root.joinpath(JINA_CLOUD_CONFIG)
-    with open(config_file, 'w') as f:
-        json.dump(config, f)
-
 
 @lru_cache()
 def _get_cloud_api_url() -> str:
@@ -62,7 +33,6 @@ def _get_cloud_api_url() -> str:
 class Auth:
     @staticmethod
     def get_auth_token():
-        config = _get_hub_config()
         return config.get('auth_token')
 
     @staticmethod
@@ -119,6 +89,4 @@ class Auth:
                 json_response = await response.json()
                 token = json_response['data']['token']
 
-        config = _get_hub_config()
-        config['auth_token'] = token
-        _save_hub_config(config)
+        config.set('auth_token', token)
