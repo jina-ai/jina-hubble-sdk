@@ -31,6 +31,16 @@ import hubble
 hubble.login()
 ```
 
+### Logout
+
+```python
+import hubble
+
+# If there is a valid token locally, 
+# this will disable that token and remove it from local config.
+hubble.logout()
+```
+
 ### Authentication and Token Management
 
 After calling `hubble.login()`, you can use the client with:
