@@ -9,6 +9,7 @@ from hubble.utils.config import config
 
 import aiohttp
 
+
 @lru_cache()
 def _get_cloud_api_url() -> str:
     """Get Cloud Api for transmiting data to the cloud.

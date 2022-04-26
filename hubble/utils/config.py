@@ -5,6 +5,7 @@ from pathlib import Path
 CONFIG_FILE_NAME = 'config.json'
 ROOT_ENV_NAME = 'JINA_HUB_ROOT'
 
+
 class Config:
     """
     This class is used to store the configuration of the application.
@@ -28,7 +29,7 @@ class Config:
         """
         if not self.config_file.exists():
             return None
-        
+
         with open(self.config_file) as f:
             config = json.load(f)
             if key is None:
@@ -48,7 +49,7 @@ class Config:
         config = self.get()
         if config is None:
             config = {}
-        
+
         config[key] = value
         with open(self.config_file, 'w') as f:
             json.dump(config, f)
@@ -66,7 +67,7 @@ class Config:
         config = self.get()
         if config is None:
             return None
-        
+
         if key in config:
             del config[key]
             with open(self.config_file, 'w') as f:
@@ -80,5 +81,6 @@ class Config:
         """
         if self.config_file.exists():
             self.config_file.unlink()
-        
+
+
 config = Config()
