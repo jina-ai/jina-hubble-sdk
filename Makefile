@@ -46,7 +46,7 @@ clean:
 ## Create a virtual environment
 env:
 	python3 -m venv .venv
-	source .venv/bin/activate
+	. .venv/bin/activate
 	pip install -U pip
 
 ## Install pre-commit hooks
