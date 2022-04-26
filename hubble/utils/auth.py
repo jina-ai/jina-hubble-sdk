@@ -90,7 +90,8 @@ class Auth:
                 json_response = await response.json()
                 token = json_response['data']['token']
 
-        config.set('auth_token', token)
+                config.set('auth_token', token)
+                print('🔐 Successfully login to Jina Ecosystem!')
 
     @staticmethod
     async def logout():
@@ -102,6 +103,11 @@ class Auth:
             async with session.post(
                 url=f'{api_host}/v2/rpc/user.session.dismiss',
             ) as response:
-                response.raise_for_status()
-
-        config.delete('auth_token')
+                json_response = await response.json()
+                if json_response['code'] == 401:
+                    print('🔓 You are not logged in. No need to logout.')
+                elif json_response['code'] == 200:
+                    print('🔓 You have successfully logged out.')
+                    config.delete('auth_token')
+                else:
+                    print(f'🚨 Failed to logout. {json_response["message"]}')
