@@ -1,10 +1,7 @@
 import pytest
 import os
 from pathlib import Path
-from hubble.utils.config import Config
-
-CONFIG_FILE_NAME = 'config.json'
-ROOT_ENV_NAME = 'JINA_HUBBLE_ROOT'
+from hubble.utils.config import Config, CONFIG_FILE_NAME, ROOT_ENV_NAME
 
 @pytest.fixture
 def config_path():
