@@ -24,8 +24,7 @@ def test_create_list_delete_personal_access_token(client):
     assert resp.ok
     resp = client.list_personal_access_tokens()
     assert resp.ok
-    pat_id = resp.json()['data']['personal_access_tokens'][0]['_id']
-    resp = client.delete_personal_access_token(personal_access_token_id=pat_id)
+    resp = client.delete_personal_access_token(name=pat_name)
     assert resp.ok
 
 

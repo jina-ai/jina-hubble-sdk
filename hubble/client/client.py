@@ -41,21 +41,18 @@ class Client(BaseClient):
         return self.handle_request(url=self._base_url + EndpointsV2.list_pats)
 
     def delete_personal_access_token(
-        self, personal_access_token_id: str
+        self, name: str
     ) -> Union[requests.Response, dict]:
-        """Delete personal access token by id.
+        """Delete personal access token by name.
 
-        # TODO: bo refactor this, it makes no sense to delete PAT by
-        # TODO id while create by name.
-
-        :param personal_access_token_id: Id of the personal access token
+        :param name: Name of the personal access token
           to be deleted.
         :returns: `requests.Response` object as returned value
             or indented json if jsonify.
         """
         return self.handle_request(
             url=self._base_url + EndpointsV2.delete_pat,
-            data={'id': personal_access_token_id},
+            data={'name': name},
         )
 
     def get_user_info(self) -> Union[requests.Response, dict]:
