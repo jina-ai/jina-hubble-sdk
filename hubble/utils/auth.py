@@ -1,34 +1,10 @@
-import json
-import os
 import webbrowser
-from functools import lru_cache
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs
-from urllib.request import Request, urlopen
 
 import aiohttp
+from hubble.utils.api_utils import get_base_url
 from hubble.utils.config import config
-
-
-@lru_cache()
-def _get_cloud_api_url() -> str:
-    """Get Cloud Api for transmiting data to the cloud.
-
-    :raises RuntimeError: Encounter error when fetching the cloud Api Url.
-    :return: Cloud Api Url
-    """
-    if 'JINA_HUBBLE_REGISTRY' in os.environ:
-        return os.environ['JINA_HUBBLE_REGISTRY']
-    else:
-        try:
-            req = Request(
-                'https://api.jina.ai/hub/hubble.json',
-                headers={'User-Agent': 'Mozilla/5.0'},
-            )
-            with urlopen(req) as resp:
-                return json.load(resp)['url']
-        except Exception as ex:
-            raise ex
 
 
 class Auth:
@@ -38,13 +14,13 @@ class Auth:
 
     @staticmethod
     async def login():
-        api_host = _get_cloud_api_url()
+        api_host = get_base_url()
 
         async with aiohttp.ClientSession() as session:
             redirect_url = 'http://localhost:8085'
 
             async with session.get(
-                url=f'{api_host}/v2/rpc/user.identity.authorize?'
+                url=f'{api_host}user.identity.authorize?'
                 f'provider=jina-login&redirectUri={redirect_url}'
             ) as response:
                 response.raise_for_status()
@@ -83,7 +59,7 @@ class Auth:
 
         async with aiohttp.ClientSession() as session:
             async with session.post(
-                url=f'{api_host}/v2/rpc/user.identity.grant.auth0Unified',
+                url=f'{api_host}user.identity.grant.auth0Unified',
                 data=post_data,
             ) as response:
                 response.raise_for_status()
@@ -95,13 +71,13 @@ class Auth:
 
     @staticmethod
     async def logout():
-        api_host = _get_cloud_api_url()
+        api_host = get_base_url()
 
         async with aiohttp.ClientSession() as session:
             session.headers.update({'Authorization': f'token {Auth.get_auth_token()}'})
 
             async with session.post(
-                url=f'{api_host}/v2/rpc/user.session.dismiss',
+                url=f'{api_host}/user.session.dismiss',
             ) as response:
                 json_response = await response.json()
                 if json_response['code'] == 401:
