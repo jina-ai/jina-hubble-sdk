@@ -40,9 +40,7 @@ class Client(BaseClient):
         """
         return self.handle_request(url=self._base_url + EndpointsV2.list_pats)
 
-    def delete_personal_access_token(
-        self, name: str
-    ) -> Union[requests.Response, dict]:
+    def delete_personal_access_token(self, name: str) -> Union[requests.Response, dict]:
         """Delete personal access token by name.
 
         :param name: Name of the personal access token
