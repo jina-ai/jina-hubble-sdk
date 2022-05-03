@@ -2,6 +2,7 @@ import os
 import webbrowser
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs
+from requests.compat import urljoin
 
 import aiohttp
 from hubble.utils.api_utils import get_base_url
@@ -84,7 +85,7 @@ class Auth:
             session.headers.update({'Authorization': f'token {Auth.get_auth_token()}'})
 
             async with session.post(
-                url=f'{api_host}/user.session.dismiss',
+                url=urljoin(api_host, 'user.session.dismiss')
             ) as response:
                 json_response = await response.json()
                 if json_response['code'] == 401:
