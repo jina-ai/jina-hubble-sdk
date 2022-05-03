@@ -2,11 +2,11 @@ import os
 import webbrowser
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs
-from requests.compat import urljoin
 
 import aiohttp
 from hubble.utils.api_utils import get_base_url
 from hubble.utils.config import config
+from requests.compat import urljoin
 
 
 class Auth:
