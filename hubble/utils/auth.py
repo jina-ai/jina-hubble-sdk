@@ -28,8 +28,11 @@ class Auth:
             redirect_url = 'http://localhost:8085'
 
             async with session.get(
-                url=f'{api_host}user.identity.authorize?'
-                f'provider=jina-login&redirectUri={redirect_url}'
+                url=urljoin(
+                    api_host,
+                    'user.identity.authorize?provider=jina-login&redirectUri=',
+                )
+                + redirect_url
             ) as response:
                 response.raise_for_status()
                 json_response = await response.json()
@@ -67,7 +70,7 @@ class Auth:
 
         async with aiohttp.ClientSession() as session:
             async with session.post(
-                url=f'{api_host}user.identity.grant.auth0Unified',
+                url=urljoin(api_host, 'user.identity.grant.auth0Unified'),
                 data=post_data,
             ) as response:
                 response.raise_for_status()
