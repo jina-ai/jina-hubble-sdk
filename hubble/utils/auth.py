@@ -1,3 +1,4 @@
+import os
 import webbrowser
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs
@@ -10,7 +11,13 @@ from hubble.utils.config import config
 class Auth:
     @staticmethod
     def get_auth_token():
-        return config.get('auth_token')
+        """Get user auth token.
+
+        .. note:: We first check `JINA_AUTH_TOKEN` environment variable.
+          if token is not None, use env token. Otherwise, we get token from config.
+        """
+        token_from_env = os.environ.get('JINA_AUTH_TOKEN')
+        return token_from_env if token_from_env else config.get('auth_token')
 
     @staticmethod
     async def login():
