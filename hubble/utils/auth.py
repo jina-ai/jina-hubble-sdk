@@ -6,6 +6,7 @@ from urllib.parse import parse_qs
 import aiohttp
 from hubble.utils.api_utils import get_base_url
 from hubble.utils.config import config
+from requests.compat import urljoin
 
 
 class Auth:
@@ -27,8 +28,11 @@ class Auth:
             redirect_url = 'http://localhost:8085'
 
             async with session.get(
-                url=f'{api_host}user.identity.authorize?'
-                f'provider=jina-login&redirectUri={redirect_url}'
+                url=urljoin(
+                    api_host,
+                    'user.identity.authorize?provider=jina-login&redirectUri=',
+                )
+                + redirect_url
             ) as response:
                 response.raise_for_status()
                 json_response = await response.json()
@@ -66,7 +70,7 @@ class Auth:
 
         async with aiohttp.ClientSession() as session:
             async with session.post(
-                url=f'{api_host}user.identity.grant.auth0Unified',
+                url=urljoin(api_host, 'user.identity.grant.auth0Unified'),
                 data=post_data,
             ) as response:
                 response.raise_for_status()
@@ -84,7 +88,7 @@ class Auth:
             session.headers.update({'Authorization': f'token {Auth.get_auth_token()}'})
 
             async with session.post(
-                url=f'{api_host}/user.session.dismiss',
+                url=urljoin(api_host, 'user.session.dismiss')
             ) as response:
                 json_response = await response.json()
                 if json_response['code'] == 401:
