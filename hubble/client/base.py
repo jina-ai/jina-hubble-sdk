@@ -20,7 +20,7 @@ class BaseClient(object):
     def __init__(
         self,
         max_retries: Optional[int] = None,
-        timeout: int = 10,
+        timeout: int = 3,
         jsonify: bool = False,
     ):
         self._api_token = Auth.get_auth_token()
@@ -58,6 +58,7 @@ class BaseClient(object):
         method: str = 'POST',
         data: Optional[dict] = None,
         files: Optional[MutableMapping[Text, IO[Any]]] = None,
+        timeout: Optional[int] = None,
     ) -> Union[requests.Response, dict]:
         """The basis request handler.
 
@@ -69,6 +70,7 @@ class BaseClient(object):
         :param method: The request type, for v2 always set to POST.
         :param data: Optional data payloads to be send along with request.
         :param files: Optional files to be uploaded.
+        :param timeout: Optional int of connection timeout.
         :returns: `requests.Response` object as returned value
             or indented json if jsonify.
         """
@@ -76,7 +78,7 @@ class BaseClient(object):
             method=method,
             url=url,
             data=data if data else None,
-            timeout=self._timeout,
+            timeout=timeout if timeout else self._timeout,
             files=files,
         )
         if resp.status_code >= 400:
