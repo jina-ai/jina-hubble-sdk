@@ -67,7 +67,7 @@ class Client(BaseClient):
         id: Optional[str] = None,
         metadata: Optional[dict] = None,
         is_public: bool = False,
-        timeout: Optional[int] = 60,
+        timeout: int = 60,
     ) -> Union[requests.Response, dict]:
         """Upload artifact to Hubble Artifact Storage.
 
@@ -91,7 +91,7 @@ class Client(BaseClient):
             timeout=timeout,
         )
 
-    def download_artifact(self, id: str, path: str, timeout: Optional[int] = 60) -> str:
+    def download_artifact(self, id: str, path: str, timeout: int = 60) -> str:
         """Download artifact from Hubble Artifact Storage to localhost.
 
         :param id: The id of the artifact to be downloaded.
