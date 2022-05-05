@@ -54,10 +54,13 @@ class Auth:
                 post_data = parse_qs(self.rfile.read(content_length))
 
                 self._set_response()
-                self.wfile.write(
-                    'You have successfully logged in!'
-                    'You can close this window now.'.encode('utf-8')
-                )
+                with open(
+                    os.path.join(
+                        os.path.dirname(__file__), 'template', 'logged_in_page.html'
+                    ),
+                    'rb',
+                ) as f:
+                    self.wfile.write(f.read())
                 done = True
 
             def log_message(self, format, *args):

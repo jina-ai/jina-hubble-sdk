@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jina Login Successful</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            font-size: 12px;
+            font-weight: 400;
+            font-style: normal;
+        }
+        .title {
+            font-weight: 700;
+            font-size: 14px;
+            line-height: 21px;
+            text-align: center;
+            letter-spacing: 0.1px;
+            text-transform: uppercase;
+        }
+        .message {
+            line-height: 18px;
+            text-align: center;
+            letter-spacing: 0.1px;
+        }
+        .close-button {
+            width: 216px;
+            padding: 6px 12px;
+            margin-top: 40px;
+
+            background: #FFFFFF;
+            border: 1px solid #009191;
+            border-radius: 4px;
+
+            line-height: 21px;
+            letter-spacing: 0.25px;
+            color: #009191;
+        }
+        .close-button:hover {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div style="text-align: center; margin-top: 130px;">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M24 4C35.0455 4 44 12.9545 44 24C44 35.0455 35.0455 44 24 44C12.9545 44 4 35.0455 4 24C4 12.9545 12.9545 4 24 4ZM32.56 17.9385C32.4206 17.7993 32.2552 17.6889 32.0731 17.6136C31.891 17.5383 31.6959 17.4997 31.4989 17.4998C31.3019 17.5 31.1069 17.5389 30.9249 17.6144C30.743 17.69 30.5777 17.8006 30.4385 17.94L21.512 26.88L17.5585 22.943C17.2759 22.6659 16.8952 22.5118 16.4995 22.5141C16.1037 22.5165 15.7249 22.6752 15.4456 22.9556C15.1663 23.236 15.0092 23.6154 15.0084 24.0112C15.0076 24.407 15.1633 24.787 15.4415 25.0685L20.4565 30.063C20.7381 30.3435 21.1196 30.5007 21.5171 30.5002C21.9146 30.4996 22.2956 30.3413 22.5765 30.06L32.5615 20.06C32.7007 19.9206 32.8111 19.7552 32.8864 19.5731C32.9616 19.391 33.0003 19.1959 33.0002 18.9989C33 18.8019 32.9611 18.6069 32.8856 18.4249C32.81 18.243 32.6994 18.0777 32.56 17.9385Z" fill="#009191"/>
+        </svg>
+
+        <h2 class="title">Login successful</h2>
+        <p class="message">
+            You can close this window and continue using the product.<br/>
+            (or it will be closed automatically in <span id="close_time">5</span>s...)
+        </p>
+        <button class="close-button" onclick="window.close()">Close Window</button>
+    </div>
+
+    <script>
+        function close_window() {
+            let count = 5;
+            const close_time = document.getElementById('close_time');
+
+            const interval = setInterval(() => {
+                count--;
+                close_time.innerHTML = count;
+                if (count === 0) {
+                    clearInterval(interval);
+                    window.close();
+                }
+            }, 1000);
+        }
+
+        close_window();
+    </script>
+</body>
+</html>
