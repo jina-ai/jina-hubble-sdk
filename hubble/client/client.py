@@ -67,7 +67,6 @@ class Client(BaseClient):
         id: Optional[str] = None,
         metadata: Optional[dict] = None,
         is_public: bool = False,
-        timeout: int = 60,
     ) -> Union[requests.Response, dict]:
         """Upload artifact to Hubble Artifact Storage.
 
@@ -76,7 +75,6 @@ class Client(BaseClient):
         :param metadata: Optional value, the metadata of the artifact.
         :param is_public: Optional value, if this artifact is public or not,
           default not public.
-        :param timeout: Optional int, allow a larger timeout when uploading.
         :returns: `requests.Response` object as returned value
             or indented json if jsonify.
         """
@@ -88,22 +86,19 @@ class Client(BaseClient):
                 'public': is_public,
             },
             files={'file': open(path, 'rb')},
-            timeout=timeout,
         )
 
-    def download_artifact(self, id: str, path: str, timeout: int = 60) -> str:
+    def download_artifact(self, id: str, path: str) -> str:
         """Download artifact from Hubble Artifact Storage to localhost.
 
         :param id: The id of the artifact to be downloaded.
         :param path: The path and name of the file to be stored in localhost.
-        :param timeout: Optional int, allow a larger timeout when uploading.
         :returns: A str object indicates the download path on localhost.
         """
         # first get download uri.
         resp = self.handle_request(
             url=self._base_url + EndpointsV2.download_artifact,
             data={'id': id},
-            timeout=timeout,
         )
         # Second download artifact.
         if isinstance(resp, requests.Response):

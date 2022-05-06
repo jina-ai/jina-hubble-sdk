@@ -13,14 +13,12 @@ class BaseClient(object):
     """Base Hubble Python API client.
 
     :param max_retries: Number of allowed maximum retries.
-    :param timeout: Request timeout, in seconds.
     :param jsonify: Convert `requests.Response` object to json.
     """
 
     def __init__(
         self,
         max_retries: Optional[int] = None,
-        timeout: int = 3,
         jsonify: bool = False,
     ):
         self._api_token = Auth.get_auth_token()
@@ -30,7 +28,6 @@ class BaseClient(object):
             )
         self._session = HubbleAPISession()
         self._session.init_jwt_auth(api_token=self._api_token)
-        self._timeout = timeout
         self._base_url = get_base_url()
         self._jsonify = jsonify
         if max_retries:
@@ -58,7 +55,6 @@ class BaseClient(object):
         method: str = 'POST',
         data: Optional[dict] = None,
         files: Optional[MutableMapping[Text, IO[Any]]] = None,
-        timeout: Optional[int] = None,
     ) -> Union[requests.Response, dict]:
         """The basis request handler.
 
@@ -70,7 +66,6 @@ class BaseClient(object):
         :param method: The request type, for v2 always set to POST.
         :param data: Optional data payloads to be send along with request.
         :param files: Optional files to be uploaded.
-        :param timeout: Optional int of connection timeout.
         :returns: `requests.Response` object as returned value
             or indented json if jsonify.
         """
@@ -78,7 +73,6 @@ class BaseClient(object):
             method=method,
             url=url,
             data=data if data else None,
-            timeout=timeout if timeout else self._timeout,
             files=files,
         )
         if resp.status_code >= 400:
