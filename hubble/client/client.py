@@ -14,10 +14,10 @@ class Client(BaseClient):
     ) -> Union[requests.Response, dict]:
         """Create a personal access token.
 
-        Personal Access Token (refer as PAT) is same as `api_token`
+        Personal Access Token (refer as PAT) is same as `token`
         where you get from the UI.
         The main difference is that you can set a ``expiration_days``
-        for PAT while ``api_token`` becomes invalid as soon as user logout.
+        for PAT while ``token`` becomes invalid as soon as user logout.
 
         :param name: The name of the personal access token.
         :param expiration_days: Number of days to be valid, by default 30 days.

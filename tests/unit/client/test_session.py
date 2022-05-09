@@ -16,6 +16,6 @@ def init_jwt_auth_url():
     return get_base_url() + EndpointsV2.get_user_info
 
 
-def test_init_jwt_auth_fail_given_invalid_api_token(test_session):
-    test_session.init_jwt_auth(api_token='fake-token')
+def test_init_jwt_auth_fail_given_invalid_token(test_session):
+    test_session.init_jwt_auth(token='fake-token')
     assert test_session.headers['Authorization'] == 'token fake-token'

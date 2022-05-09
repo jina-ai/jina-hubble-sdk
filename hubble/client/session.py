@@ -25,14 +25,14 @@ class HubbleAPISession(requests.Session):
             }
         )
 
-    def init_jwt_auth(self, api_token: str):
+    def init_jwt_auth(self, token: str):
         """Initialize the jwt token.
 
-        :param api_token: The api token user get from webpage.
+        :param token: The api token user get from webpage.
         """
-        self.headers.update({'Authorization': f'token {api_token}'})
+        self.headers.update({'Authorization': f'token {token}'})
 
-    def validate_api_token(self) -> requests.Response:
+    def validate_token(self) -> requests.Response:
         """Validate API token.
 
         This function will call the whoami endpoint from Hubble API
