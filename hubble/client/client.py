@@ -64,14 +64,14 @@ class Client(BaseClient):
 
     def upload_artifact(
         self,
-        path: Union[str, io.BytesIO],
+        f: Union[str, io.BytesIO],
         id: Optional[str] = None,
         metadata: Optional[dict] = None,
         is_public: bool = False,
     ) -> Union[requests.Response, dict]:
         """Upload artifact to Hubble Artifact Storage.
 
-        :param path: The full path or the `io.BytesIO` of the file to be uploaded.
+        :param f: The full path or the `io.BytesIO` of the file to be uploaded.
         :param id: Optional value, the id of the artifact.
         :param metadata: Optional value, the metadata of the artifact.
         :param is_public: Optional value, if this artifact is public or not,
@@ -79,13 +79,13 @@ class Client(BaseClient):
         :returns: `requests.Response` object as returned value
             or indented json if jsonify.
         """
-        if isinstance(path, str):
-            files = {'file': open(path, 'rb')}
-        elif isinstance(path, io.BytesIO):
-            files = {'file': path}
+        if isinstance(f, str):
+            files = {'file': open(f, 'rb')}
+        elif isinstance(f, io.BytesIO):
+            files = {'file': f}
         else:
             raise TypeError(
-                f'Unexpected type {type(path)}, expect either `str` or `io.BytesIO`.'
+                f'Unexpected type {type(f)}, expect either `str` or `io.BytesIO`.'
             )
 
         return self.handle_request(
