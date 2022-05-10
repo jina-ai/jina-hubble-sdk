@@ -1,3 +1,4 @@
+import io
 import os
 import uuid
 
@@ -34,8 +35,12 @@ def test_get_user_info(client):
 
 
 def test_upload_get_delete_artifact(client, tmpdir):
+    # upload from path.
     artifact_dir = os.path.join(cur_dir, '../resources/model')
-    resp = client.upload_artifact(path=artifact_dir)
+    resp = client.upload_artifact(f=artifact_dir)
+    assert resp.ok
+    # upload from bytesio
+    resp = client.upload_artifact(f=io.BytesIO(b"some initial binary data: \x00\x01"))
     assert resp.ok
     artifact_id = resp.json()['data']['_id']
     resp = client.get_artifact_info(id=artifact_id)
