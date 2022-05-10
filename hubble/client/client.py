@@ -1,3 +1,4 @@
+import io
 import json
 import shutil
 from typing import Optional, Union
@@ -63,14 +64,14 @@ class Client(BaseClient):
 
     def upload_artifact(
         self,
-        path: str,
+        path: Union[str, io.BytesIO],
         id: Optional[str] = None,
         metadata: Optional[dict] = None,
         is_public: bool = False,
     ) -> Union[requests.Response, dict]:
         """Upload artifact to Hubble Artifact Storage.
 
-        :param path: The full path of the file to be uploaded.
+        :param path: The full path or the `io.BytesIO` of the file to be uploaded.
         :param id: Optional value, the id of the artifact.
         :param metadata: Optional value, the metadata of the artifact.
         :param is_public: Optional value, if this artifact is public or not,
@@ -78,6 +79,15 @@ class Client(BaseClient):
         :returns: `requests.Response` object as returned value
             or indented json if jsonify.
         """
+        if isinstance(path, str):
+            files = {'file': open(path, 'rb')}
+        elif isinstance(path, io.BytesIO):
+            files = {'file': path}
+        else:
+            raise TypeError(
+                f'Unexpected file type {type(path)}, expect either `str` or `io.BytesIO`.'
+            )
+
         return self.handle_request(
             url=self._base_url + EndpointsV2.upload_artifact,
             data={
@@ -85,7 +95,7 @@ class Client(BaseClient):
                 'metaData': json.dumps(metadata) if metadata else None,
                 'public': is_public,
             },
-            files={'file': open(path, 'rb')},
+            files=files,
         )
 
     def download_artifact(self, id: str, path: str) -> str:
