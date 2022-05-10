@@ -85,7 +85,7 @@ class Client(BaseClient):
             files = {'file': path}
         else:
             raise TypeError(
-                f'Unexpected file type {type(path)}, expect either `str` or `io.BytesIO`.'
+                f'Unexpected type {type(path)}, expect either `str` or `io.BytesIO`.'
             )
 
         return self.handle_request(
