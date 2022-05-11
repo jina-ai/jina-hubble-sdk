@@ -67,17 +67,24 @@ response = client.list_personal_access_tokens()
 ### Artifact Management
 ```python
 import hubble
+import io
 
 client = hubble.Client(
     max_retries=None,
     timeout=10,
     jsonify=True
 )
-# Upload artifact to Hubble Artifact Storage.
+# Upload artifact to Hubble Artifact Storage by providing path.
 response = client.upload_artifact(
-    path='my-model.onnx',
+    f='~/Documents/my-model.onnx',
     is_public=False
 )
+# Upload artifact to Hubble Artifact Storage by providing `io.BytesIO`
+response = client.upload_artifact(
+    f=io.BytesIO(b"some initial binary data: \x00\x01"),
+    is_public=False
+)
+
 # Get current artifact information.
 response = client.get_artifact_info(id='my-artifact-id')
 # Download artifact to local directory.
