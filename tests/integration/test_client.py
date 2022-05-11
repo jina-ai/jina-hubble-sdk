@@ -36,15 +36,20 @@ def test_get_user_info(client):
 
 def test_upload_get_delete_artifact(client, tmpdir):
     # upload from path.
-    artifact_dir = os.path.join(cur_dir, '../resources/model')
-    resp = client.upload_artifact(f=artifact_dir)
+    artifact_file = os.path.join(cur_dir, '../resources/model')
+    resp = client.upload_artifact(f=artifact_file, show_progress=True)
     assert resp.ok
+
     # upload from bytesio
-    resp = client.upload_artifact(f=io.BytesIO(b"some initial binary data: \x00\x01"))
+    resp = client.upload_artifact(
+        f=io.BytesIO(b"some initial binary data: \x00\x01"), show_progress=True
+    )
     assert resp.ok
+
     artifact_id = resp.json()['data']['_id']
     resp = client.get_artifact_info(id=artifact_id)
     assert resp.ok
+
     downloaded_artifact = client.download_artifact(
         id=artifact_id, path=os.path.join(tmpdir, 'model')
     )

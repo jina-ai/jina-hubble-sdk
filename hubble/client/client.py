@@ -68,6 +68,7 @@ class Client(BaseClient):
         id: Optional[str] = None,
         metadata: Optional[dict] = None,
         is_public: bool = False,
+        show_progress: bool = False,
     ) -> Union[requests.Response, dict]:
         """Upload artifact to Hubble Artifact Storage.
 
@@ -79,24 +80,61 @@ class Client(BaseClient):
         :returns: `requests.Response` object as returned value
             or indented json if jsonify.
         """
+        from rich import filesize
+
+        from ..utils.pbar import get_progressbar
+
+        pbar = get_progressbar(disable=not show_progress)
+
+        class BufferReader(io.BytesIO):
+            def __init__(self, buf=b''):
+                super().__init__(buf)
+                self._len = len(buf)
+
+                self.task = pbar.add_task(
+                    'Uploading',
+                    total=self._len,
+                    start=True,
+                    total_size=str(filesize.decimal(self._len)),
+                )
+
+            def __len__(self):
+                return self._len
+
+            def read(self, n=-1):
+                chunk = io.BytesIO.read(self, n)
+                pbar.update(self.task, advance=len(chunk))
+                return chunk
+
         if isinstance(f, str):
-            files = {'file': open(f, 'rb')}
-        elif isinstance(f, io.BytesIO):
-            files = {'file': f}
-        else:
+            f = open(f, 'rb')
+        elif not isinstance(f, io.BytesIO):
             raise TypeError(
                 f'Unexpected type {type(f)}, expect either `str` or `io.BytesIO`.'
             )
 
-        return self.handle_request(
-            url=self._base_url + EndpointsV2.upload_artifact,
-            data={
-                'id': id,
-                'metaData': json.dumps(metadata) if metadata else None,
-                'public': is_public,
-            },
-            files=files,
+        dict_data = {
+            'public': is_public,
+            'file': ('file', f.read()),
+        }
+
+        if id:
+            dict_data['id'] = id
+        if metadata:
+            dict_data['metaData'] = json.dumps(metadata)
+
+        (data, ctype) = requests.packages.urllib3.filepost.encode_multipart_formdata(
+            dict_data
         )
+
+        headers = {'Content-Type': ctype}
+
+        with pbar:
+            return self.handle_request(
+                url=self._base_url + EndpointsV2.upload_artifact,
+                data=BufferReader(data),
+                headers=headers,
+            )
 
     def download_artifact(self, id: str, path: str) -> str:
         """Download artifact from Hubble Artifact Storage to localhost.
