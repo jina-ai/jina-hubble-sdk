@@ -56,6 +56,7 @@ class BaseClient(object):
         method: str = 'POST',
         data: Optional[dict] = None,
         files: Optional[MutableMapping[Text, IO[Any]]] = None,
+        headers: Optional[dict] = None,
     ) -> Union[requests.Response, dict]:
         """The basis request handler.
 
@@ -75,6 +76,7 @@ class BaseClient(object):
             url=url,
             data=data if data else None,
             files=files,
+            headers=headers,
         )
         if resp.status_code >= 400:
             self._handle_error_request(resp)
