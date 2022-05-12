@@ -51,7 +51,7 @@ def test_upload_get_delete_artifact(client, tmpdir):
     assert resp.ok
 
     downloaded_artifact = client.download_artifact(
-        id=artifact_id, path=os.path.join(tmpdir, 'model')
+        id=artifact_id, path=os.path.join(tmpdir, 'model'), show_progress=True
     )
     assert os.path.isfile(downloaded_artifact)
     resp = client.delete_artifact(id=artifact_id)

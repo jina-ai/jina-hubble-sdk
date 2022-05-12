@@ -1,6 +1,5 @@
 import io
 import json
-import shutil
 from typing import Optional, Union
 
 import requests
@@ -136,25 +135,44 @@ class Client(BaseClient):
                 headers=headers,
             )
 
-    def download_artifact(self, id: str, path: str) -> str:
+    def download_artifact(self, id: str, path: str, show_progress: bool = False) -> str:
         """Download artifact from Hubble Artifact Storage to localhost.
 
         :param id: The id of the artifact to be downloaded.
         :param path: The path and name of the file to be stored in localhost.
         :returns: A str object indicates the download path on localhost.
         """
+        from rich import filesize
+
+        from ..utils.pbar import get_progressbar
+
         # first get download uri.
         resp = self.handle_request(
             url=self._base_url + EndpointsV2.download_artifact,
             data={'id': id},
         )
+
         # Second download artifact.
         if isinstance(resp, requests.Response):
             resp = resp.json()
         download_url = resp['data']['download']
-        with requests.get(download_url, stream=True) as r:
-            with open(path, 'wb') as f:
-                shutil.copyfileobj(r.raw, f)
+
+        pbar = get_progressbar(disable=not show_progress)
+
+        with pbar:
+            with requests.get(download_url, stream=True) as response:
+                total = int(response.headers.get('content-length'))
+                task = pbar.add_task(
+                    'Downloading',
+                    total=total,
+                    start=True,
+                    total_size=str(filesize.decimal(total)),
+                )
+
+                with open(path, 'wb') as f:
+                    for data in response.iter_content(chunk_size=1024 * 1024):
+                        f.write(data)
+                        pbar.update(task, advance=len(data))
 
         return path
 
