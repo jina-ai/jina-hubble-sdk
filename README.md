@@ -12,7 +12,7 @@
 ## Install
 
 ```shell
-pip install --pre jina-hubble-sdk
+pip install jina-hubble-sdk
 ```
 
 ## Core functionality
@@ -99,8 +99,8 @@ response = client.delete_artifact(id='my-artifact-id')
 
 ## Release cycle
 
-Each time new commits come into `main` branch, the pre-release procedure will be started. 
-It will generate a pre-release in Pypi.
+- Each time new commits come into `main` branch, CD workflow will generate a new release both on GitHub and Pypi.
+- Each time new commits come into `alpha` branch, CD workflow will generate a new pre-release both on GitHub and Pypi.
 
 <!-- start support-pitch -->
 ## Support
