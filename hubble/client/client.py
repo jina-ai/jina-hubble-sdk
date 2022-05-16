@@ -83,6 +83,8 @@ class Client(BaseClient):
 
         from ..utils.pbar import get_progressbar
 
+        self.get_user_info()  # to make sure the user is logged in.
+
         pbar = get_progressbar(disable=not show_progress)
 
         class BufferReader(io.BytesIO):
