@@ -1,16 +1,4 @@
-import os
-
 from setuptools import find_packages, setup
-
-try:
-    libinfo_py = os.path.join('hubble', '__init__.py')
-    libinfo_content = open(libinfo_py, 'r', encoding='utf8').readlines()
-    version_line = [
-        line.strip() for line in libinfo_content if line.startswith('__version__')
-    ][0]
-    exec(version_line)  # gives __version__
-except FileNotFoundError:
-    __version__ = '0.0.0'
 
 # package metadata
 _description = 'SDK for Hubble API at Jina AI.'
@@ -74,7 +62,6 @@ if __name__ == '__main__':
     setup(
         name='jina-hubble-sdk',
         packages=find_packages(exclude=_package_exclude),
-        version=__version__,
         include_package_data=True,
         description=_description,
         author=_author,
