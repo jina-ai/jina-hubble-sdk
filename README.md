@@ -51,7 +51,6 @@ import hubble
 
 client = hubble.Client(
     max_retries=None,
-    timeout=10,
     jsonify=True
 )
 # Get current user information.
@@ -72,7 +71,6 @@ import io
 
 client = hubble.Client(
     max_retries=None,
-    timeout=10,
     jsonify=True
 )
 # Upload artifact to Hubble Artifact Storage by providing path.
