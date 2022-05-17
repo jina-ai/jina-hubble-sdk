@@ -22,3 +22,8 @@ jobs:
         run: make style
       - name: Run tests
         run: make test
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          files: ./coverage.xml
+        
