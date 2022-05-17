@@ -40,19 +40,26 @@ def test_upload_get_delete_artifact(client, tmpdir):
     resp = client.upload_artifact(f=artifact_file, show_progress=True)
     assert resp.ok
 
+    artifact_id1 = resp.json()['data']['_id']
+
     # upload from bytesio
     resp = client.upload_artifact(
         f=io.BytesIO(b"some initial binary data: \x00\x01"), show_progress=True
     )
     assert resp.ok
 
-    artifact_id = resp.json()['data']['_id']
-    resp = client.get_artifact_info(id=artifact_id)
+    artifact_id2 = resp.json()['data']['_id']
+    resp = client.get_artifact_info(id=artifact_id2)
     assert resp.ok
 
     downloaded_artifact = client.download_artifact(
-        id=artifact_id, path=os.path.join(tmpdir, 'model'), show_progress=True
+        id=artifact_id2, path=os.path.join(tmpdir, 'model'), show_progress=True
     )
     assert os.path.isfile(downloaded_artifact)
-    resp = client.delete_artifact(id=artifact_id)
+
+    resp = client.list_artifacts(filter={'metaData.foo': 'bar'}, sort={'type': -1})
     assert resp.ok
+
+    for artifact_id in [artifact_id1, artifact_id2]:
+        resp = client.delete_artifact(id=artifact_id)
+        assert resp.ok

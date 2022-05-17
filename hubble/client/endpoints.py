@@ -13,3 +13,4 @@ class EndpointsV2(object):
     download_artifact: str = 'artifact.getDownloadUrl'
     delete_artifact: str = 'artifact.delete'
     get_artifact_info: str = 'artifact.getDetail'
+    list_artifacts: str = 'artifact.list'
