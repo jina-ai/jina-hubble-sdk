@@ -80,11 +80,13 @@ client = hubble.Client(
     max_retries=None,
     jsonify=True
 )
+
 # Upload artifact to Hubble Artifact Storage by providing path.
 response = client.upload_artifact(
     f='~/Documents/my-model.onnx',
     is_public=False
 )
+
 # Upload artifact to Hubble Artifact Storage by providing `io.BytesIO`
 response = client.upload_artifact(
     f=io.BytesIO(b"some initial binary data: \x00\x01"),
@@ -93,11 +95,16 @@ response = client.upload_artifact(
 
 # Get current artifact information.
 response = client.get_artifact_info(id='my-artifact-id')
+
 # Download artifact to local directory.
 response = client.download_artifact(
     id='my-artifact-id',
     path='my-local-filepath'
 )
+
+# Get list of artifacts.
+response = client.list_artifacts(filter={'metaData.foo': 'bar'}, sort={'type': -1})
+
 # Delete the artifact.
 response = client.delete_artifact(id='my-artifact-id')
 ```

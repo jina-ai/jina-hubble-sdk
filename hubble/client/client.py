@@ -1,6 +1,6 @@
 import io
 import json
-from typing import Optional, Union
+from typing import Dict, List, Optional, Union
 
 import requests
 
@@ -200,4 +200,34 @@ class Client(BaseClient):
         return self.handle_request(
             url=self._base_url + EndpointsV2.get_artifact_info,
             data={'id': id},
+        )
+
+    def list_artifacts(
+        self,
+        *,
+        filter: Optional[dict] = None,
+        sort: Optional[Dict[str, int]] = None,
+        pageIndex: Optional[int] = None,
+        pageSize: Optional[int] = None,
+    ) -> Union[requests.Response, List[dict]]:
+        """Get list of artifacts.
+
+        :param filter: optional, to filter by fields.
+        :param sort: optional, to sort by fields.
+        :param pageIndex: optional, to specify which page to load.
+        :param pageSize: optional, number of items per page.
+        :returns: `requests.Response` object as returned value
+            or indented json if jsonify.
+        """
+
+        data = {
+            'filter': filter,
+            'sort': sort,
+            'pageIndex': pageIndex,
+            'pageSize': pageSize,
+        }
+
+        return self.handle_request(
+            url=self._base_url + EndpointsV2.list_artifacts,
+            data={key: value for (key, value) in data.items() if value is not None},
         )
