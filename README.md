@@ -8,6 +8,13 @@
     <b>Hubble Python SDK: Talk with Hubble in a Pythonic Way</b>
 </p>
 
+<p align="center">
+    <a href="https://codecov.io/gh/jina-ai/hubble-client-python">
+        <img src="https://codecov.io/gh/jina-ai/hubble-client-python/branch/main/graph/badge.svg?token=Sttz9HTmDq"/>
+    </a>
+</p>
+
+
 
 ## Install
 
