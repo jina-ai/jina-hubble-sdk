@@ -24,7 +24,7 @@ class Auth:
     async def login():
         api_host = get_base_url()
 
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(trust_env=True) as session:
             redirect_url = 'http://localhost:8085'
 
             async with session.get(
@@ -71,7 +71,7 @@ class Auth:
             while not done:
                 httpd.handle_request()
 
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(trust_env=True) as session:
             async with session.post(
                 url=urljoin(api_host, 'user.identity.grant.auth0Unified'),
                 data=post_data,
@@ -87,7 +87,7 @@ class Auth:
     async def logout():
         api_host = get_base_url()
 
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession(trust_env=True) as session:
             session.headers.update({'Authorization': f'token {Auth.get_auth_token()}'})
 
             async with session.post(
