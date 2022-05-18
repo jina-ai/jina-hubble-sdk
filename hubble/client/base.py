@@ -1,4 +1,3 @@
-import json
 from typing import IO, Any, MutableMapping, Optional, Text, Union
 
 import requests
@@ -69,7 +68,7 @@ class BaseClient(object):
         :param data: Optional data payloads to be send along with request.
         :param files: Optional files to be uploaded.
         :returns: `requests.Response` object as returned value
-            or indented json if jsonify.
+            or dict if jsonify.
         """
         resp = self._session.request(
             method=method,
@@ -82,6 +81,6 @@ class BaseClient(object):
             self._handle_error_request(resp)
 
         if self._jsonify:
-            resp = json.dumps(resp.json(), indent=2)
+            return resp.json()
 
         return resp
