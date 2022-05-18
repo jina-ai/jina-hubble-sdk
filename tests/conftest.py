@@ -6,6 +6,6 @@ import pytest
 @pytest.fixture(autouse=True)
 def environment():
     """Test should be performed on staging environment."""
-    os.environ['HUBBLE_ENVIRONMENT'] = 'STAGING'
+    os.environ['JINA_HUBBLE_REGISTRY'] = 'https://apihubble.staging.jina.ai'
     yield
-    del os.environ['HUBBLE_ENVIRONMENT']
+    del os.environ['JINA_HUBBLE_REGISTRY']
