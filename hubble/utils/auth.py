@@ -9,6 +9,15 @@ from hubble.utils.config import config
 from requests.compat import urljoin
 
 
+def _is_in_colab():
+    try:
+        import google.colab
+
+        return True
+    except ModuleNotFoundError:
+        return False
+
+
 class Auth:
     @staticmethod
     def get_auth_token():
@@ -36,7 +45,16 @@ class Auth:
             ) as response:
                 response.raise_for_status()
                 json_response = await response.json()
-                webbrowser.open(json_response['data']['redirectTo'], new=2)
+                if _is_in_colab():
+                    from IPython.display import Javascript, display
+
+                    display(
+                        Javascript(
+                            f'window.open({json_response["data"]["redirectTo"]});'
+                        )
+                    )
+                else:
+                    webbrowser.open(json_response['data']['redirectTo'], new=2)
 
         done = False
         post_data = None
