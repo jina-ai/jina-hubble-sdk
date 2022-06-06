@@ -6,9 +6,11 @@ import asyncio
 import nest_asyncio
 
 from .client.client import Client  # noqa F401
-from .utils.auth import Auth  # noqa F401
+from .utils.auth import Auth, _is_in_colab  # noqa F401
 
 nest_asyncio.apply()
+if _is_in_colab():
+    __import__('IPython').embed()
 
 
 def login():

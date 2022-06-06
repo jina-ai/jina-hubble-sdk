@@ -11,7 +11,7 @@ from requests.compat import urljoin
 
 def _is_in_colab():
     try:
-        import google.colab
+        import google.colab  # noqa F401
 
         return True
     except ModuleNotFoundError:
