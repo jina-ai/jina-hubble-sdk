@@ -1,11 +1,12 @@
+import json
 import os
 import webbrowser
-from http.server import BaseHTTPRequestHandler, HTTPServer
-from urllib.parse import parse_qs
+from urllib.parse import urlencode
 
 import aiohttp
 from hubble.utils.api_utils import get_base_url
 from hubble.utils.config import config
+from hubble.utils.google_colab import in_google_colab
 from requests.compat import urljoin
 
 
@@ -21,60 +22,37 @@ class Auth:
         return token_from_env if token_from_env else config.get('auth_token')
 
     @staticmethod
-    async def login():
+    async def login(**kwargs):
         api_host = get_base_url()
-
+        auth_info = None
         async with aiohttp.ClientSession(trust_env=True) as session:
-            redirect_url = 'http://localhost:8085'
+            kwargs['redirect_url'] = 'https://hub.jina.ai/authorization-landing'
+            kwargs['provider'] = 'jina-login'
 
             async with session.get(
                 url=urljoin(
                     api_host,
-                    'user.identity.authorize?provider=jina-login&redirectUri=',
-                )
-                + redirect_url
+                    'user.identity.proxiedAuthorize?{}'.format(urlencode(kwargs)),
+                ),
             ) as response:
-                response.raise_for_status()
-                json_response = await response.json()
-                webbrowser.open(json_response['data']['redirectTo'], new=2)
-
-        done = False
-        post_data = None
-
-        class S(BaseHTTPRequestHandler):
-            def _set_response(self):
-                self.send_response(200)
-                self.send_header('Content-type', 'text/html')
-                self.end_headers()
-
-            def do_POST(self):
-                nonlocal done, post_data
-
-                content_length = int(self.headers['Content-Length'])
-                post_data = parse_qs(self.rfile.read(content_length))
-
-                self._set_response()
-                with open(
-                    os.path.join(
-                        os.path.dirname(__file__), 'template', 'logged_in_page.html'
-                    ),
-                    'rb',
-                ) as f:
-                    self.wfile.write(f.read())
-                done = True
-
-            def log_message(self, format, *args):
-                return
-
-        server_address = ('', 8085)
-        with HTTPServer(server_address, S) as httpd:
-            while not done:
-                httpd.handle_request()
+                async for line in response.content:
+                    item = json.loads(line.decode('utf-8'))
+                    event = item['event']
+                    if event == 'redirect':
+                        if in_google_colab():
+                            print('Please open the following link in your browser:')
+                            print(item['data']['redirectTo'])
+                        else:
+                            webbrowser.open(item['data']['redirectTo'])
+                    elif event == 'authorize':
+                        auth_info = item['data']
+                    else:
+                        print('🚨 Unknown event: {}'.format(event))
 
         async with aiohttp.ClientSession(trust_env=True) as session:
             async with session.post(
-                url=urljoin(api_host, 'user.identity.grant.auth0Unified'),
-                data=post_data,
+                url=urljoin(api_host, 'user.identity.grant.auto'),
+                data=auth_info,
             ) as response:
                 response.raise_for_status()
                 json_response = await response.json()
