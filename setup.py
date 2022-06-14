@@ -79,5 +79,4 @@ if __name__ == '__main__':
         classifiers=_classifiers,
         project_urls=_project_urls,
         keywords=_keywords,
-        package_data={'jina-hubble-sdk': ['utils/template/logged_in_page.html']},
     )

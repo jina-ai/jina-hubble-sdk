@@ -1,3 +1,2 @@
 include requirements.txt
 include requirements-dev.txt
-include hubble/utils/template/logged_in_page.html
