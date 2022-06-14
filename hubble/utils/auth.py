@@ -39,13 +39,8 @@ class Auth:
                     event = item['event']
                     if event == 'redirect':
                         if in_google_colab():
-                            from IPython.display import Javascript, display
-
-                            display(
-                                Javascript(
-                                    f'window.open("{item["data"]["redirectTo"]}");'
-                                )
-                            )
+                            print('Please open the following link in your browser:')
+                            print(item['data']['redirectTo'])
                         else:
                             webbrowser.open(item['data']['redirectTo'])
                     elif event == 'authorize':
