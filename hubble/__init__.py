@@ -11,9 +11,9 @@ from .utils.auth import Auth  # noqa F401
 nest_asyncio.apply()
 
 
-def login():
+def login(**kwargs):
     """This function guide user to browser log-in and get token."""
-    asyncio.run(Auth.login())
+    asyncio.run(Auth.login(**kwargs))
 
 
 def logout():
