@@ -6,7 +6,6 @@ from urllib.parse import urlencode
 import aiohttp
 from hubble.utils.api_utils import get_base_url
 from hubble.utils.config import config
-from hubble.utils.google_colab import in_google_colab
 from requests.compat import urljoin
 
 
@@ -38,11 +37,9 @@ class Auth:
                     item = json.loads(line.decode('utf-8'))
                     event = item['event']
                     if event == 'redirect':
-                        if in_google_colab():
-                            print('Please open the following link in your browser:')
-                            print(item['data']['redirectTo'])
-                        else:
-                            webbrowser.open(item['data']['redirectTo'])
+                        print('Open the following link in your browser:')
+                        print(item['data']['redirectTo'])
+                        webbrowser.open(item['data']['redirectTo'])
                     elif event == 'authorize':
                         if item['data']['code'] and item['data']['state']:
                             auth_info = item['data']
