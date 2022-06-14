@@ -26,7 +26,7 @@ class Auth:
         api_host = get_base_url()
         auth_info = None
         async with aiohttp.ClientSession(trust_env=True) as session:
-            kwargs['provider'] = kwargs['provider'] or 'jina-login'
+            kwargs['provider'] = kwargs.get('provider', 'jina-login')
 
             async with session.get(
                 url=urljoin(
@@ -49,9 +49,21 @@ class Auth:
                         else:
                             webbrowser.open(item['data']['redirectTo'])
                     elif event == 'authorize':
-                        auth_info = item['data']
+                        if item['data']['code'] and item['data']['state']:
+                            auth_info = item['data']
+                        else:
+                            print(
+                                '🚨 Authentication failed: {}'.format(
+                                    item['data']['error_description']
+                                )
+                            )
+                    elif event == 'error':
+                        print('🚨 Authentication failed: {}'.format(item['data']))
                     else:
                         print('🚨 Unknown event: {}'.format(event))
+
+        if auth_info is None:
+            return
 
         async with aiohttp.ClientSession(trust_env=True) as session:
             async with session.post(
