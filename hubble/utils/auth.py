@@ -26,8 +26,7 @@ class Auth:
         api_host = get_base_url()
         auth_info = None
         async with aiohttp.ClientSession(trust_env=True) as session:
-            kwargs['redirect_url'] = 'https://hub.jina.ai/authorization-landing'
-            kwargs['provider'] = 'jina-login'
+            kwargs['provider'] = kwargs['provider'] or 'jina-login'
 
             async with session.get(
                 url=urljoin(
@@ -40,8 +39,13 @@ class Auth:
                     event = item['event']
                     if event == 'redirect':
                         if in_google_colab():
-                            print('Please open the following link in your browser:')
-                            print(item['data']['redirectTo'])
+                            from IPython.display import Javascript, display
+
+                            display(
+                                Javascript(
+                                    f'window.open({item["data"]["redirectTo"]});'
+                                )
+                            )
                         else:
                             webbrowser.open(item['data']['redirectTo'])
                     elif event == 'authorize':
