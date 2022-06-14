@@ -43,7 +43,7 @@ class Auth:
 
                             display(
                                 Javascript(
-                                    f'window.open({item["data"]["redirectTo"]});'
+                                    f'window.open("{item["data"]["redirectTo"]}");'
                                 )
                             )
                         else:
