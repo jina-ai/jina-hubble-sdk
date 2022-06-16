@@ -130,7 +130,7 @@ except Exception as ex:
 
 - Make a new virtual env. `make env`
 - Install dependencies. `make init`
-- Login Jina account. `jina auth login`
+- **The test should be run in a logged in environment**. So need to login to Jina. `jina auth login`
 - Test locally. `make test`
 
 ### Release cycle
