@@ -21,13 +21,12 @@ class BaseClient(object):
         max_retries: Optional[int] = None,
         jsonify: bool = False,
     ):
-        self._token = token if token else Auth.get_auth_token()
-        if not self._token:
-            raise ValueError(
-                'We can not get the token, please call `hubble.login()` first.'
-            )
         self._session = HubbleAPISession()
-        self._session.init_jwt_auth(token=self._token)
+
+        self._token = token if token else Auth.get_auth_token()
+        if self._token:
+            self._session.init_jwt_auth(token=self._token)
+
         self._base_url = get_base_url()
         self._jsonify = jsonify
         if max_retries:

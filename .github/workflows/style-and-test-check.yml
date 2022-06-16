@@ -19,8 +19,7 @@ jobs:
       - name: Run tests
         run: make test
         env:
-          HUBBLE_ACCESS_TOKEN: ${{secrets.HUBBLE_ACCESS_TOKEN}}
-          JINA_HUBBLE_REGISTRY: https://apihubble.staging.jina.ai
+          JINA_AUTH_TOKEN: ${{secrets.JINA_AUTH_TOKEN}}
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
         with:

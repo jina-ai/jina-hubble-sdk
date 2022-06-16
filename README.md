@@ -109,10 +109,34 @@ response = client.list_artifacts(filter={'metaData.foo': 'bar'}, sort={'type': -
 response = client.delete_artifact(id='my-artifact-id')
 ```
 
-## Release cycle
+### Error Handling
+```python
+import hubble
+
+client = hubble.Client()
+
+try:
+    client.get_user_info()
+except hubble.excepts.AuthenticationRequiredError:
+    print('Please login first.')
+except Exception:
+    print('Unknown error')
+```
+
+## Development
+
+### Local test
+
+- Make a new virtual env. `make env`
+- Install dependencies. `make init`
+- **The test should be run in a logged in environment**. So need to login to Jina. `jina auth login`
+- Test locally. `make test`
+
+### Release cycle
 
 - Each time new commits come into `main` branch, CD workflow will generate a new release both on GitHub and Pypi.
 - Each time new commits come into `alpha` branch, CD workflow will generate a new pre-release both on GitHub and Pypi.
+
 
 <!-- start support-pitch -->
 ## Support

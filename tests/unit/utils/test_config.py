@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 from hubble.utils import auth
@@ -30,7 +31,8 @@ def test_config(config, config_path):
     assert not config_path.exists()
 
 
-def test_get_auth_token(config, config_path):
+@patch.dict(os.environ, {'JINA_AUTH_TOKEN': ''})
+def test_get_auth_token(config):
     auth.config = config
     config.set('auth_token', 'my-token')
     assert config.get('auth_token') == 'my-token'
