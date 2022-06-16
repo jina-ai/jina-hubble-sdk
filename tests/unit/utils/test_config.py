@@ -31,7 +31,7 @@ def test_config(config, config_path):
     assert not config_path.exists()
 
 
-@patch.dict(os.environ, {"JINA_AUTH_TOKEN": ""})
+@patch.dict(os.environ, {'JINA_AUTH_TOKEN': ''})
 def test_get_auth_token(config):
     auth.config = config
     config.set('auth_token', 'my-token')

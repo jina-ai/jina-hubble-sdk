@@ -117,11 +117,10 @@ client = hubble.Client()
 
 try:
     client.get_user_info()
-except Exception as ex:
-    if (isinstance(ex, hubble.excepts.AuthenticationRequiredError)):
-        print('Please login first.')
-    else:
-        print('Unknown error')
+except hubble.excepts.AuthenticationRequiredError:
+    print('Please login first.')
+except Exception:
+    print('Unknown error')
 ```
 
 ## Development
