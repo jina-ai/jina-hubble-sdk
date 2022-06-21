@@ -185,7 +185,8 @@ class Client(BaseClient):
                         pbar.update(task, advance=len(data))
                 else:
                     raise TypeError(
-                        f'Unexpected type {type(f)}, expect either `str` or `io.BytesIO`.'
+                        f'Unexpected type {type(f)}, expect either'
+                        '`str` or `io.BytesIO`.'
                     )
 
     def delete_artifact(self, id: str) -> Union[requests.Response, dict]:
