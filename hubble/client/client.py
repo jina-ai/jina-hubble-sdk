@@ -138,13 +138,13 @@ class Client(BaseClient):
             )
 
     def download_artifact(
-        self, id: str, path: Union[str, io.BytesIO], show_progress: bool = False
+        self, id: str, f: Union[str, io.BytesIO], show_progress: bool = False
     ) -> str:
         """Download artifact from Hubble Artifact Storage to localhost.
 
         :param id: The id of the artifact to be downloaded.
-        :param path: The full path or the `io.BytesIO` of the file to be downloaded.
-        :returns: A str object indicates the download path on localhost.
+        :param f: The full path or the `io.BytesIO` of the file to be downloaded.
+        :returns: A str object indicates the download path on localhost or bytes.
         """
         from rich import filesize
 
@@ -173,19 +173,19 @@ class Client(BaseClient):
                     total_size=str(filesize.decimal(total)),
                 )
 
-                if isinstance(path, str):
-                    with open(path, 'wb') as f:
+                if isinstance(f, str):
+                    with open(f, 'wb') as writer:
                         for data in response.iter_content(chunk_size=1024 * 1024):
-                            f.write(data)
+                            writer.write(data)
                             pbar.update(task, advance=len(data))
-                        return path
-                elif isinstance(path, io.BytesIO):
+                        return f
+                elif isinstance(f, io.BytesIO):
                     for data in response.iter_content(chunk_size=1024 * 1024):
                         yield data
                         pbar.update(task, advance=len(data))
                 else:
                     raise TypeError(
-                        f'Unexpected type {type(path)}, expect either `str` or `io.BytesIO`.'
+                        f'Unexpected type {type(f)}, expect either `str` or `io.BytesIO`.'
                     )
 
     def delete_artifact(self, id: str) -> Union[requests.Response, dict]:
