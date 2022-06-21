@@ -101,6 +101,11 @@ response = client.download_artifact(
     id='my-artifact-id',
     f='my-local-filepath'
 )
+# Download artifact as an io.BytesIO object
+response = client.download_artifact(
+    id='my-artifact-id',
+    f=io.BytesIO()
+)
 
 # Get list of artifacts.
 response = client.list_artifacts(filter={'metaData.foo': 'bar'}, sort={'type': -1})
