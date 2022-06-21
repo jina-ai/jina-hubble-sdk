@@ -87,3 +87,22 @@ def test_upload_get_delete_artifact(client, tmpdir):
         resp = client.delete_artifact(id=artifact_id)
 
         assert_response(resp)
+
+
+def test_upload_download_artifact_as_bytesio(client):
+    # upload from path.
+    data = b'some initial binary data: \x00\x01'
+    resp = client.upload_artifact(f=io.BytesIO(data), show_progress=True)
+    assert_response(resp)
+
+    if not client._jsonify:
+        resp = resp.json()
+
+    artifact_id1 = resp['data']['_id']
+
+    # download as buffer
+    obj = io.BytesIO()
+    resp = client.download_artifact(artifact_id1, path=obj)
+    for chunk in resp:
+        assert isinstance(chunk, bytes)
+        assert chunk == data
