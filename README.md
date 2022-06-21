@@ -99,7 +99,7 @@ response = client.get_artifact_info(id='my-artifact-id')
 # Download artifact to local directory.
 response = client.download_artifact(
     id='my-artifact-id',
-    path='my-local-filepath'
+    f='my-local-filepath'
 )
 
 # Get list of artifacts.

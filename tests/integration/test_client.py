@@ -75,7 +75,7 @@ def test_upload_get_delete_artifact(client, tmpdir):
     assert_response(resp)
 
     downloaded_artifact = client.download_artifact(
-        id=artifact_id2, path=os.path.join(tmpdir, 'model'), show_progress=True
+        id=artifact_id2, f=os.path.join(tmpdir, 'model'), show_progress=True
     )
     assert os.path.isfile(downloaded_artifact)
 
@@ -103,6 +103,6 @@ def test_upload_download_artifact_bytes(client):
     # download as buffer
     obj = io.BytesIO()
     resp = client.download_artifact(artifact_id1, f=obj)
-    for chunk in resp:
-        assert isinstance(chunk, bytes)
-        assert chunk == data
+    assert isinstance(resp, io.BytesIO)
+    resp.seek(0)
+    assert resp.read() == data

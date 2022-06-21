@@ -178,16 +178,16 @@ class Client(BaseClient):
                         for data in response.iter_content(chunk_size=1024 * 1024):
                             writer.write(data)
                             pbar.update(task, advance=len(data))
-                        return f
                 elif isinstance(f, io.BytesIO):
                     for data in response.iter_content(chunk_size=1024 * 1024):
-                        yield data
+                        f.write(data)
                         pbar.update(task, advance=len(data))
                 else:
                     raise TypeError(
                         f'Unexpected type {type(f)}, expect either'
                         '`str` or `io.BytesIO`.'
                     )
+        return f
 
     def delete_artifact(self, id: str) -> Union[requests.Response, dict]:
         """Delete the artifact from Hubble Artifact Storage.
