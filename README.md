@@ -142,6 +142,28 @@ except Exception:
 - Each time new commits come into `main` branch, CD workflow will generate a new release both on GitHub and Pypi.
 - Each time new commits come into `alpha` branch, CD workflow will generate a new pre-release both on GitHub and Pypi.
 
+## FAQ (Frequently Asked Questions)
+
+### Run into `RuntimeError: asyncio.run() cannot be called from a running event loop` in Google Colab?
+
+You could run into a problem when you trying to run these codes in Google Colab 
+
+```python
+import hubble
+
+hubble.login()
+```
+
+The way to bypass this problem is adding `nest_asyncio` and use it first.
+
+```
+import hubble
+import nest_asyncio
+
+nest_asyncio.apply()
+hubble.login()
+```
+
 
 <!-- start support-pitch -->
 ## Support
