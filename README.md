@@ -156,7 +156,7 @@ hubble.login()
 
 The way to bypass this problem is adding `nest_asyncio` and use it first.
 
-```
+```python
 import hubble
 import nest_asyncio
 
