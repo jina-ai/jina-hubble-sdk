@@ -70,43 +70,6 @@ class Client(BaseClient):
     def username(self) -> str:
         return self.get_user_info()['data']['nickname']
 
-    def show_hint(self) -> bool:
-        """
-        Show hint if the user is not logged in.
-        """
-        from rich import print
-        from rich.panel import Panel
-
-        try:
-            print(
-                Panel(
-                    f'''You are logged into Jina AI as [green bold]{self.username}[/], which gives you a lot of benefits:
-- You can easily manage the DocumentArray, Executor, Flow via the web Console.
-- You enjoy [b]unlimited-time, protected[/] storage for the DocumentArray.
-- More features are coming soon.
-
-:unlock: To log out, use [dim]jina auth logout[/].''',
-                    title=':sunglasses: [green bold]You are logged in[/]',
-                    width=50,
-                )
-            )
-            return True
-        except AuthenticationRequiredError:
-            print(
-                Panel(
-                    f'''Jina AI offers many free benefits for logged in users.
-- They can easily manage the DocumentArray, Executor, Flow via the web Console.
-- They enjoy [b]unlimited-time, protected[/] storage for the DocumentArray.
-- More features are coming soon for them.
-
-:closed_lock_with_key: To log in, use [bold]jina auth login[/] with your Github/Google/Email account.''',
-                    title=':no_mouth: [yellow bold]You are not logged in[/]',
-                    width=50,
-                )
-            )
-        except Exception as ex:
-            print(f'Unknown error: {ex}')
-
     def upload_artifact(
         self,
         f: Union[str, io.BytesIO],
