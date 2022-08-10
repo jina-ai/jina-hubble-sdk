@@ -83,20 +83,20 @@ class Client(BaseClient):
 - More features are coming soon.
 
 :unlock: To log out, use [dim]jina auth logout[/].''',
-                    title=':sunglasses: You are logged in',
+                    title=':sunglasses: [g]You are logged in[/]',
                     width=50,
                 )
             )
         except AuthenticationRequiredError:
             print(
                 Panel(
-                    f'''There are many free benefits for logged in users.
+                    f'''Jina AI offers many free benefits for logged in users.
 - They can easily manage the DocumentArray, Executor, Flow via the web Console.
 - They enjoy [b]unlimited-time, protected[/] storage for the DocumentArray.
 - More features are coming soon for them.
 
 :closed_lock_with_key: To log in, use [bold]jina auth login[/] with your Github/Google/Email account.''',
-                    title=':no_mouth: You are not logged in',
+                    title=':no_mouth: [y]You are not logged in[/]',
                     width=50,
                 )
             )
