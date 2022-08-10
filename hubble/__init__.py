@@ -21,6 +21,8 @@ def logout():
 def show_hint(interactive: bool = False) -> bool:
     """
     Show hint if the user is not logged in.
+
+    # noqa E501
     """
     from rich import print
     from rich.panel import Panel
@@ -28,7 +30,7 @@ def show_hint(interactive: bool = False) -> bool:
     try:
         print(
             Panel(
-f'''You are logged into Jina AI as [green bold]{Client(jsonify=True).username}[/], which gives you a lot of benefits:
+                f'''You are logged into Jina AI as [green bold]{Client(jsonify=True).username}[/], which gives you a lot of benefits:
 - You can easily manage the DocumentArray, Executor, Flow via the web Console.
 - You enjoy [b]unlimited-time, protected[/] storage for the DocumentArray.
 - More features are coming soon.
