@@ -2,6 +2,7 @@
 The Hubble Python Client
 """
 import asyncio
+from typing import Optional
 
 from .client.client import Client  # noqa F401
 from .excepts import AuthenticationRequiredError
@@ -18,18 +19,19 @@ def logout():
     asyncio.run(Auth.logout())
 
 
-def show_hint(interactive: bool = False) -> bool:  # noqa: E501
+def show_hint(interactive: bool = False) -> Optional[str]:  # noqa: E501
     """
     Show hint if the user is not logged in.
 
     """
     from rich import print
     from rich.panel import Panel
+    c = Client(jsonify=True)
 
     try:
         print(
             Panel(
-                f'''You are logged into Jina AI as [green bold]{Client(jsonify=True).username}[/], which gives you a lot of benefits:
+                f'''You are logged into Jina AI as [green bold]{c.username}[/], which gives you a lot of benefits:
 - You can easily manage the DocumentArray, Executor, Flow via the web Console.
 - You enjoy [b]unlimited-time, protected[/] storage for the DocumentArray.
 - More features are coming soon.
@@ -39,7 +41,7 @@ def show_hint(interactive: bool = False) -> bool:  # noqa: E501
                 width=50,
             )
         )
-        return True
+        return c.token
     except AuthenticationRequiredError:
         print(
             Panel(
@@ -58,6 +60,7 @@ def show_hint(interactive: bool = False) -> bool:  # noqa: E501
 
             if Confirm.ask('Do you want to login now?'):
                 login()
-                return True
+
+            return show_hint(interactive=interactive)
     except Exception as ex:
         print(f'Unknown error: {ex}')
