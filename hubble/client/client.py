@@ -83,7 +83,7 @@ class Client(BaseClient):
 - More features are coming soon.
 
 :unlock: To log out, use [dim]jina auth logout[/].''',
-                    title=':sunglasses: [g]You are logged in[/]',
+                    title=':sunglasses: [green bold]You are logged in[/]',
                     width=50,
                 )
             )
@@ -96,7 +96,7 @@ class Client(BaseClient):
 - More features are coming soon for them.
 
 :closed_lock_with_key: To log in, use [bold]jina auth login[/] with your Github/Google/Email account.''',
-                    title=':no_mouth: [y]You are not logged in[/]',
+                    title=':no_mouth: [yellow bold]You are not logged in[/]',
                     width=50,
                 )
             )
