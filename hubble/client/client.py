@@ -6,7 +6,6 @@ import requests
 
 from .base import BaseClient
 from .endpoints import EndpointsV2
-from ..excepts import AuthenticationRequiredError
 
 
 class Client(BaseClient):

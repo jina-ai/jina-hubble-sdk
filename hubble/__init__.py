@@ -54,6 +54,7 @@ def show_hint(interactive: bool = False) -> bool:
         )
         if interactive:
             from rich.prompt import Confirm
+
             if Confirm.ask('Do you want to login now?'):
                 login()
                 return True
