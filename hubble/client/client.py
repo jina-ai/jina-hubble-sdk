@@ -70,7 +70,10 @@ class Client(BaseClient):
     def username(self) -> str:
         return self.get_user_info()['data']['nickname']
 
-    def show_hint(self) -> None:
+    def show_hint(self) -> bool:
+        """
+        Show hint if the user is not logged in.
+        """
         from rich import print
         from rich.panel import Panel
 
@@ -87,6 +90,7 @@ class Client(BaseClient):
                     width=50,
                 )
             )
+            return True
         except AuthenticationRequiredError:
             print(
                 Panel(
