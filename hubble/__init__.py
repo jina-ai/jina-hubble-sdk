@@ -26,6 +26,7 @@ def show_hint(interactive: bool = False) -> Optional[str]:  # noqa: E501
     """
     from rich import print
     from rich.panel import Panel
+
     c = Client(jsonify=True)
 
     try:
