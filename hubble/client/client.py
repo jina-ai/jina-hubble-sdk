@@ -61,6 +61,14 @@ class Client(BaseClient):
         """
         return self.handle_request(url=self._base_url + EndpointsV2.get_user_info)
 
+    @property
+    def token(self) -> str:
+        return self._token
+
+    @property
+    def username(self) -> str:
+        return self.get_user_info()['data']['nickname']
+
     def upload_artifact(
         self,
         f: Union[str, io.BytesIO],
