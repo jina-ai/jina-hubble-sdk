@@ -18,11 +18,10 @@ def logout():
     asyncio.run(Auth.logout())
 
 
-def show_hint(interactive: bool = False) -> bool:
+def show_hint(interactive: bool = False) -> bool:  # noqa E501
     """
     Show hint if the user is not logged in.
 
-    # noqa E501
     """
     from rich import print
     from rich.panel import Panel
