@@ -1,18 +1,6 @@
-<p align="center">
-    <a href="https://jina.ai/">
-        <img src="https://github.com/jina-ai/hubble-client-python/blob/main/.github/logos/hubble-colorful.png?raw=true" alt="Hubble python SDK logo" width="200px">
-    </a>
-</p>
+# jina-hubble-sdk
 
-<p align="center">
-    <b>Hubble Python SDK: Talk with Hubble in a Pythonic Way</b>
-</p>
-
-<p align="center">
-    <a href="https://codecov.io/gh/jina-ai/hubble-client-python">
-        <img src="https://codecov.io/gh/jina-ai/hubble-client-python/branch/main/graph/badge.svg?token=Sttz9HTmDq"/>
-    </a>
-</p>
+<img src="https://codecov.io/gh/jina-ai/hubble-client-python/branch/main/graph/badge.svg?token=Sttz9HTmDq"/>
 
 
 ## Install
