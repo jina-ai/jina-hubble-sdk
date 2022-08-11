@@ -2,6 +2,7 @@
 The Hubble Python Client
 """
 import asyncio
+import os
 from typing import Optional
 
 from .client.client import Client  # noqa F401
@@ -19,6 +20,19 @@ def logout():
     asyncio.run(Auth.logout())
 
 
+def get_token() -> Optional[str]:
+    """Get token."""
+    if os.environ.get('SHOW_HUBBLE_HINT') == 'ALWAYS':
+        token = show_hint()
+    elif os.environ.get('SHOW_HUBBLE_HINT', 'ONCE') == 'ONCE':
+        token = show_hint()
+        os.environ['SHOW_HUBBLE_HINT'] = 'NEVER'
+    else:
+        token = Client(jsonify=True).token
+
+    return os.environ.get('JINA_AUTH_TOKEN', token)
+
+
 def show_hint(interactive: bool = False) -> Optional[str]:  # noqa: E501
     """
     Show hint if the user is not logged in.
@@ -32,13 +46,13 @@ def show_hint(interactive: bool = False) -> Optional[str]:  # noqa: E501
     try:
         print(
             Panel(
-                f'''You are logged into Jina AI as [green bold]{c.username}[/], which gives you a lot of benefits:
-- You can easily manage the DocumentArray, Executor, Flow via the web Console.
-- You enjoy [b]unlimited-time, protected[/] storage for the DocumentArray.
+                f'''You have logged into Jina AI as [green bold]{c.username}[/], which gives you a lot of benefits:
+- You can easily manage the DocumentArray, Executor, Flow via the web console.
+- You enjoy persist DocumentArray with [b]unlimited-time, privately[/] .
 - More features are coming soon.
 
 :unlock: To log out, use [dim]jina auth logout[/].''',
-                title=':sunglasses: [green bold]You are logged in[/]',
+                title=':sunglasses: [green bold]You have logged in[/]',
                 width=50,
             )
         )
@@ -47,9 +61,9 @@ def show_hint(interactive: bool = False) -> Optional[str]:  # noqa: E501
         print(
             Panel(
                 f'''Jina AI offers many free benefits for logged in users.
-- They can easily manage the DocumentArray, Executor, Flow via the web Console.
-- They enjoy [b]unlimited-time, protected[/] storage for the DocumentArray.
-- More features are coming soon for them.
+- Easily manage the DocumentArray, Executor, Flow via the web console.
+- Persist DocumentArray with [b]unlimited-time, privately[/] .
+- More features are coming soon.
 
 {':closed_lock_with_key: To log in, use [bold]jina auth login[/].' if not interactive else ''}''',
                 title=':no_mouth: [yellow bold]You are not logged in[/]',
