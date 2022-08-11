@@ -1,6 +1,7 @@
 import os
 
-from . import login as _login, Client
+from . import Client
+from . import login as _login
 from .excepts import AuthenticationFailedError, AuthenticationRequiredError
 
 
