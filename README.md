@@ -11,10 +11,11 @@ pip install jina-hubble-sdk
 
 ## Core functionality
 
+* Python API and CLI.
 * Authentication and token management.
 * Artifact management.
 
-## Usage
+## Python API
 
 ### Login to Hubble
 
@@ -114,6 +115,46 @@ except hubble.excepts.AuthenticationRequiredError:
 except Exception:
     print('Unknown error')
 ```
+
+## CLI
+
+### Login to Jina Cloud
+
+Open browser automatically and login via 3rd party. Token will be saved locally.
+
+```shell
+jina auth login
+```
+
+### Logout
+
+If there is a valid token locally, this will disable that token and remove it from local config.
+
+```shell
+jina auth logout
+```
+
+### Personal access token (PAT) management
+
+#### Create a new PAT
+
+```shell
+jina auth token create <name of PAT> -e <expiration days>
+```
+
+#### List PATs
+
+```shell
+jina auth token list
+```
+
+#### Delete PAT
+
+```shell
+jina auth token delete <name of PAT>
+```
+
+
 
 ## Development
 
