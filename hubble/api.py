@@ -1,6 +1,6 @@
 import os
 
-from . import login, Client
+from . import login as _login, Client
 from .excepts import AuthenticationFailedError, AuthenticationRequiredError
 
 
@@ -12,7 +12,7 @@ def login(args):
     console = Console()
 
     if args.force:
-        login(prompt='login')
+        _login(prompt='login')
         return
 
     try:
@@ -31,7 +31,7 @@ def login(args):
         if isinstance(ex, AuthenticationRequiredError) or isinstance(
             AuthenticationFailedError
         ):
-            login(prompt='login')
+            _login(prompt='login')
         else:
             raise ex
 
