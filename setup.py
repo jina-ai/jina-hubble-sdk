@@ -79,4 +79,9 @@ if __name__ == '__main__':
         classifiers=_classifiers,
         project_urls=_project_urls,
         keywords=_keywords,
+        entry_points={
+            'console_scripts': [
+                'jina-auth=hubble.__main__:main',
+            ],
+        },
     )
