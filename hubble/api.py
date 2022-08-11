@@ -2,11 +2,16 @@ import os
 
 from . import Client
 from . import login as _login
+from . import logout as _logout
 from .excepts import AuthenticationFailedError, AuthenticationRequiredError
 
 
+def logout(*args):
+    _logout()
+
+
 def login(args):
-    client = Client(max_retries=None)
+    client = Client(jsonify=True)
 
     from rich.console import Console
 
@@ -22,9 +27,9 @@ def login(args):
             console.print(
                 f'You are already logged in as [b green]{nickname}[/b green].',
                 '',
-                'If you want to login to another account, please do either:',
-                '- run [b]jina auth logout[/]',
-                '- or run [b]jina auth login -f[/]',
+                'If you want to login to another account, please run either:',
+                '- [b]jina auth logout[/]',
+                '- or, [b]jina auth login -f[/]',
                 sep=os.linesep,
             )
     except Exception as ex:
