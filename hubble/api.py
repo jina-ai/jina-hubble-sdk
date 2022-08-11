@@ -17,15 +17,14 @@ def login(args):
         return
 
     try:
-        resp = client.get_user_info()
-        nickname = resp.json().get('data', {}).get('nickname', '')
+        nickname = client.username
         if nickname:
             console.print(
                 f'You are already logged in as [b green]{nickname}[/b green].',
                 '',
-                'If you want to login to another account, please do either way:',
-                '- run `jina auth logout` first',
-                '- run `jina auth login -f`',
+                'If you want to login to another account, please do either:',
+                '- run [b]jina auth logout[/]',
+                '- or run [b]jina auth login -f[/]',
                 sep=os.linesep,
             )
     except Exception as ex:
