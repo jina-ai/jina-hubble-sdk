@@ -86,21 +86,19 @@ def token(args):
         import rich
         from rich.table import Table
 
-        table = Table(title="Your personal access tokens")
-        table.add_column("ID", justify="center", style="cyan", no_wrap=True)
-        table.add_column("Type", style="magenta")
-        table.add_column("Name", justify="center", style="green")
-        table.add_column("ExpireAt", justify="center", style="green")
-        table.add_column("CreatedAt", justify="center", style="green")
-        table.add_column("UpdatedAt", justify="center", style="green")
+        table = Table(title='Your Personal Access Tokens', highlight=True)
+        table.add_column('Name')
+        table.add_column('Type')
+        table.add_column('Create at', justify='center')
+        table.add_column('Expire at', justify='center')
+        table.add_column('Last use at', justify='center')
 
         for token in tokens:
             table.add_row(
-                token['_id'],
-                token['type'],
                 token['name'],
-                token['expireAt'],
+                token['type'],
                 token['createdAt'],
+                token['expireAt'],
                 token['updatedAt'],
             )
 
