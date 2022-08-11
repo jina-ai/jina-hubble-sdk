@@ -29,9 +29,7 @@ def login(args):
                 sep=os.linesep,
             )
     except Exception as ex:
-        if isinstance(ex, AuthenticationRequiredError) or isinstance(
-            AuthenticationFailedError
-        ):
+        if isinstance(ex, (AuthenticationRequiredError, AuthenticationFailedError)):
             _login(prompt='login')
         else:
             raise ex
