@@ -1,17 +1,18 @@
 import os
 
+from . import login, Client
 from .excepts import AuthenticationFailedError, AuthenticationRequiredError
 
 
 def login(args):
-    client = hubble.Client(max_retries=None)
+    client = Client(max_retries=None)
 
     from rich.console import Console
 
     console = Console()
 
     if args.force:
-        hubble.login(prompt='login')
+        login(prompt='login')
         return
 
     try:
@@ -30,17 +31,13 @@ def login(args):
         if isinstance(ex, AuthenticationRequiredError) or isinstance(
             AuthenticationFailedError
         ):
-            hubble.login(prompt='login')
+            login(prompt='login')
         else:
             raise ex
 
 
-def logout(args):
-    hubble.logout()
-
-
 def token(args):
-    client = hubble.Client(max_retries=None)
+    client = Client(max_retries=None)
 
     if args.operation == 'create':
         response = client.create_personal_access_token(
