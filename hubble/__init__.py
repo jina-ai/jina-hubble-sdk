@@ -20,12 +20,12 @@ def logout():
     asyncio.run(Auth.logout())
 
 
-def get_token() -> Optional[str]:
+def get_token(interactive: bool = False) -> Optional[str]:
     """Get token."""
     if os.environ.get('SHOW_HUBBLE_HINT') == 'ALWAYS':
-        token = show_hint()
+        token = show_hint(interactive)
     elif os.environ.get('SHOW_HUBBLE_HINT', 'ONCE') == 'ONCE':
-        token = show_hint()
+        token = show_hint(interactive)
         os.environ['SHOW_HUBBLE_HINT'] = 'NEVER'
     else:
         token = Client(jsonify=True).token

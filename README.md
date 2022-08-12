@@ -17,6 +17,22 @@ pip install jina-hubble-sdk
 
 ## Python API
 
+### Get a token
+
+Including login if not.
+
+```python
+import hubble
+hubble.get_token()
+```
+
+If you are using inside an interactive environment, i.e. user can input via stdin:
+
+```python
+import hubble
+hubble.get_token(interactive=True)
+```
+
 ### Login to Hubble
 
 ```python
