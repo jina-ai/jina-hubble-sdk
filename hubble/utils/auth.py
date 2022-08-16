@@ -1,12 +1,11 @@
 import json
 import os
 import webbrowser
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urljoin
 
 import aiohttp
 from hubble.utils.api_utils import get_base_url
 from hubble.utils.config import config
-from requests.compat import urljoin
 
 
 class Auth:
