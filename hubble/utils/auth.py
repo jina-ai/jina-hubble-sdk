@@ -1,12 +1,12 @@
 import json
 import os
 import webbrowser
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urljoin
 
 import aiohttp
 from hubble.utils.api_utils import get_base_url
 from hubble.utils.config import config
-from requests.compat import urljoin
+from rich import print
 
 
 class Auth:
@@ -37,22 +37,28 @@ class Auth:
                     item = json.loads(line.decode('utf-8'))
                     event = item['event']
                     if event == 'redirect':
-                        print('Open the following link in your browser:')
-                        print(item['data']['redirectTo'])
+                        print(
+                            f':point_right: Your browser is going to open the login page, '
+                            f'if not please open the following link: {item["data"]["redirectTo"]}'
+                        )
                         webbrowser.open(item['data']['redirectTo'])
                     elif event == 'authorize':
                         if item['data']['code'] and item['data']['state']:
                             auth_info = item['data']
                         else:
                             print(
-                                '🚨 Authentication failed: {}'.format(
+                                ':rotating_light: Authentication failed: {}'.format(
                                     item['data']['error_description']
                                 )
                             )
                     elif event == 'error':
-                        print('🚨 Authentication failed: {}'.format(item['data']))
+                        print(
+                            ':rotating_light: Authentication failed: {}'.format(
+                                item['data']
+                            )
+                        )
                     else:
-                        print('🚨 Unknown event: {}'.format(event))
+                        print(':rotating_light: Unknown event: {}'.format(event))
 
         if auth_info is None:
             return
@@ -67,7 +73,7 @@ class Auth:
                 token = json_response['data']['token']
 
                 config.set('auth_token', token)
-                print('🔐 Successfully login to Jina Ecosystem!')
+                print(':closed_lock_with_key: Successfully login to [b]Jina AI[/]!')
 
     @staticmethod
     async def logout():
@@ -81,9 +87,11 @@ class Auth:
             ) as response:
                 json_response = await response.json()
                 if json_response['code'] == 401:
-                    print('🔓 You are not logged in. No need to logout.')
+                    print(':unlock: You are not logged in. No need to logout.')
                 elif json_response['code'] == 200:
-                    print('🔓 You have successfully logged out.')
+                    print(':unlock: You have successfully logged out.')
                     config.delete('auth_token')
                 else:
-                    print(f'🚨 Failed to logout. {json_response["message"]}')
+                    print(
+                        f':rotating_light: Failed to logout. {json_response["message"]}'
+                    )
