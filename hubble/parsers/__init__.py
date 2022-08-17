@@ -11,7 +11,7 @@ def get_main_parser(parser=None):
         parser = set_base_parser()
 
     sp = parser.add_subparsers(
-        dest='cli',
+        dest='cli2',
         required=True,
     )
 

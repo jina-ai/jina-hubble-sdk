@@ -17,7 +17,7 @@ def parser() -> "ArgumentParser":
     ],
 )
 def test_login(parser: 'ArgumentParser', input, expected):
-    assert parser.parse_args(input).cli == expected[0]
+    assert parser.parse_args(input).cli2 == expected[0]
     assert parser.parse_args(input).force == expected[1]
 
 
@@ -28,7 +28,7 @@ def test_login(parser: 'ArgumentParser', input, expected):
     ],
 )
 def test_logout(parser: 'ArgumentParser', input, expected):
-    assert parser.parse_args(input).cli == expected[0]
+    assert parser.parse_args(input).cli2 == expected[0]
 
 
 @pytest.mark.parametrize(
@@ -40,7 +40,7 @@ def test_logout(parser: 'ArgumentParser', input, expected):
     ],
 )
 def test_token_create(parser: 'ArgumentParser', input, expected):
-    assert parser.parse_args(input).cli == expected[0]
+    assert parser.parse_args(input).cli2 == expected[0]
     assert parser.parse_args(input).operation == expected[1]
     assert parser.parse_args(input).expire == expected[2]
     assert parser.parse_args(input).name == expected[3]
@@ -53,6 +53,6 @@ def test_token_create(parser: 'ArgumentParser', input, expected):
     ],
 )
 def test_token_delete(parser: 'ArgumentParser', input, expected):
-    assert parser.parse_args(input).cli == expected[0]
+    assert parser.parse_args(input).cli2 == expected[0]
     assert parser.parse_args(input).operation == expected[1]
     assert parser.parse_args(input).name == expected[2]

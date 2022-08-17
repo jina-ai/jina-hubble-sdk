@@ -39,37 +39,16 @@ def show_hint(interactive: bool = False) -> Optional[str]:  # noqa: E501
 
     """
     from rich import print
-    from rich.panel import Panel
 
     c = Client(jsonify=True)
 
     try:
         print(
-            Panel(
-                f'''You have logged into Jina AI as [green bold]{c.username}[/], which gives you a lot of benefits:
-- You can easily manage the DocumentArray, Executor, Flow via the web console.
-- You enjoy persist DocumentArray with [b]unlimited-time, privately[/] .
-- More features are coming soon.
-
-:unlock: To log out, use [dim]jina auth logout[/].''',
-                title=':sunglasses: [green bold]You have logged in[/]',
-                width=50,
-            )
-        )
+            f':closed_lock_with_key: [green bold]You have logged in to Jina AI[/] as [bold]{c.username}[/]. To log out, use [dim]jina auth logout[/].')
         return c.token
     except AuthenticationRequiredError:
         print(
-            Panel(
-                f'''Jina AI offers many free benefits for logged in users.
-- Easily manage the DocumentArray, Executor, Flow via the web console.
-- Persist DocumentArray with [b]unlimited-time, privately[/] .
-- More features are coming soon.
-
-{':closed_lock_with_key: To log in, use [bold]jina auth login[/].' if not interactive else ''}''',
-                title=':no_mouth: [yellow bold]You are not logged in[/]',
-                width=50,
-            )
-        )
+            ':closed_lock_with_key: [yellow bold]You are not logged in to Jina AI[/]. To log in, use [bold]jina auth login[/] or set env variable [bold]JINA_AUTH_TOKEN[/].')
         if interactive:
             from rich.prompt import Confirm
 

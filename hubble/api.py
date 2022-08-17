@@ -55,8 +55,10 @@ def token(args):
 
         rich.print(
             Panel(
-                f'token: [b]{token}[/b]',
-                title=':party_popper: [green]Successfully created',
+                f'''[b]{token}[/b]
+                
+You can use it as an environment variable [b]JINA_AUTH_TOKEN[/b].''',
+                title=':party_popper: [green]New token created[/]',
                 subtitle=':point_up:️ [red]Please keep this token in a safe place!',
                 width=50,
             )
