@@ -75,7 +75,7 @@ class Auth:
 
                 config.set('auth_token', token)
                 print(
-                    f':closed_lock_with_key: Successfully login to Jina AI as [b]{user}[/b]!'
+                    f':closed_lock_with_key: [green]Successfully login to Jina AI[/] as [b]{user}[/b]!'
                 )
 
     @staticmethod
