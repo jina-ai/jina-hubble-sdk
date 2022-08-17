@@ -28,7 +28,7 @@ def get_credentials_for(_registry: str):
     """
     c = Client(jsonify=True).token
     token = os.environ.get('JINA_AUTH_TOKEN', c)
-    print(json.dumps({'Username': '<token>', 'Password': token if token else ''}, indent=4))
+    print(json.dumps({'Username': '<token>', 'Secret': token if token else 'anonymous'}, indent=4))
 
 
 def main():
