@@ -44,11 +44,15 @@ def show_hint(interactive: bool = False) -> Optional[str]:  # noqa: E501
 
     try:
         print(
-            f':closed_lock_with_key: [green bold]You have logged in to Jina AI[/] as [bold]{c.username}[/]. To log out, use [dim]jina auth logout[/].')
+            f':closed_lock_with_key: [green bold]You have logged in to Jina AI[/] as [bold]{c.username}[/]. '
+            f'To log out, use [dim]jina auth logout[/].'
+        )
         return c.token
     except AuthenticationRequiredError:
         print(
-            ':closed_lock_with_key: [yellow bold]You are not logged in to Jina AI[/]. To log in, use [bold]jina auth login[/] or set env variable [bold]JINA_AUTH_TOKEN[/].')
+            ':closed_lock_with_key: [yellow bold]You are not logged in to Jina AI[/]. '
+            'To log in, use [bold]jina auth login[/] or set env variable [bold]JINA_AUTH_TOKEN[/].'
+        )
         if interactive:
             from rich.prompt import Confirm
 
