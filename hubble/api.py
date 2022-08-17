@@ -57,9 +57,9 @@ def token(args):
             Panel(
                 f'''[b]{token}[/b]
 
-You can use it as an environment variable [b]JINA_AUTH_TOKEN[/b].''',
+You can set it as an env var [b]JINA_AUTH_TOKEN[/b]''',
                 title=':party_popper: [green]New token created[/]',
-                subtitle=':point_up:️ [red]Please keep this token in a safe place!',
+                subtitle=':point_up:️ [yellow] This token is only shown once![/]',
                 width=50,
             )
         )
