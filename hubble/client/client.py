@@ -197,28 +197,34 @@ class Client(BaseClient):
                     )
         return f
 
-    def delete_artifact(self, id: str) -> Union[requests.Response, dict]:
+    def delete_artifact(
+        self, id: Optional[str] = None, name: Optional[str] = None
+    ) -> Union[requests.Response, dict]:
         """Delete the artifact from Hubble Artifact Storage.
 
         :param id: The id of the artifact to be deleted.
+        :param name: The name of the artifact to be deleted.
         :returns: `requests.Response` object as returned value
             or indented json if jsonify.
         """
         return self.handle_request(
             url=self._base_url + EndpointsV2.delete_artifact,
-            data={'id': id},
+            data={'id': id} if id else {'name': name},
         )
 
-    def get_artifact_info(self, id: str) -> Union[requests.Response, dict]:
+    def get_artifact_info(
+        self, id: Optional[str] = None, name: Optional[str] = None
+    ) -> Union[requests.Response, dict]:
         """Get the metadata of the artifact.
 
         :param id: The id of the artifact to be deleted.
+        :param name: The name of the artifact to be deleted.
         :returns: `requests.Response` object as returned value
             or indented json if jsonify.
         """
         return self.handle_request(
             url=self._base_url + EndpointsV2.get_artifact_info,
-            data={'id': id},
+            data={'id': id} if id else {'name': name},
         )
 
     def list_artifacts(

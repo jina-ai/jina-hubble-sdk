@@ -3,11 +3,42 @@ The Hubble Python Client
 """
 import asyncio
 import os
+from functools import wraps
 from typing import Optional
 
 from .client.client import Client  # noqa F401
 from .excepts import AuthenticationRequiredError
 from .utils.auth import Auth  # noqa F401
+
+
+def login_required(func):
+    """Annotate a function so that it requires login to Jina AI to run.
+
+    Example:
+
+    .. highlight:: python
+    .. code-block:: python
+
+        @login_required
+        def foo():
+            print(1)
+
+    :param levels: required build level to run this function.
+    :return: annotated function
+    """
+
+    @wraps(func)
+    def arg_wrapper(*args, **kwargs):
+        if Client(jsonify=True).token:
+            return func(*args, **kwargs)
+        else:
+            raise AuthenticationRequiredError(
+                response={},
+                message=f'{func!r} requires login to Jina AI, please do `jina auth login` '
+                f'or set env variable `JINA_AUTH_TOKEN`',
+            )
+
+    return arg_wrapper
 
 
 def login(**kwargs):
@@ -30,7 +61,7 @@ def get_token(interactive: bool = False) -> Optional[str]:
     else:
         token = Client(jsonify=True).token
 
-    return os.environ.get('JINA_AUTH_TOKEN', token)
+    return token
 
 
 def show_hint(interactive: bool = False) -> Optional[str]:  # noqa: E501
