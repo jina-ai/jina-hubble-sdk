@@ -254,5 +254,5 @@ class Client(BaseClient):
 
         return self.handle_request(
             url=self._base_url + EndpointsV2.list_artifacts,
-            data={key: value for (key, value) in data.items() if value is not None},
+            json={key: value for (key, value) in data.items() if value is not None},
         )
