@@ -55,6 +55,7 @@ class BaseClient(object):
         data: Optional[dict] = None,
         files: Optional[MutableMapping[Text, IO[Any]]] = None,
         headers: Optional[dict] = None,
+        json: Optional[dict] = None,
     ) -> Union[requests.Response, dict]:
         """The basis request handler.
 
@@ -72,9 +73,10 @@ class BaseClient(object):
         resp = self._session.request(
             method=method,
             url=url,
-            json=data if data else None,
+            data=data if data else None,
             files=files,
             headers=headers,
+            json=json if json else None,
         )
         if resp.status_code >= 400:
             self._handle_error_request(resp)
