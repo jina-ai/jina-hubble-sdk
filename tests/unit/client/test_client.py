@@ -16,6 +16,7 @@ def test_handle_error_request(mocker, params):
         client.get_user_info()
 
 
+@patch.dict(os.environ, {'JINA_AUTH_TOKEN': ''})
 def test_auth_required_decorator_fail():
     @login_required
     def foo():
