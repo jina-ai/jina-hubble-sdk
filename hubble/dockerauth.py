@@ -28,17 +28,20 @@ def get_credentials_for(_registry: str):
     """
     c = Client(jsonify=True).token
     token = os.environ.get('JINA_AUTH_TOKEN', c)
-    print(json.dumps({'Username': '<token>', 'Secret': token if token else 'anonymous'}, indent=4))
+    username = os.environ.get('HUBBLE_DOCKER_AUTH_OVERRIDE_USERNAME', '<token>')
+    secret = os.environ.get('HUBBLE_DOCKER_AUTH_OVERRIDE_SECRET', token)
 
+    sys.stdout.write(json.dumps({'Username': username, 'Secret': secret if secret else 'anonymous'}, indent=4))
+    sys.stdout.write('\n');
 
 def main():
     """
     Main entry point.
     """
     import argparse
-    parser = argparse.ArgumentParser(description='Deploy hubble docker credential helper for the registry.')
+    parser = argparse.ArgumentParser(description='Hubble docker credential helper for the registry.')
     parser.add_argument('action', nargs='?', default='get', help='Action: get, store, erase, or deploy')
-    parser.add_argument('--registry', nargs='?', help='The registry to deploy the helper for.')
+    parser.add_argument('registry', nargs='?', help='The registry to deploy helper for.')
 
     args = parser.parse_args()
 
