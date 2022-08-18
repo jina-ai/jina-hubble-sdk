@@ -71,9 +71,12 @@ class Auth:
                 response.raise_for_status()
                 json_response = await response.json()
                 token = json_response['data']['token']
+                user = json_response['data']['user']['nickname']
 
                 config.set('auth_token', token)
-                print(':closed_lock_with_key: Successfully login to [b]Jina AI[/]!')
+                print(
+                    f':closed_lock_with_key: [green]Successfully login to Jina AI[/] as [b]{user}[/b]!'
+                )
 
     @staticmethod
     async def logout():
@@ -87,9 +90,9 @@ class Auth:
             ) as response:
                 json_response = await response.json()
                 if json_response['code'] == 401:
-                    print(':unlock: You are not logged in. No need to logout.')
+                    print(':unlock: You are not login. No need to logout.')
                 elif json_response['code'] == 200:
-                    print(':unlock: You have successfully logged out.')
+                    print(':unlock: You have successfully logout.')
                     config.delete('auth_token')
                 else:
                     print(

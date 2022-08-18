@@ -3,11 +3,42 @@ The Hubble Python Client
 """
 import asyncio
 import os
+from functools import wraps
 from typing import Optional
 
 from .client.client import Client  # noqa F401
 from .excepts import AuthenticationRequiredError
 from .utils.auth import Auth  # noqa F401
+
+
+def login_required(func):
+    """Annotate a function so that it requires login to Jina AI to run.
+
+    Example:
+
+    .. highlight:: python
+    .. code-block:: python
+
+        @login_required
+        def foo():
+            print(1)
+
+    :param levels: required build level to run this function.
+    :return: annotated function
+    """
+
+    @wraps(func)
+    def arg_wrapper(*args, **kwargs):
+        if Client(jsonify=True).token:
+            return func(*args, **kwargs)
+        else:
+            raise AuthenticationRequiredError(
+                response={},
+                message=f'{func!r} requires login to Jina AI, please do `jina auth login` '
+                f'or set env variable `JINA_AUTH_TOKEN`',
+            )
+
+    return arg_wrapper
 
 
 def login(**kwargs):
@@ -30,7 +61,7 @@ def get_token(interactive: bool = False) -> Optional[str]:
     else:
         token = Client(jsonify=True).token
 
-    return os.environ.get('JINA_AUTH_TOKEN', token)
+    return token
 
 
 def show_hint(interactive: bool = False) -> Optional[str]:  # noqa: E501
@@ -39,36 +70,19 @@ def show_hint(interactive: bool = False) -> Optional[str]:  # noqa: E501
 
     """
     from rich import print
-    from rich.panel import Panel
 
     c = Client(jsonify=True)
 
     try:
         print(
-            Panel(
-                f'''You have logged into Jina AI as [green bold]{c.username}[/], which gives you a lot of benefits:
-- You can easily manage the DocumentArray, Executor, Flow via the web console.
-- You enjoy persist DocumentArray with [b]unlimited-time, privately[/] .
-- More features are coming soon.
-
-:unlock: To log out, use [dim]jina auth logout[/].''',
-                title=':sunglasses: [green bold]You have logged in[/]',
-                width=50,
-            )
+            f':closed_lock_with_key: [green bold]You have login to Jina AI[/] as [bold]{c.username}[/]. '
+            f'To log out, use [dim]jina auth logout[/].'
         )
         return c.token
     except AuthenticationRequiredError:
         print(
-            Panel(
-                f'''Jina AI offers many free benefits for logged in users.
-- Easily manage the DocumentArray, Executor, Flow via the web console.
-- Persist DocumentArray with [b]unlimited-time, privately[/] .
-- More features are coming soon.
-
-{':closed_lock_with_key: To log in, use [bold]jina auth login[/].' if not interactive else ''}''',
-                title=':no_mouth: [yellow bold]You are not logged in[/]',
-                width=50,
-            )
+            ':closed_lock_with_key: [yellow bold]You are not login to Jina AI[/]. '
+            'To log in, use [bold]jina auth login[/] or set env variable [bold]JINA_AUTH_TOKEN[/].'
         )
         if interactive:
             from rich.prompt import Confirm

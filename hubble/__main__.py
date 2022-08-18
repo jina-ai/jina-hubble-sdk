@@ -6,7 +6,7 @@ def main():
     try:
         from . import api
 
-        getattr(api, args.cli.replace('-', '_'))(args)
+        getattr(api, args.auth_cli.replace('-', '_'))(args)
     except KeyboardInterrupt:
         pass
 

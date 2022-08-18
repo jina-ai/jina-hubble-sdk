@@ -25,7 +25,7 @@ def login(args):
         nickname = client.username
         if nickname:
             console.print(
-                f'You are already logged in as [b green]{nickname}[/b green].',
+                f':closed_lock_with_key: You are already login as [b green]{nickname}[/b green].',
                 '',
                 'If you want to login to another account, please run either:',
                 '- [b]jina auth logout[/]',
@@ -55,9 +55,11 @@ def token(args):
 
         rich.print(
             Panel(
-                f'token: [b]{token}[/b]',
-                title=':party_popper: [green]Successfully created',
-                subtitle=':point_up:️ [red]Please keep this token in a safe place!',
+                f'''[b]{token}[/b]
+
+You can set it as an env var [b]JINA_AUTH_TOKEN[/b]''',
+                title=':party_popper: [green]New token created[/]',
+                subtitle=':point_up:️ [yellow] This token is only shown once![/]',
                 width=50,
             )
         )

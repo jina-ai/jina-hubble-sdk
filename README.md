@@ -33,6 +33,16 @@ import hubble
 hubble.get_token(interactive=True)
 ```
 
+Mark a function as login required,
+
+```python
+import hubble
+
+@hubble.login_required
+def foo():
+    pass
+```
+
 ### Login to Hubble
 
 ```python
