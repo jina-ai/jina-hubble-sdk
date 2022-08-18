@@ -72,7 +72,7 @@ class BaseClient(object):
         resp = self._session.request(
             method=method,
             url=url,
-            data=data if data else None,
+            json=data if data else None,
             files=files,
             headers=headers,
         )
