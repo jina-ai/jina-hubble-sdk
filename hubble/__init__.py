@@ -6,11 +6,13 @@ import os
 from functools import wraps
 from typing import Optional
 
+import importlib_metadata
+
 from .client.client import Client  # noqa F401
 from .excepts import AuthenticationRequiredError
 from .utils.auth import Auth  # noqa F401
 
-__version__ = '0.13.2'
+__version__ = importlib_metadata.version('jina-hubble-sdk')
 
 
 def login_required(func):
