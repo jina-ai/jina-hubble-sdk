@@ -10,6 +10,8 @@ from .client.client import Client  # noqa F401
 from .excepts import AuthenticationRequiredError
 from .utils.auth import Auth  # noqa F401
 
+__version__ = '0.13.1'
+
 
 def login_required(func):
     """Annotate a function so that it requires login to Jina AI to run.
