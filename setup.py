@@ -1,5 +1,3 @@
-from os import path
-
 from setuptools import find_packages, setup
 
 # package metadata
@@ -43,16 +41,6 @@ try:
 except FileNotFoundError:
     _main_deps = []
 
-try:
-    pkg_name = 'hubble'
-    libinfo_py = path.join(pkg_name, '__init__.py')
-    libinfo_content = open(libinfo_py, 'r', encoding='utf8').readlines()
-    version_line = [
-        _l.strip() for _l in libinfo_content if _l.startswith('__version__')
-    ][0]
-    exec(version_line)  # gives __version__
-except FileNotFoundError:
-    __version__ = '0.0.0'
 
 try:
     with open('requirements-dev.txt', 'r') as f:
@@ -74,7 +62,6 @@ if __name__ == '__main__':
     setup(
         name='jina-hubble-sdk',
         packages=find_packages(exclude=_package_exclude),
-        version=__version__,
         include_package_data=True,
         description=_description,
         author=_author,

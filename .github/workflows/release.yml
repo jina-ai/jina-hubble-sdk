@@ -8,11 +8,7 @@ on:
       - beta
 
 jobs:
-  cd-tests:
-    if: |
-      !startsWith(github.event.head_commit.message, 'chore') &&
-      !startsWith(github.event.head_commit.message, 'build: hotfix') &&
-      !endsWith(github.event.head_commit.message, 'reformatted by jina-dev-bot')
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -38,3 +34,11 @@ jobs:
         uses: codecov/codecov-action@v2
         with:
           files: ./coverage.xml
+      - name: Install setuptools
+        run: python -m pip install --upgrade setuptools wheel twine
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PYPI_TOKEN: ${{ secrets.TWINE_PASSWORD }}
+        run: npx semantic-release
