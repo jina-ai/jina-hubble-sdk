@@ -6,9 +6,13 @@ import os
 from functools import wraps
 from typing import Optional
 
+import pkg_resources
+
 from .client.client import Client  # noqa F401
 from .excepts import AuthenticationRequiredError
 from .utils.auth import Auth  # noqa F401
+
+__version__ = pkg_resources.get_distribution("jina-hubble-sdk").version
 
 
 def login_required(func):
