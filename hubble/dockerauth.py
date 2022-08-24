@@ -1,10 +1,11 @@
 #!/usr/bin/env python
+import json
 import os
 import sys
-import json
-
 from pathlib import Path
+
 from .client.client import Client  # noqa F401
+
 
 def deploy_hubble_docker_credential_helper_for(registry: str):
     """
@@ -15,7 +16,7 @@ def deploy_hubble_docker_credential_helper_for(registry: str):
     if docker_config_file_path.exists():
         with docker_config_file_path.open('r+') as f:
             target_conf = json.load(f)
-    if ('credHelpers' not in target_conf):
+    if 'credHelpers' not in target_conf:
         target_conf['credHelpers'] = {}
     target_conf['credHelpers'][registry] = 'jina-hubble'
     with docker_config_file_path.open('w') as f:
@@ -31,17 +32,30 @@ def get_credentials_for(_registry: str):
     username = os.environ.get('HUBBLE_DOCKER_AUTH_OVERRIDE_USERNAME', '<token>')
     secret = os.environ.get('HUBBLE_DOCKER_AUTH_OVERRIDE_SECRET', token)
 
-    sys.stdout.write(json.dumps({'Username': username, 'Secret': secret if secret else 'anonymous'}, indent=4))
-    sys.stdout.write('\n');
+    sys.stdout.write(
+        json.dumps(
+            {'Username': username, 'Secret': secret if secret else 'anonymous'},
+            indent=4,
+        )
+    )
+    sys.stdout.write('\n')
+
 
 def main():
     """
     Main entry point.
     """
     import argparse
-    parser = argparse.ArgumentParser(description='Hubble docker credential helper for the registry.')
-    parser.add_argument('action', nargs='?', default='get', help='Action: get, store, erase, or deploy')
-    parser.add_argument('registry', nargs='?', help='The registry to deploy helper for.')
+
+    parser = argparse.ArgumentParser(
+        description='Hubble docker credential helper for the registry.'
+    )
+    parser.add_argument(
+        'action', nargs='?', default='get', help='Action: get, store, erase, or deploy'
+    )
+    parser.add_argument(
+        'registry', nargs='?', help='The registry to deploy helper for.'
+    )
 
     args = parser.parse_args()
 
