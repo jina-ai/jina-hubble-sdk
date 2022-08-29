@@ -90,7 +90,9 @@ class Auth:
             ) as response:
                 json_response = await response.json()
                 if json_response['code'] == 401:
-                    print(':unlock: You are not logged in. There is no need to log out.')
+                    print(
+                        ':unlock: You are not logged in. There is no need to log out.'
+                    )
                 elif json_response['code'] == 200:
                     print(':unlock: You have successfully logged out.')
                     config.delete('auth_token')
