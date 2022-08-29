@@ -38,8 +38,8 @@ class Auth:
                     event = item['event']
                     if event == 'redirect':
                         print(
-                            f':point_right: Your browser is going to open the login page, '
-                            f'if not please open the following link: {item["data"]["redirectTo"]}'
+                            f':point_right: Your browser is going to open the login page. '
+                            f'If this fails please open the following link: {item["data"]["redirectTo"]}'
                         )
                         webbrowser.open(item['data']['redirectTo'])
                     elif event == 'authorize':
@@ -75,7 +75,7 @@ class Auth:
 
                 config.set('auth_token', token)
                 print(
-                    f':closed_lock_with_key: [green]Successfully login to Jina AI[/] as [b]{user}[/b]!'
+                    f':closed_lock_with_key: [green]Successfully logged in to Jina AI[/] as [b]{user}[/b]!'
                 )
 
     @staticmethod
@@ -90,11 +90,11 @@ class Auth:
             ) as response:
                 json_response = await response.json()
                 if json_response['code'] == 401:
-                    print(':unlock: You are not login. No need to logout.')
+                    print(':unlock: You are not logged in. There is no need to log out.')
                 elif json_response['code'] == 200:
-                    print(':unlock: You have successfully logout.')
+                    print(':unlock: You have successfully logged out.')
                     config.delete('auth_token')
                 else:
                     print(
-                        f':rotating_light: Failed to logout. {json_response["message"]}'
+                        f':rotating_light: Failed to log out. {json_response["message"]}'
                     )
