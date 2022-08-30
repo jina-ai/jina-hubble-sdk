@@ -25,9 +25,9 @@ def login(args):
         nickname = client.username
         if nickname:
             console.print(
-                f':closed_lock_with_key: You are already login as [b green]{nickname}[/b green].',
+                f':closed_lock_with_key: You are already logged in as [b green]{nickname}[/b green].',
                 '',
-                'If you want to login to another account, please run either:',
+                'If you want to log in to another account, please run either:',
                 '- [b]jina auth logout[/]',
                 '- or, [b]jina auth login -f[/]',
                 sep=os.linesep,
