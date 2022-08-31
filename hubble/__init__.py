@@ -6,15 +6,17 @@ import os
 from functools import wraps
 from typing import Optional
 
-from pkg_resources import DistributionNotFound, get_distribution
+from importlib_metadata import PackageNotFoundError, version
 
 from .client.client import Client  # noqa F401
 from .excepts import AuthenticationRequiredError
 from .utils.auth import Auth  # noqa F401
 
 try:
-    __version__ = get_distribution("jina-hubble-sdk").version
-except DistributionNotFound:
+    __version__ = version("jina-hubble-sdk")
+except PackageNotFoundError:
+    __version__ = "v0.0.0"
+finally:
     __version__ = "v0.0.0"
 
 
