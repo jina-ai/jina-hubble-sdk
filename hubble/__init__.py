@@ -38,14 +38,15 @@ def login_required(func):
 
     @wraps(func)
     def arg_wrapper(*args, **kwargs):
-        if Client(jsonify=True).token:
+        try:
+            Client(jsonify=True).get_user_info()
             return func(*args, **kwargs)
-        else:
+        except AuthenticationRequiredError:
             raise AuthenticationRequiredError(
                 response={},
-                message=f'{func!r} requires login to Jina AI, please do `jina auth login` '
-                f'or set env variable `JINA_AUTH_TOKEN`',
-            )
+                message=f'Jina auth token is not provided or has expired. {func!r} requires login to Jina AI, '
+                f'please do `jina auth login -f` or set env variable `JINA_AUTH_TOKEN` with correct token',
+            ) from None
 
     return arg_wrapper
 

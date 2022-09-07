@@ -1,9 +1,10 @@
 import os
-from unittest.mock import patch
 
+import hubble
 import pytest
 from hubble import Client, login_required
 from hubble.excepts import AuthenticationRequiredError
+from mock import patch
 
 
 @patch.dict(os.environ, {'JINA_AUTH_TOKEN': ''})
@@ -17,7 +18,7 @@ def test_handle_error_request(mocker, params):
 
 
 @patch.dict(os.environ, {'JINA_AUTH_TOKEN': ''})
-def test_auth_required_decorator_fail():
+def test_auth_required_decorator_no_token():
     @login_required
     def foo():
         print('hello!!!')
@@ -28,8 +29,20 @@ def test_auth_required_decorator_fail():
 
 @patch.dict(os.environ, {'JINA_AUTH_TOKEN': 'abc'})
 def test_auth_required_decorator_success():
-    @login_required
+    patch('hubble.login_required', lambda x: x).start()
+
+    @hubble.login_required
     def foo():
         print('hello!!!')
 
     foo()
+
+
+@patch.dict(os.environ, {'JINA_AUTH_TOKEN': 'somerandomtoken'})
+def test_auth_required_decorator_wrong_or_expired_token():
+    @login_required
+    def foo():
+        print('hello!!!')
+
+    with pytest.raises(AuthenticationRequiredError):
+        foo()
