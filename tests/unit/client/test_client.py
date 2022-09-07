@@ -3,7 +3,7 @@ import os
 import hubble
 import pytest
 from hubble import Client, login_required
-from hubble.excepts import AuthenticationFailedError, AuthenticationRequiredError
+from hubble.excepts import AuthenticationRequiredError
 from mock import patch
 
 
@@ -44,5 +44,5 @@ def test_auth_required_decorator_wrong_or_expired_token():
     def foo():
         print('hello!!!')
 
-    with pytest.raises(AuthenticationFailedError):
+    with pytest.raises(AuthenticationRequiredError):
         foo()

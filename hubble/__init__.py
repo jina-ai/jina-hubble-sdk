@@ -9,7 +9,7 @@ from typing import Optional
 from importlib_metadata import PackageNotFoundError, version
 
 from .client.client import Client  # noqa F401
-from .excepts import AuthenticationFailedError, AuthenticationRequiredError
+from .excepts import AuthenticationRequiredError
 from .utils.auth import Auth  # noqa F401
 
 try:
@@ -38,22 +38,15 @@ def login_required(func):
 
     @wraps(func)
     def arg_wrapper(*args, **kwargs):
-        if Client(jsonify=True).token:
-            try:
-                Client(jsonify=True).get_user_info()
-                return func(*args, **kwargs)
-            except AuthenticationRequiredError:
-                raise AuthenticationFailedError(
-                    response={},
-                    message=f'Jina auth token has expired. {func!r} requires login to Jina AI, '
-                    f'please do `jina auth login -f` or set env variable `JINA_AUTH_TOKEN` with updated token',
-                ) from None
-        else:
+        try:
+            Client(jsonify=True).get_user_info()
+            return func(*args, **kwargs)
+        except AuthenticationRequiredError:
             raise AuthenticationRequiredError(
                 response={},
-                message=f'{func!r} requires login to Jina AI, please do `jina auth login` '
-                f'or set env variable `JINA_AUTH_TOKEN`',
-            )
+                message=f'Jina auth token is not provided or has expired. {func!r} requires login to Jina AI, '
+                f'please do `jina auth login -f` or set env variable `JINA_AUTH_TOKEN` with correct token',
+            ) from None
 
     return arg_wrapper
 
