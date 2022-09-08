@@ -1,7 +1,7 @@
 # jina-hubble-sdk
 
 <img alt="PyPI" src="https://img.shields.io/pypi/v/jina-hubble-sdk">
-<img src="https://codecov.io/gh/jina-ai/hubble-client-python/branch/main/graph/badge.svg?token=Sttz9HTmDq"/>
+<img src="https://codecov.io/gh/jina-ai/jina-hubble-sdk/branch/main/graph/badge.svg?token=Sttz9HTmDq"/>
 
 
 ## Install
