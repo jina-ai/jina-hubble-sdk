@@ -6,7 +6,7 @@ import os
 from functools import wraps
 from typing import Optional
 
-from importlib_metadata import PackageNotFoundError, version
+from importlib_metadata import version
 
 from .client.client import Client  # noqa F401
 from .excepts import AuthenticationRequiredError
@@ -14,9 +14,7 @@ from .utils.auth import Auth  # noqa F401
 
 try:
     __version__ = version("jina-hubble-sdk")
-except PackageNotFoundError:
-    __version__ = "v0.0.0"
-finally:
+except Exception:
     __version__ = "v0.0.0"
 
 
