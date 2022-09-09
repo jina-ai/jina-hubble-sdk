@@ -59,6 +59,11 @@ def logout():
     asyncio.run(Auth.logout())
 
 
+def is_logged_in():
+    """Check if user is logged in."""
+    return True if Client(jsonify=True).token else False
+
+
 def get_token(interactive: bool = False) -> Optional[str]:
     """Get token."""
     if os.environ.get('SHOW_HUBBLE_HINT') == 'ALWAYS':
