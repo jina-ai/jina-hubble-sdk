@@ -20,7 +20,7 @@ pip install jina-hubble-sdk
 
 ### Get a token
 
-Including login if not.
+Notice that the token you got from this function is always valid. If the token is invalid or expired, the result is `None`.
 
 ```python
 import hubble

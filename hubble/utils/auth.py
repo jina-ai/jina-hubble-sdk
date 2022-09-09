@@ -1,6 +1,7 @@
 import json
 import os
 import webbrowser
+from typing import Optional
 from urllib.parse import urlencode, urljoin
 
 import aiohttp
@@ -18,7 +19,12 @@ class Auth:
           if token is not None, use env token. Otherwise, we get token from config.
         """
         token_from_env = os.environ.get('JINA_AUTH_TOKEN')
-        return token_from_env if token_from_env else config.get('auth_token')
+
+        token_from_config: Optional[str] = None
+        if isinstance(config.get('auth_token'), str):
+            token_from_config = config.get('auth_token')
+
+        return token_from_env if token_from_env else token_from_config
 
     @staticmethod
     async def login(**kwargs):
