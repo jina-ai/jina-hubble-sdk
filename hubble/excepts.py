@@ -87,7 +87,7 @@ class InternalResourceIdConflictError(BaseError):
 
 class FileTooLargeError(BaseError):
     ...
-    
+
 
 class MaximumUploadSizeReachedError(BaseError):
     ...
@@ -150,7 +150,7 @@ errorcodes = {
     40502: IncompatiableMethodError,
     40901: InternalResourceIdConflictError,
     41301: FileTooLargeError,
-    41302: MaximumUploadSizeReachedError
+    41302: MaximumUploadSizeReachedError,
     42201: InternalDataCorruptionError,
     42202: IdentifierNamespaceOccupiedError,
     42203: SubmittedDataMalformedError,
