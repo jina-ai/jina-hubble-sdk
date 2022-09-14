@@ -3,12 +3,12 @@ import os
 import webbrowser
 from typing import Optional
 from urllib.parse import urlencode, urljoin
-import requests
 
 import aiohttp
+import requests
+from hubble.client.session import HubbleAPISession
 from hubble.utils.api_utils import get_base_url
 from hubble.utils.config import config
-from hubble.client.session import HubbleAPISession
 from rich import print
 
 
