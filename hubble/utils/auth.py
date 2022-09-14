@@ -30,9 +30,7 @@ class Auth:
 
     @staticmethod
     async def login(force=False, **kwargs):
-
-        # verify if a user token is already present
-        # if yes, return 
+        # verify if token already exists, authenticate token if exists
         if not force:
             token = Auth.get_auth_token()
             if token:
@@ -42,10 +40,9 @@ class Auth:
                     resp = session.validate_token()
                     resp.raise_for_status()
                     return
-                except requests.exceptions.HTTPError as err:
+                except requests.exceptions.HTTPError:
                     pass
 
-        # if no token is present, or force is used, proceed with user login
         api_host = get_base_url()
         auth_info = None
         async with aiohttp.ClientSession(trust_env=True) as session:
@@ -87,7 +84,6 @@ class Auth:
         if auth_info is None:
             return
 
-        # question: is this actually what's needed to validate a token ? 
         async with aiohttp.ClientSession(trust_env=True) as session:
             async with session.post(
                 url=urljoin(api_host, 'user.identity.grant.auto'),
