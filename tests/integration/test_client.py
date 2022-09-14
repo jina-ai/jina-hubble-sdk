@@ -106,3 +106,6 @@ def test_upload_download_artifact_bytes(client):
     assert isinstance(resp, io.BytesIO)
     resp.seek(0)
     assert resp.read() == data
+
+    resp = client.delete_artifact(id=artifact_id1)
+    assert_response(resp)
