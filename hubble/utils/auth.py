@@ -5,6 +5,8 @@ from typing import Optional
 from urllib.parse import urlencode, urljoin
 
 import aiohttp
+import requests
+from hubble.client.session import HubbleAPISession
 from hubble.utils.api_utils import get_base_url
 from hubble.utils.config import config
 from rich import print
@@ -27,7 +29,20 @@ class Auth:
         return token_from_env if token_from_env else token_from_config
 
     @staticmethod
-    async def login(**kwargs):
+    async def login(force=False, **kwargs):
+        # verify if token already exists, authenticate token if exists
+        if not force:
+            token = Auth.get_auth_token()
+            if token:
+                session = HubbleAPISession()
+                session.init_jwt_auth(token)
+                try:
+                    resp = session.validate_token()
+                    resp.raise_for_status()
+                    return
+                except requests.exceptions.HTTPError:
+                    pass
+
         api_host = get_base_url()
         auth_info = None
         async with aiohttp.ClientSession(trust_env=True) as session:

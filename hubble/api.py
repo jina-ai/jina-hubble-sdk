@@ -18,7 +18,7 @@ def login(args):
     console = Console()
 
     if args.force:
-        _login(prompt='login')
+        _login(prompt='login', force=True)
         return
 
     try:
