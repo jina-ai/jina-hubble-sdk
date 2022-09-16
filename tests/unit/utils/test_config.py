@@ -41,3 +41,15 @@ def test_get_auth_token(config):
     os.environ['JINA_AUTH_TOKEN'] = 'my-token-from-env'
     assert config.get('auth_token') == 'my-token'
     assert auth.Auth.get_auth_token() == 'my-token-from-env'
+
+
+@patch.dict(os.environ, {'JINA_AUTH_TOKEN': ''})
+def test_get_auth_token_from_config(config):
+    auth.config = config
+    config.set('auth_token', 'my-token')
+    assert config.get('auth_token') == 'my-token'
+    assert auth.Auth.get_auth_token_from_config() == 'my-token'
+
+    os.environ['JINA_AUTH_TOKEN'] = 'my-token-from-env'
+    assert config.get('auth_token') == 'my-token'
+    assert auth.Auth.get_auth_token_from_config() == 'my-token'
