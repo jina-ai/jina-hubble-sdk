@@ -14,6 +14,15 @@ from rich import print
 
 class Auth:
     @staticmethod
+    def get_auth_token_from_config():
+        """Get user auth token from config file."""
+        token_from_config: Optional[str] = None
+        if isinstance(config.get('auth_token'), str):
+            token_from_config = config.get('auth_token')
+
+        return token_from_config
+
+    @staticmethod
     def get_auth_token():
         """Get user auth token.
 
@@ -22,9 +31,7 @@ class Auth:
         """
         token_from_env = os.environ.get('JINA_AUTH_TOKEN')
 
-        token_from_config: Optional[str] = None
-        if isinstance(config.get('auth_token'), str):
-            token_from_config = config.get('auth_token')
+        token_from_config: Optional[str] = Auth.get_auth_token_from_config()
 
         return token_from_env if token_from_env else token_from_config
 
@@ -103,8 +110,13 @@ class Auth:
     async def logout():
         api_host = get_base_url()
 
+        token = Auth.get_auth_token()
+        token_from_config = Auth.get_auth_token_from_config()
+        if token != token_from_config:
+            print(':warning: The token from environment variable is ignored.')
+
         async with aiohttp.ClientSession(trust_env=True) as session:
-            session.headers.update({'Authorization': f'token {Auth.get_auth_token()}'})
+            session.headers.update({'Authorization': f'token {token_from_config}'})
 
             async with session.post(
                 url=urljoin(api_host, 'user.session.dismiss')
@@ -112,7 +124,7 @@ class Auth:
                 json_response = await response.json()
                 if json_response['code'] == 401:
                     print(
-                        ':unlock: You are not logged in. There is no need to log out.'
+                        ':unlock: You are not logged in locally. There is no need to log out.'
                     )
                 elif json_response['code'] == 200:
                     print(':unlock: You have successfully logged out.')

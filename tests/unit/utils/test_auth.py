@@ -89,7 +89,7 @@ class ValidateResponse:
         [None, 'SOME_TOKEN', 200, False],
     ],
 )
-async def test_login(
+async def test_login_logout(
     mocker, monkeypatch, existing_token, expected_token, validate_status_code, force
 ):
     def _mock_get_aiohttp(*args, **kwargs):
@@ -121,8 +121,10 @@ async def test_login(
     authorized_token = config.get('auth_token')
     assert authorized_token == expected_token
 
-    # removing token created by this test
-    config.delete('auth_token')
+    await Auth.logout()
+
+    token_after_logout = config.get('auth_token')
+    assert token_after_logout is None
 
     # putting back config token
     if config_token:
