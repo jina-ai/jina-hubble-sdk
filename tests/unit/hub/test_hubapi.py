@@ -2,8 +2,7 @@ import os
 from pathlib import Path
 
 import pytest
-from jina.hubble import HubExecutor, hubapi
-from jina.hubble.hubapi import list_local
+from hubble.hub import HubExecutor, hubapi
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -27,7 +26,7 @@ def test_install_local(executor_zip_file, test_executor, install_deps):
         str(path).endswith(
             f'{os.path.join(test_executor.uuid, test_executor.tag)}.dist-info'
         )
-        for path in list_local()
+        for path in hubapi.list_local()
     )
 
     hubapi.uninstall_local(test_executor.uuid)
@@ -40,9 +39,9 @@ def test_load_dump_secret():
     uuid8 = 'hello'
     secret = 'world'
     task_id = 'UUID'
-    with tempfile.TemporaryDirectory() as tmpdirname:
-        hubapi.dump_secret(Path(tmpdirname), uuid8, secret, task_id)
-        new_uuid8, new_secret, new_task_id = hubapi.load_secret(Path(tmpdirname))
+    with tempfile.TemporaryDirectory() as tmp_dirname:
+        hubapi.dump_secret(Path(tmp_dirname), uuid8, secret, task_id)
+        new_uuid8, new_secret, new_task_id = hubapi.load_secret(Path(tmp_dirname))
     assert new_uuid8 == uuid8
     assert new_secret == secret
     assert task_id == new_task_id
@@ -54,13 +53,13 @@ def test_load_dump_secret_existing_encryption_key():
     uuid8 = 'hello'
     secret = 'world'
     task_id = 'UUID'
-    with tempfile.TemporaryDirectory() as tmpdirname:
+    with tempfile.TemporaryDirectory() as tmp_dirname:
         # creates an encryption key
-        hubapi.dump_secret(Path(tmpdirname), 'dummy', 'dummy', 'dummy')
+        hubapi.dump_secret(Path(tmp_dirname), 'dummy', 'dummy', 'dummy')
 
         # dump secret using existing encryption key
-        hubapi.dump_secret(Path(tmpdirname), uuid8, secret, task_id)
-        new_uuid8, new_secret, new_task_id = hubapi.load_secret(Path(tmpdirname))
+        hubapi.dump_secret(Path(tmp_dirname), uuid8, secret, task_id)
+        new_uuid8, new_secret, new_task_id = hubapi.load_secret(Path(tmp_dirname))
     assert new_uuid8 == uuid8
     assert new_secret == secret
     assert task_id == new_task_id

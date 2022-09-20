@@ -6,13 +6,13 @@ import shutil
 from pathlib import Path
 from typing import Tuple
 
-from jina import __cache_path__
-from jina.helper import random_identity
-from jina.hubble import HubExecutor
-from jina.hubble.helper import (
+from hubble.hub import HubExecutor
+from hubble.hub.helper import (
+    __cache_path__,
     get_hub_packages_dir,
     install_requirements,
     is_requirements_installed,
+    random_identity,
     unpack_package,
 )
 

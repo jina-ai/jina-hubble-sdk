@@ -79,6 +79,24 @@ def get_download_cache_dir() -> Path:
     return cache_dir
 
 
+def random_identity(use_uuid1: bool = False) -> str:
+    """
+    Generate random UUID.
+
+    ..note::
+        A MAC address or time-based ordering (UUID1) can afford increased database performance, since it's less work
+        to sort numbers closer-together than those distributed randomly (UUID4) (see here).
+
+        A second related issue, is that using UUID1 can be useful in debugging, even if origin data is lost or not
+        explicitly stored.
+
+    :param use_uuid1: use UUID1 instead of UUID4. This is the default Document ID generator.
+    :return: A random UUID.
+
+    """
+    return random_uuid(use_uuid1).hex
+
+
 def random_uuid(use_uuid1: bool = False) -> uuid.UUID:
     """
     Get a random UUID.

@@ -4,3 +4,4 @@ rich
 importlib-metadata
 filelock
 pathspec
+cryptography
