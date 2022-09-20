@@ -6,9 +6,16 @@ import os
 from functools import wraps
 from typing import Optional
 
+from importlib_metadata import version
+
 from .client.client import Client  # noqa F401
 from .excepts import AuthenticationRequiredError
 from .utils.auth import Auth  # noqa F401
+
+try:
+    __version__ = version("jina-hubble-sdk")
+except Exception:
+    __version__ = "v0.0.0"
 
 
 def login_required(func):
@@ -29,14 +36,15 @@ def login_required(func):
 
     @wraps(func)
     def arg_wrapper(*args, **kwargs):
-        if Client(jsonify=True).token:
+        try:
+            Client(jsonify=True).get_user_info()
             return func(*args, **kwargs)
-        else:
+        except AuthenticationRequiredError:
             raise AuthenticationRequiredError(
                 response={},
-                message=f'{func!r} requires login to Jina AI, please do `jina auth login` '
-                f'or set env variable `JINA_AUTH_TOKEN`',
-            )
+                message=f'Jina auth token is not provided or has expired. {func!r} requires login to Jina AI, '
+                f'please do `jina auth login -f` or set env variable `JINA_AUTH_TOKEN` with correct token',
+            ) from None
 
     return arg_wrapper
 
@@ -49,6 +57,11 @@ def login(**kwargs):
 def logout():
     """Logout."""
     asyncio.run(Auth.logout())
+
+
+def is_logged_in():
+    """Check if user is logged in."""
+    return True if Client(jsonify=True).token else False
 
 
 def get_token(interactive: bool = False) -> Optional[str]:
@@ -75,13 +88,13 @@ def show_hint(interactive: bool = False) -> Optional[str]:  # noqa: E501
 
     try:
         print(
-            f':closed_lock_with_key: [green bold]You have login to Jina AI[/] as [bold]{c.username}[/]. '
+            f':closed_lock_with_key: [green bold]You are logged in to Jina AI[/] as [bold]{c.username}[/]. '
             f'To log out, use [dim]jina auth logout[/].'
         )
         return c.token
     except AuthenticationRequiredError:
         print(
-            ':closed_lock_with_key: [yellow bold]You are not login to Jina AI[/]. '
+            ':closed_lock_with_key: [yellow bold]You are not logged in to Jina AI[/]. '
             'To log in, use [bold]jina auth login[/] or set env variable [bold]JINA_AUTH_TOKEN[/].'
         )
         if interactive:

@@ -1,6 +1,7 @@
 # jina-hubble-sdk
 
-<img src="https://codecov.io/gh/jina-ai/hubble-client-python/branch/main/graph/badge.svg?token=Sttz9HTmDq"/>
+<img alt="PyPI" src="https://img.shields.io/pypi/v/jina-hubble-sdk">
+<img src="https://codecov.io/gh/jina-ai/jina-hubble-sdk/branch/main/graph/badge.svg?token=Sttz9HTmDq"/>
 
 
 ## Install
@@ -17,9 +18,19 @@ pip install jina-hubble-sdk
 
 ## Python API
 
+### Detecting logging status
+
+```python
+import hubble
+if hubble.is_logged_in():
+    print('yeah')
+else:
+    print('no')
+```
+
 ### Get a token
 
-Including login if not.
+Notice that the token you got from this function is always valid. If the token is invalid or expired, the result is `None`.
 
 ```python
 import hubble

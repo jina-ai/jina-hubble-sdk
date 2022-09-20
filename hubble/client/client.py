@@ -62,8 +62,12 @@ class Client(BaseClient):
         return self.handle_request(url=self._base_url + EndpointsV2.get_user_info)
 
     @property
-    def token(self) -> str:
-        return self._token
+    def token(self):
+        try:
+            self.get_user_info()
+            return self._token
+        except Exception:
+            return None
 
     @property
     def username(self) -> str:
@@ -254,5 +258,5 @@ class Client(BaseClient):
 
         return self.handle_request(
             url=self._base_url + EndpointsV2.list_artifacts,
-            data={key: value for (key, value) in data.items() if value is not None},
+            json={key: value for (key, value) in data.items() if value is not None},
         )
