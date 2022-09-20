@@ -7,18 +7,22 @@ from pathlib import Path
 from .client.client import Client  # noqa F401
 
 
-def deploy_hubble_docker_credential_helper_for(registry: str):
+def deploy_hubble_docker_credential_helper_for(*registries: str):
     """
     Deploy hubble docker credential helper for the registry.
     """
-    docker_config_file_path = Path(os.path.expanduser('~/.docker/config.json'))
+    dockerConfigDir = os.environ.get('DOCKER_CONFIG', '~')
+    docker_config_file_path = Path(
+        os.path.expanduser(dockerConfigDir + '/.docker/config.json')
+    )
     target_conf = {}
     if docker_config_file_path.exists():
         with docker_config_file_path.open('r+') as f:
             target_conf = json.load(f)
     if 'credHelpers' not in target_conf:
         target_conf['credHelpers'] = {}
-    target_conf['credHelpers'][registry] = 'jina-hubble'
+    for registry in registries:
+        target_conf['credHelpers'][registry] = 'jina-hubble'
     with docker_config_file_path.open('w') as f:
         json.dump(target_conf, f, sort_keys=True, indent=8)
 
@@ -27,8 +31,7 @@ def get_credentials_for(_registry: str):
     """
     Get credentials for the registry.
     """
-    c = Client(jsonify=True).token
-    token = os.environ.get('JINA_AUTH_TOKEN', c)
+    token = Client(jsonify=True).token
     username = os.environ.get('HUBBLE_DOCKER_AUTH_OVERRIDE_USERNAME', '<token>')
     secret = os.environ.get('HUBBLE_DOCKER_AUTH_OVERRIDE_SECRET', token)
 
@@ -39,6 +42,15 @@ def get_credentials_for(_registry: str):
         )
     )
     sys.stdout.write('\n')
+
+
+def auto_deploy_hubble_docker_credential_helper():
+    """
+    Discover then deploy hubble docker credential helper for internal registries.
+    """
+    client = Client(jsonify=True)
+    registries = client.list_internal_docker_registries().get('data', [])
+    deploy_hubble_docker_credential_helper_for(*registries)
 
 
 def main():
@@ -66,9 +78,9 @@ def main():
         sys.exit(0)
     elif args.action == 'deploy':
         if not args.registry:
-            print('Please specify the registry to deploy the helper for.')
+            auto_deploy_hubble_docker_credential_helper()
             sys.exit(1)
-        deploy_hubble_docker_credential_helper_for(args.registry)
+        deploy_hubble_docker_credential_helper_for(*args.registry)
         sys.exit(0)
     else:
         sys.exit(1)

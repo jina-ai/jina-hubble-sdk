@@ -102,6 +102,13 @@ class Auth:
                 user = json_response['data']['user']['nickname']
 
                 config.set('auth_token', token)
+
+                from hubble.dockerauth import (
+                    auto_deploy_hubble_docker_credential_helper,
+                )
+
+                auto_deploy_hubble_docker_credential_helper()
+
                 print(
                     f':closed_lock_with_key: [green]Successfully logged in to Jina AI[/] as [b]{user}[/b]!'
                 )

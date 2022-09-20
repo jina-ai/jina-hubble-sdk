@@ -109,3 +109,18 @@ def test_upload_download_artifact_bytes(client):
 
     resp = client.delete_artifact(id=artifact_id1)
     assert_response(resp)
+
+
+@pytest.mark.parametrize(
+    'client', [{'jsonify': True}, {'jsonify': False}], indirect=True
+)
+def test_list_internal_docker_registries(client):
+    resp = client.list_internal_docker_registries()
+    assert_response(resp)
+
+    if not client._jsonify:
+        resp = resp.json()
+
+    registries = resp['data']
+
+    assert type(registries[0]) is str
