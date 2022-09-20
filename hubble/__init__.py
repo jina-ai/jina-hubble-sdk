@@ -3,6 +3,7 @@ The Hubble Python Client
 """
 import asyncio
 import os
+import sys
 from functools import wraps
 from typing import Optional
 
@@ -16,6 +17,9 @@ try:
     __version__ = version("jina-hubble-sdk")
 except Exception:
     __version__ = "v0.0.0"
+
+
+__windows__ = sys.platform == 'win32'
 
 
 def login_required(func):

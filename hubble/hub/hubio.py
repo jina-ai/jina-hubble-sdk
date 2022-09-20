@@ -4,6 +4,7 @@ import argparse
 import copy
 import hashlib
 import json
+import logging
 import os
 import random
 from pathlib import Path
@@ -11,10 +12,10 @@ from typing import Dict, List, Optional, Union
 from urllib.parse import urljoin
 
 import hubble
-from jina import __resources_path__, __version__
-from jina.helper import ArgNamespace, get_rich_console, retry
-from jina.hubble import HubExecutor
-from jina.hubble.helper import (
+from hubble.hub import HubExecutor
+from hubble.hub.helper import (
+    ArgNamespace,
+    __resources_path__,
     archive_package,
     check_requirements_env_variable,
     disk_cache_offline,
@@ -24,11 +25,13 @@ from jina.hubble.helper import (
     get_hubble_error_message,
     get_request_header,
     get_requirements_env_variables,
+    get_rich_console,
     parse_hub_uri,
+    retry,
     status_task,
     upload_file,
 )
-from jina.hubble.hubapi import (
+from hubble.hub.hubapi import (
     dump_secret,
     get_dist_path_of_executor,
     get_lockfile,
@@ -36,9 +39,11 @@ from jina.hubble.hubapi import (
     install_package_dependencies,
     load_secret,
 )
-from jina.importer import ImportExtensions
-from jina.logging.logger import JinaLogger
-from jina.parsers.hubble import set_hub_parser
+from hubble.hub.parsers import set_hub_parser
+
+# TODO: from jina import __version__
+# TODO: from jina.importer import ImportExtensions
+# TODO: from jina.logging.logger import JinaLogger
 
 
 class HubIO:
@@ -62,16 +67,17 @@ class HubIO:
             self.args = args
         else:
             self.args = ArgNamespace.kwargs2namespace(kwargs, set_hub_parser())
-        self.logger = JinaLogger(self.__class__.__name__, **vars(args))
+        # TODO: self.logger = JinaLogger(self.__class__.__name__, **vars(args))
+        self.logger = logging.getLogger(self.__class__.__name__)
 
-        with ImportExtensions(required=True):
-            import cryptography
-            import filelock
-            import rich
+        # with ImportExtensions(required=True):
+        #     import cryptography
+        #     import filelock
+        #     import rich
 
-            assert rich  #: prevent pycharm auto remove the above line
-            assert cryptography
-            assert filelock
+        #     assert rich  #: prevent pycharm auto remove the above line
+        #     assert cryptography
+        #     assert filelock
 
     def new(self) -> None:
         """Create a new executor folder interactively."""
@@ -994,8 +1000,7 @@ metas:
             The `name` and `tag` should be passed via ``args`` and `force` and `secret` as ``kwargs``, otherwise,
             cache does not work.
         """
-        with ImportExtensions(required=True):
-            import requests
+        import requests
 
         @retry(num_retry=3)
         def _send_request_with_retry(url, **kwargs):
@@ -1059,7 +1064,7 @@ metas:
         payload = {
             'name': name,
             'tag': tag if tag else 'latest',
-            'jina': __version__,
+            # 'jina': __version__, # TODO
             'args': args_copy,
             'secret': secret,
         }
@@ -1148,24 +1153,24 @@ metas:
                     progress.update(task_id, advance=0, description=status)
 
     def _load_docker_client(self):
-        with ImportExtensions(required=True):
-            import docker.errors
-            from docker import APIClient
-            from jina import __windows__
+        # with ImportExtensions(required=True):
+        import docker.errors
+        from docker import APIClient
+        from hubble import __windows__
 
-            try:
-                self._client = docker.from_env()
-                # low-level client
-                self._raw_client = APIClient(
-                    base_url=docker.constants.DEFAULT_NPIPE
-                    if __windows__
-                    else docker.constants.DEFAULT_UNIX_SOCKET
-                )
-            except docker.errors.DockerException:
-                self.logger.critical(
-                    'Docker daemon seems not running. Please run Docker daemon and try again.'
-                )
-                exit(1)
+        try:
+            self._client = docker.from_env()
+            # low-level client
+            self._raw_client = APIClient(
+                base_url=docker.constants.DEFAULT_NPIPE
+                if __windows__
+                else docker.constants.DEFAULT_UNIX_SOCKET
+            )
+        except docker.errors.DockerException:
+            self.logger.critical(
+                'Docker daemon seems not running. Please run Docker daemon and try again.'
+            )
+            exit(1)
 
     def pull(self) -> str:
         """Pull the executor package from Jina Hub.

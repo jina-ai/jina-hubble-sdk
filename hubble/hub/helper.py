@@ -1,7 +1,9 @@
 """Module for helper functions for Hub API."""
 
+import functools
 import hashlib
 import io
+import json
 import logging
 import os
 import shelve
@@ -12,11 +14,12 @@ import urllib
 import uuid
 import warnings
 import zipfile
+from argparse import ArgumentParser, Namespace
 from contextlib import nullcontext
 from enum import IntEnum
 from functools import lru_cache, wraps
 from pathlib import Path
-from typing import Dict, Optional, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple, Union
 from urllib.parse import urlparse
 
 from hubble import get_token
@@ -26,8 +29,10 @@ from hubble.hub.requirements import (
     get_env_variables,
     parse_requirement,
 )
+from rich.console import Console
 
-logger = logging.getLogger(__name__)
+# TODO: from jina.logging.predefined import default_logger
+default_logger = logging.getLogger(__name__)
 
 __resources_path__ = os.path.join(
     os.path.dirname(sys.modules['hubble'].__file__), 'resources'
@@ -79,6 +84,165 @@ def get_download_cache_dir() -> Path:
     return cache_dir
 
 
+class ArgNamespace:
+    """Helper function for argparse.Namespace object."""
+
+    @staticmethod
+    def kwargs2list(kwargs: Dict) -> List[str]:
+        """
+        Convert dict to an argparse-friendly list.
+
+        :param kwargs: dictionary of key-values to be converted
+        :return: argument list
+        """
+        args = []
+        # TODO: from jina.serve.executors import BaseExecutor
+
+        for k, v in kwargs.items():
+            k = k.replace('_', '-')
+            if v is not None:
+                if isinstance(v, bool):
+                    if v:
+                        args.append(f'--{k}')
+                elif isinstance(v, list):  # for nargs
+                    args.extend([f'--{k}', *(str(vv) for vv in v)])
+                elif isinstance(v, dict):
+                    args.extend([f'--{k}', json.dumps(v)])
+                # TODO: elif isinstance(v, type) and issubclass(v, BaseExecutor):
+                #     args.extend([f'--{k}', v.__name__])
+                else:
+                    args.extend([f'--{k}', str(v)])
+        return args
+
+    @staticmethod
+    def kwargs2namespace(
+        kwargs: Dict[str, Union[str, int, bool]],
+        parser: ArgumentParser,
+        warn_unknown: bool = False,
+        fallback_parsers: Optional[List[ArgumentParser]] = None,
+        positional_args: Optional[Tuple[str, ...]] = None,
+    ) -> Namespace:
+        """
+        Convert dict to a namespace.
+
+        :param kwargs: dictionary of key-values to be converted
+        :param parser: the parser for building kwargs into a namespace
+        :param warn_unknown: True, if unknown arguments should be logged
+        :param fallback_parsers: a list of parsers to help resolving the args
+        :param positional_args: some parser requires positional arguments to be presented
+        :return: argument list
+        """
+        args = ArgNamespace.kwargs2list(kwargs)
+        if positional_args:
+            args += positional_args
+        p_args, unknown_args = parser.parse_known_args(args)
+        unknown_args = list(filter(lambda x: x.startswith('--'), unknown_args))
+        if '--jcloud' in unknown_args:
+            unknown_args.remove('--jcloud')
+        if warn_unknown and unknown_args:
+            _leftovers = set(unknown_args)
+            if fallback_parsers:
+                for p in fallback_parsers:
+                    _, _unk_args = p.parse_known_args(args)
+                    _leftovers = _leftovers.intersection(_unk_args)
+                    if not _leftovers:
+                        # all args have been resolved
+                        break
+            # TODO: warn_unknown_args(_leftovers)
+
+        return p_args
+
+    @staticmethod
+    def get_non_defaults_args(
+        args: Namespace, parser: ArgumentParser, taboo: Optional[Set[str]] = None
+    ) -> Dict:
+        """
+        Get non-default args in a dict.
+
+        :param args: the namespace to parse
+        :param parser: the parser for referring the default values
+        :param taboo: exclude keys in the final result
+        :return: non defaults
+        """
+        if taboo is None:
+            taboo = set()
+        non_defaults = {}
+        _defaults = vars(parser.parse_args([]))
+        for k, v in vars(args).items():
+            if k in _defaults and k not in taboo and _defaults[k] != v:
+                non_defaults[k] = v
+        return non_defaults
+
+    @staticmethod
+    def flatten_to_dict(
+        args: Union[Dict[str, 'Namespace'], 'Namespace']
+    ) -> Dict[str, Any]:
+        """Convert argparse.Namespace to dict to be uploaded via REST.
+
+        :param args: namespace or dict or namespace to dict.
+        :return: pod args
+        """
+        if isinstance(args, Namespace):
+            return vars(args)
+        elif isinstance(args, dict):
+            pod_args = {}
+            for k, v in args.items():
+                if isinstance(v, Namespace):
+                    pod_args[k] = vars(v)
+                elif isinstance(v, list):
+                    pod_args[k] = [vars(_) for _ in v]
+                else:
+                    pod_args[k] = v
+            return pod_args
+
+
+def get_rich_console():
+    """
+    Function to get jina rich default console.
+    :return: rich console
+    """
+    return Console(
+        force_terminal=True if 'PYCHARM_HOSTED' in os.environ else None,
+        color_system=None if 'JINA_LOG_NO_COLOR' in os.environ else 'auto',
+    )
+
+
+def retry(
+    num_retry: int = 3,
+    message: str = 'Calling {func_name} failed, retry attempt {attempt}/{num_retry}. Error: {error!r}',
+):
+    """
+    Retry calling a function again in case of an error.
+
+    :param num_retry: number of times to retry
+    :param message: message to log when error happened
+    :return: wrapper
+    """
+    # TODO: from jina.logging.predefined import default_logger
+
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            for i in range(num_retry):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    default_logger.warning(
+                        message.format(
+                            func_name=func.__name__,
+                            attempt=i + 1,
+                            num_retry=num_retry,
+                            error=e,
+                        )
+                    )
+                    if i + 1 == num_retry:
+                        raise
+
+        return wrapper
+
+    return decorator
+
+
 def random_identity(use_uuid1: bool = False) -> str:
     """
     Generate random UUID.
@@ -117,6 +281,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
     import platform
     from uuid import getnode
 
+    # TODO:
     # import google.protobuf
     # import grpc
     # import yaml
@@ -138,6 +303,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
     __jina_env__ = ()
     try:
 
+        # TODO:
         info = {
             # 'jina': __version__,
             # 'docarray': __docarray_version__,
@@ -164,7 +330,7 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
         env_info = {k: os.getenv(k, __unset_msg__) for k in __jina_env__}
         full_version = info, env_info
     except Exception as e:
-        logger.error(str(e))
+        default_logger.error(str(e))
         full_version = None
 
     return full_version
@@ -516,7 +682,9 @@ def disk_cache_offline(
                         dict_db[call_hash] = result
                     except urllib.error.URLError:
                         if call_hash in dict_db:
-                            logger.warning(message.format(func_name=func.__name__))
+                            default_logger.warning(
+                                message.format(func_name=func.__name__)
+                            )
                             return dict_db[call_hash], True
                         else:
                             raise
