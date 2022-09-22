@@ -1,5 +1,5 @@
 def get_main_parser(parser=None):
-    """The main parser for Jina
+    """The main parser for Jina Auth CLI
     :return: the parser
     """
     from .base import set_base_parser

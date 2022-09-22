@@ -2,10 +2,10 @@ import argparse
 
 
 def set_base_parser():
-    from .helper import _chf
+    from hubble.parsers.helper import _chf
 
     parser = argparse.ArgumentParser(
-        description=f'Jina Auth CLI helps you login in to Jina AI Ecosystem.',  # noqa F501
+        description='Push/Pull an Executor to/from Jina Hub',
         formatter_class=_chf,
     )
 

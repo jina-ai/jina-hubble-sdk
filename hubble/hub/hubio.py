@@ -39,7 +39,7 @@ from hubble.hub.hubapi import (
     install_package_dependencies,
     load_secret,
 )
-from hubble.hub.parsers import set_hub_parser
+from hubble.hub.parsers import get_main_parser
 
 # TODO: from jina import __version__
 # TODO: from jina.importer import ImportExtensions
@@ -66,7 +66,7 @@ class HubIO:
         if args and isinstance(args, argparse.Namespace):
             self.args = args
         else:
-            self.args = ArgNamespace.kwargs2namespace(kwargs, set_hub_parser())
+            self.args = ArgNamespace.kwargs2namespace(kwargs, get_main_parser())
         # TODO: self.logger = JinaLogger(self.__class__.__name__, **vars(args))
         self.logger = logging.getLogger(self.__class__.__name__)
 

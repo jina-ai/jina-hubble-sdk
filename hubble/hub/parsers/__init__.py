@@ -1,5 +1,6 @@
-from hubble.parsers.base import set_base_parser
 from hubble.parsers.helper import _chf
+
+from .base import set_base_parser
 
 
 def mixin_hub_usage_parser(parser):
@@ -72,24 +73,25 @@ def set_hub_status_parser(parser=None):
     return parser
 
 
-def set_hub_parser(parser=None):
-    """Set the parser for the hub
-    :param parser: the parser configure
-
+def get_main_parser(parser=None):
+    """The main parser for Jina Hub CLI
     :return: the parser
     """
+
+    # create the top-level parser
     if not parser:
         parser = set_base_parser()
 
-    spp = parser.add_subparsers(
-        dest='hub',
+    sp = parser.add_subparsers(
+        dest='hub_cli',
+        help='Manage Executor on Jina Hub',
         description='use `%(prog)-8s [sub-command] --help` '
         'to get detailed information about each sub-command',
         required=True,
     )
 
     set_hub_new_parser(
-        spp.add_parser(
+        sp.add_parser(
             'new',
             help='create a new executor using the template',
             description='Create a new executor using the template',
@@ -98,7 +100,7 @@ def set_hub_parser(parser=None):
     )
 
     set_hub_push_parser(
-        spp.add_parser(
+        sp.add_parser(
             'push',
             help='push an executor package to Jina hub',
             description='Push an executor package to Jina hub',
@@ -107,7 +109,7 @@ def set_hub_parser(parser=None):
     )
 
     set_hub_pull_parser(
-        spp.add_parser(
+        sp.add_parser(
             'pull',
             help='download an executor image/package from Jina hub',
             description='Download an executor image/package from Jina hub',
@@ -116,7 +118,7 @@ def set_hub_parser(parser=None):
     )
 
     set_hub_status_parser(
-        spp.add_parser(
+        sp.add_parser(
             'status',
             help='query an executor building status of of a pushed Executor from Jina hub',
             description='Query an executor building status of of a pushed Executor from Jina hub',
