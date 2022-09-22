@@ -78,11 +78,11 @@ flake:
 
 ## Run the black formatter
 black:
-	black $(SRC_CODE)
+	black $(SRC_CODE) --extend-exclude hubble/resources
 
 ## Dry run the black formatter
 black-check:
-	black --check $(SRC_CODE)
+	black --check $(SRC_CODE) --extend-exclude hubble/resources
 
 ## Run the isort import formatter
 isort:
