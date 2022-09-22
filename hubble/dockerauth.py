@@ -80,7 +80,7 @@ def main():
         if not args.registry:
             auto_deploy_hubble_docker_credential_helper()
             sys.exit(1)
-        deploy_hubble_docker_credential_helper_for(*args.registry)
+        deploy_hubble_docker_credential_helper_for(args.registry)
         sys.exit(0)
     else:
         sys.exit(1)
