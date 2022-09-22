@@ -74,7 +74,7 @@ SRC_CODE = hubble/ tests/
 
 ## Run the flake linter
 flake:
-	flake8 $(SRC_CODE)
+	flake8 $(SRC_CODE) --exclude hubble/resources
 
 ## Run the black formatter
 black:
