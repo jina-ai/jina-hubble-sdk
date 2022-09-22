@@ -260,3 +260,15 @@ class Client(BaseClient):
             url=self._base_url + EndpointsV2.list_artifacts,
             json={key: value for (key, value) in data.items() if value is not None},
         )
+
+    def list_internal_docker_registries(
+        self,
+    ) -> Union[requests.Response, dict]:
+        """List internal docker registries.
+
+        :returns: `requests.Response` object as returned value
+            or indented json if jsonify.
+        """
+        return self.handle_request(
+            url=self._base_url + EndpointsV2.list_internal_docker_registries,
+        )

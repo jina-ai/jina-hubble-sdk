@@ -12,10 +12,7 @@ def logout(*args):
 
 def login(args):
     client = Client(jsonify=True)
-
-    from rich.console import Console
-
-    console = Console()
+    nickname = ''
 
     if args.force:
         _login(prompt='login', force=True)
@@ -23,7 +20,20 @@ def login(args):
 
     try:
         nickname = client.username
+    except Exception as ex:
+        if isinstance(ex, (AuthenticationRequiredError, AuthenticationFailedError)):
+            _login(prompt='login')
+        else:
+            raise ex
+    else:
+        from .dockerauth import auto_deploy_hubble_docker_credential_helper
+
+        auto_deploy_hubble_docker_credential_helper()
+
         if nickname:
+            from rich.console import Console
+
+            console = Console()
             console.print(
                 f':closed_lock_with_key: You are already logged in as [b green]{nickname}[/b green].',
                 '',
@@ -32,11 +42,6 @@ def login(args):
                 '- or, [b]jina auth login -f[/]',
                 sep=os.linesep,
             )
-    except Exception as ex:
-        if isinstance(ex, (AuthenticationRequiredError, AuthenticationFailedError)):
-            _login(prompt='login')
-        else:
-            raise ex
 
 
 def token(args):
