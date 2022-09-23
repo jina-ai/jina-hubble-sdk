@@ -271,6 +271,22 @@ def random_uuid(use_uuid1: bool = False) -> uuid.UUID:
     return uuid.uuid1() if use_uuid1 else uuid.uuid4()
 
 
+def get_ci_vendor() -> Optional[str]:
+    with open(os.path.join(__resources_path__, 'ci-vendors.json')) as fp:
+        all_cis = json.load(fp)
+        for c in all_cis:
+            if isinstance(c['env'], str) and c['env'] in os.environ:
+                return c['constant']
+            elif isinstance(c['env'], dict):
+                for k, v in c['env'].items():
+                    if os.environ.get(k, None) == v:
+                        return c['constant']
+            elif isinstance(c['env'], list):
+                for k in c['env']:
+                    if k in os.environ:
+                        return c['constant']
+
+
 def get_full_version() -> Optional[Tuple[Dict, Dict]]:
     """
     Get the version of libraries used in Jina and environment variables.
@@ -292,11 +308,10 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
     #     __docarray_version__,
     #     __jina_env__,
     #     __proto_version__,
-    #     __unset_msg__,
-    #     __uptime__,
     #     __version__,
     # )
     # from jina.logging.predefined import default_logger
+    from hubble import __uptime__
     from hubble import __version__ as __hubble_version__
 
     __unset_msg__ = '(unset)'
@@ -322,9 +337,10 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
             'processor': platform.processor(),
             'uid': getnode(),
             'session-id': str(random_uuid(use_uuid1=True)),
-            # 'uptime': __uptime__,
-            # 'ci-vendor': get_ci_vendor() or __unset_msg__,
-            # 'internal': 'jina-ai' in os.getenv('GITHUB_ACTION_REPOSITORY', __unset_msg__)
+            'uptime': __uptime__,
+            'ci-vendor': get_ci_vendor() or __unset_msg__,
+            'internal': 'jina-ai'
+            in os.getenv('GITHUB_ACTION_REPOSITORY', __unset_msg__),
         }
 
         env_info = {k: os.getenv(k, __unset_msg__) for k in __jina_env__}

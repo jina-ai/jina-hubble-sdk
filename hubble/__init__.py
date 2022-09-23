@@ -2,8 +2,9 @@
 The Hubble Python Client
 """
 import asyncio
-import os
-import sys
+import datetime as _datetime
+import os as _os
+import sys as _sys
 from functools import wraps
 from typing import Optional
 
@@ -19,7 +20,8 @@ except Exception:
     __version__ = "v0.0.0"
 
 
-__windows__ = sys.platform == 'win32'
+__windows__ = _sys.platform == 'win32'
+__uptime__ = _datetime.datetime.now().isoformat()
 
 
 def login_required(func):
@@ -70,11 +72,11 @@ def is_logged_in():
 
 def get_token(interactive: bool = False) -> Optional[str]:
     """Get token."""
-    if os.environ.get('SHOW_HUBBLE_HINT') == 'ALWAYS':
+    if _os.environ.get('SHOW_HUBBLE_HINT') == 'ALWAYS':
         token = show_hint(interactive)
-    elif os.environ.get('SHOW_HUBBLE_HINT', 'ONCE') == 'ONCE':
+    elif _os.environ.get('SHOW_HUBBLE_HINT', 'ONCE') == 'ONCE':
         token = show_hint(interactive)
-        os.environ['SHOW_HUBBLE_HINT'] = 'NEVER'
+        _os.environ['SHOW_HUBBLE_HINT'] = 'NEVER'
     else:
         token = Client(jsonify=True).token
 
