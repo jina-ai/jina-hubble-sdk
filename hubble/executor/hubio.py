@@ -12,8 +12,8 @@ from typing import Dict, List, Optional, Union
 from urllib.parse import urljoin
 
 import hubble
-from hubble.hub import HubExecutor
-from hubble.hub.helper import (
+from hubble.executor import HubExecutor
+from hubble.executor.helper import (
     ArgNamespace,
     __resources_path__,
     archive_package,
@@ -31,7 +31,7 @@ from hubble.hub.helper import (
     status_task,
     upload_file,
 )
-from hubble.hub.hubapi import (
+from hubble.executor.hubapi import (
     dump_secret,
     get_dist_path_of_executor,
     get_lockfile,
@@ -39,7 +39,7 @@ from hubble.hub.hubapi import (
     install_package_dependencies,
     load_secret,
 )
-from hubble.hub.parsers import get_main_parser
+from hubble.executor.parsers import get_main_parser
 
 # TODO: from jina import __version__
 # TODO: from jina.importer import ImportExtensions

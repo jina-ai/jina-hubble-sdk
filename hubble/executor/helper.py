@@ -23,7 +23,7 @@ from typing import Any, Dict, List, Optional, Set, Tuple, Union
 from urllib.parse import urlparse
 
 from hubble import get_token
-from hubble.hub.requirements import (
+from hubble.executor.requirements import (
     check_env_variable,
     expand_env_variables,
     get_env_variables,

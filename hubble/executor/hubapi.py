@@ -6,8 +6,8 @@ import shutil
 from pathlib import Path
 from typing import Tuple
 
-from hubble.hub import HubExecutor
-from hubble.hub.helper import (
+from hubble.executor import HubExecutor
+from hubble.executor.helper import (
     __cache_path__,
     get_hub_packages_dir,
     install_requirements,

@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 import pytest
-from hubble.hub import HubExecutor, hubapi
+from hubble.executor import HubExecutor, hubapi
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 

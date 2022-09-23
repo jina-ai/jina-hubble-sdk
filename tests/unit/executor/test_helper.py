@@ -3,8 +3,8 @@ import warnings
 from pathlib import Path
 
 import pytest
-from hubble.hub import helper
-from hubble.hub.helper import disk_cache_offline
+from hubble.executor import helper
+from hubble.executor.helper import disk_cache_offline
 
 
 @pytest.fixture
@@ -115,7 +115,7 @@ def test_install_requirements(monkeypatch):
     ],
 )
 def test_parse_requirements(requirement, name, specs, extras):
-    from hubble.hub.requirements import parse_requirement
+    from hubble.executor.requirements import parse_requirement
 
     req_spec = parse_requirement(requirement)
 

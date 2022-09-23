@@ -23,7 +23,7 @@ def set_hub_push_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
-    from hubble.hub.parsers.push import mixin_hub_push_parser
+    from hubble.executor.parsers.push import mixin_hub_push_parser
 
     mixin_hub_usage_parser(parser)
     mixin_hub_push_parser(parser)
@@ -38,7 +38,7 @@ def set_hub_pull_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
-    from hubble.hub.parsers.pull import mixin_hub_pull_parser
+    from hubble.executor.parsers.pull import mixin_hub_pull_parser
 
     mixin_hub_usage_parser(parser)
     mixin_hub_pull_parser(parser)
@@ -53,7 +53,7 @@ def set_hub_new_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
-    from hubble.hub.parsers.new import mixin_hub_new_parser
+    from hubble.executor.parsers.new import mixin_hub_new_parser
 
     mixin_hub_new_parser(parser)
     return parser
@@ -67,7 +67,7 @@ def set_hub_status_parser(parser=None):
     if not parser:
         parser = set_base_parser()
 
-    from hubble.hub.parsers.status import mixin_hub_status_parser
+    from hubble.executor.parsers.status import mixin_hub_status_parser
 
     mixin_hub_status_parser(parser)
     return parser

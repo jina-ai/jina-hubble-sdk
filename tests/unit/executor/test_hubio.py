@@ -13,11 +13,11 @@ import hubble
 import pytest
 import requests
 import yaml
-from hubble.hub import hubio
-from hubble.hub.helper import disk_cache_offline, get_requirements_env_variables
-from hubble.hub.hubapi import get_secret_path
-from hubble.hub.hubio import HubExecutor, HubIO
-from hubble.hub.parsers import (
+from hubble.executor import hubio
+from hubble.executor.helper import disk_cache_offline, get_requirements_env_variables
+from hubble.executor.hubapi import get_secret_path
+from hubble.executor.hubio import HubExecutor, HubIO
+from hubble.executor.parsers import (
     set_hub_new_parser,
     set_hub_pull_parser,
     set_hub_push_parser,
