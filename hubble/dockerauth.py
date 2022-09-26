@@ -24,7 +24,8 @@ def deploy_hubble_docker_credential_helper_for(*registries: str):
     for registry in registries:
         target_conf['credHelpers'][registry] = 'jina-hubble'
     with docker_config_file_path.open('w') as f:
-        json.dump(target_conf, f, sort_keys=True, indent=8)
+        json.dump(target_conf, f, sort_keys=True, indent=2)
+        f.write('\n')
 
 
 def get_credentials_for(_registry: str):
@@ -38,7 +39,7 @@ def get_credentials_for(_registry: str):
     sys.stdout.write(
         json.dumps(
             {'Username': username, 'Secret': secret if secret else 'anonymous'},
-            indent=4,
+            indent=2,
         )
     )
     sys.stdout.write('\n')
