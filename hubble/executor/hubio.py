@@ -980,10 +980,10 @@ metas:
     def fetch_meta(
         name: str,
         tag: str,
-        *,
-        secret: Optional[str] = None,
         image_required: bool = True,
         rebuild_image: bool = True,
+        *,
+        secret: Optional[str] = None,
         force: bool = False,
     ) -> HubExecutor:
         """Fetch the executor meta info from Jina Hub.
@@ -997,8 +997,8 @@ metas:
         :return: meta of executor
 
         .. note::
-            The `name` and `tag` should be passed via ``args`` and `force` and `secret` as ``kwargs``, otherwise,
-            cache does not work.
+            The significant parameters like `name` and `tag` should be passed via ``args``
+            and `force` and `secret` as ``kwargs``, otherwise, cache does not work.
         """
         import requests
 
@@ -1030,7 +1030,7 @@ metas:
         images = resp['package'].get('containers', [])
         image_name = images[0] if images else None
         if image_required and not image_name:
-            raise Exception(
+            raise RuntimeError(
                 f'No image found for executor "{name}", '
                 f'tag: {tag}, commit: {resp.get("commit", {}).get("id")}, '
                 f'session_id: {req_header.get("jinameta-session-id")}'
@@ -1194,8 +1194,8 @@ metas:
                 executor, from_cache = HubIO.fetch_meta(
                     name,
                     tag,
+                    image_required,
                     secret=secret,
-                    image_required=image_required,
                     force=need_pull,
                 )
 
@@ -1267,8 +1267,8 @@ metas:
                                 executor, _ = HubIO.fetch_meta(
                                     name,
                                     tag,
+                                    image_required,
                                     secret=secret,
-                                    image_required=False,
                                     force=True,
                                 )
 
