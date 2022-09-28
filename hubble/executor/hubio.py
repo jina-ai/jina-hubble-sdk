@@ -42,9 +42,6 @@ from hubble.executor.hubapi import (
 )
 from hubble.executor.parsers import get_main_parser
 
-# TODO: from jina.importer import ImportExtensions
-# TODO: from jina.logging.logger import JinaLogger
-
 
 class HubIO:
     """:class:`HubIO` provides the way to interact with Jina Hub registry.
@@ -69,17 +66,7 @@ class HubIO:
             self.args = args
         else:
             self.args = ArgNamespace.kwargs2namespace(kwargs, get_main_parser())
-        # TODO: self.logger = JinaLogger(self.__class__.__name__, **vars(args))
         self.logger = logging.getLogger(self.__class__.__name__)
-
-        # with ImportExtensions(required=True):
-        #     import cryptography
-        #     import filelock
-        #     import rich
-
-        #     assert rich  #: prevent pycharm auto remove the above line
-        #     assert cryptography
-        #     assert filelock
 
     def new(self) -> None:
         """Create a new executor folder interactively."""

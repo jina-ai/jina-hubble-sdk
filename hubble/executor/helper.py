@@ -31,7 +31,6 @@ from hubble.executor.requirements import (
 )
 from rich.console import Console
 
-# TODO: from jina.logging.predefined import default_logger
 default_logger = logging.getLogger(__name__)
 
 __resources_path__ = os.path.join(
@@ -125,36 +124,16 @@ class ArgNamespace:
     def kwargs2namespace(
         kwargs: Dict[str, Union[str, int, bool]],
         parser: ArgumentParser,
-        warn_unknown: bool = False,
-        fallback_parsers: Optional[List[ArgumentParser]] = None,
-        positional_args: Optional[Tuple[str, ...]] = None,
     ) -> Namespace:
         """
         Convert dict to a namespace.
 
         :param kwargs: dictionary of key-values to be converted
         :param parser: the parser for building kwargs into a namespace
-        :param warn_unknown: True, if unknown arguments should be logged
-        :param fallback_parsers: a list of parsers to help resolving the args
-        :param positional_args: some parser requires positional arguments to be presented
         :return: argument list
         """
         args = ArgNamespace.kwargs2list(kwargs)
-        if positional_args:
-            args += positional_args
-        p_args, unknown_args = parser.parse_known_args(args)
-        unknown_args = list(filter(lambda x: x.startswith('--'), unknown_args))
-        if warn_unknown and unknown_args:
-            _leftovers = set(unknown_args)
-            if fallback_parsers:
-                for p in fallback_parsers:
-                    _, _unk_args = p.parse_known_args(args)
-                    _leftovers = _leftovers.intersection(_unk_args)
-                    if not _leftovers:
-                        # all args have been resolved
-                        break
-            # TODO: warn_unknown_args(_leftovers)
-
+        p_args, _ = parser.parse_known_args(args)
         return p_args
 
     @staticmethod
