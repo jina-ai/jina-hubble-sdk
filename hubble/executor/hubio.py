@@ -16,6 +16,7 @@ from hubble.executor import HubExecutor
 from hubble.executor.helper import (
     ArgNamespace,
     __resources_path__,
+    __unset_msg__,
     archive_package,
     check_requirements_env_variable,
     disk_cache_offline,
@@ -41,7 +42,6 @@ from hubble.executor.hubapi import (
 )
 from hubble.executor.parsers import get_main_parser
 
-# TODO: from jina import __version__
 # TODO: from jina.importer import ImportExtensions
 # TODO: from jina.logging.logger import JinaLogger
 
@@ -63,6 +63,8 @@ class HubIO:
     """
 
     def __init__(self, args: Optional[argparse.Namespace] = None, **kwargs):
+        self.jina_env: Optional[Dict] = kwargs.pop('jina_env', None)
+
         if args and isinstance(args, argparse.Namespace):
             self.args = args
         else:
@@ -599,7 +601,7 @@ metas:
 
         console = get_rich_console()
         with console.status(f'Pushing `{self.args.path}` ...') as st:
-            req_header = get_request_header()
+            req_header = get_request_header(self.jina_env)
             try:
                 st.update(f'Packaging {self.args.path} ...')
                 md5_hash = hashlib.md5()
@@ -833,7 +835,7 @@ metas:
 
     def _status_with_progress(self, console, st, task_id, replay=False, verbose=False):
 
-        req_header = get_request_header()
+        req_header = get_request_header(self.jina_env)
         dict_data = {}
         dict_data['replay'] = replay
         dict_data['verbose'] = verbose
@@ -984,6 +986,7 @@ metas:
         rebuild_image: bool = True,
         *,
         secret: Optional[str] = None,
+        jina_env: Optional[Dict] = None,
         force: bool = False,
     ) -> HubExecutor:
         """Fetch the executor meta info from Jina Hub.
@@ -992,6 +995,7 @@ metas:
         :param secret: the access secret of the executor
         :param image_required: it indicates whether a Docker image is required or not
         :param rebuild_image: it indicates whether Jina Hub need to rebuild image or not
+        :param jina_env: versions and other environment variables
         :param force: if set to True, access to fetch_meta will always pull latest Executor metas, otherwise, default
             to local cache
         :return: meta of executor
@@ -1022,7 +1026,7 @@ metas:
         if tag:
             payload['tag'] = tag
 
-        req_header = get_request_header()
+        req_header = get_request_header(jina_env)
 
         resp = _send_request_with_retry(pull_url, json=payload, headers=req_header)
         resp = resp.json()['data']
@@ -1049,13 +1053,22 @@ metas:
         )
 
     @staticmethod
-    def deploy_public_sandbox(args: Union[argparse.Namespace, Dict]) -> str:
+    def deploy_public_sandbox(
+        args: Union[argparse.Namespace, Dict], jina_env: Optional[Dict] = None
+    ) -> str:
         """
         Deploy a public sandbox to Jina Hub.
         :param args: arguments parsed from the CLI
+        :param jina_env: versions and other environment variables
 
         :return: the host and port of the sandbox
         """
+
+        try:
+            from jina import __version__ as jina_version
+        except ImportError:
+            jina_version = __unset_msg__
+
         args_copy = copy.deepcopy(args)
         if not isinstance(args_copy, Dict):
             args_copy = vars(args_copy)
@@ -1064,7 +1077,7 @@ metas:
         payload = {
             'name': name,
             'tag': tag if tag else 'latest',
-            # 'jina': __version__, # TODO
+            'jina': jina_env and jina_env.get('jina', jina_version) or jina_version,
             'args': args_copy,
             'secret': secret,
         }
@@ -1076,10 +1089,11 @@ metas:
         host = None
         port = None
 
+        headers = get_request_header(jina_env)
         json_response = requests.post(
             url=urljoin(hubble.utils.get_base_url(), 'sandbox.get'),
             json=payload,
-            headers=get_request_header(),
+            headers=headers,
         ).json()
         if json_response.get('code') == 200:
             host = json_response.get('data', {}).get('host', None)
@@ -1096,7 +1110,7 @@ metas:
                 json_response = requests.post(
                     url=urljoin(hubble.utils.get_base_url(), 'sandbox.create'),
                     json=payload,
-                    headers=get_request_header(),
+                    headers=headers,
                 ).json()
 
                 data = json_response.get('data') or {}
