@@ -98,7 +98,10 @@ class ArgNamespace:
         :return: argument list
         """
         args = []
-        # TODO: from jina.serve.executors import BaseExecutor
+        try:
+            from jina.serve.executors import BaseExecutor
+        except ImportError:
+            BaseExecutor = None
 
         for k, v in kwargs.items():
             k = k.replace('_', '-')
@@ -110,8 +113,10 @@ class ArgNamespace:
                     args.extend([f'--{k}', *(str(vv) for vv in v)])
                 elif isinstance(v, dict):
                     args.extend([f'--{k}', json.dumps(v)])
-                # TODO: elif isinstance(v, type) and issubclass(v, BaseExecutor):
-                #     args.extend([f'--{k}', v.__name__])
+                elif (
+                    BaseExecutor and isinstance(v, type) and issubclass(v, BaseExecutor)
+                ):
+                    args.extend([f'--{k}', v.__name__])
                 else:
                     args.extend([f'--{k}', str(v)])
         return args
