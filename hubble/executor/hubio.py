@@ -1054,7 +1054,7 @@ metas:
 
     @staticmethod
     def deploy_public_sandbox(
-        args: Union[argparse.Namespace, Dict], jina_env: Optional[Dict] = None
+        args: Union[argparse.Namespace, Dict], *, jina_env: Optional[Dict] = None
     ) -> str:
         """
         Deploy a public sandbox to Jina Hub.

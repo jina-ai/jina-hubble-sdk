@@ -374,26 +374,17 @@ def get_full_version(jina_env: Optional[Dict] = None) -> Optional[Tuple[Dict, Di
     return full_version
 
 
-def _get_request_header_main(jina_env: Optional[Dict] = None) -> Dict:
-    """Return the header of request.
-
-    :return: request header
-    """
-    metas, envs = get_full_version(jina_env)
-
-    header = {
-        **{f'jinameta-{k}': str(v) for k, v in metas.items()},
-        **envs,
-    }
-    return header
-
-
 def get_request_header(jina_env: Optional[Dict] = None) -> Dict:
     """Return the header of request with an authorization token.
 
     :return: request header
     """
-    headers = _get_request_header_main(jina_env)
+    metas, envs = get_full_version(jina_env)
+
+    headers = {
+        **{f'jinameta-{k}': str(v) for k, v in metas.items()},
+        **envs,
+    }
 
     auth_token = get_token()
     if auth_token:
