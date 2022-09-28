@@ -11,11 +11,13 @@ def deploy_hubble_docker_credential_helper_for(*registries: str):
     """
     Deploy hubble docker credential helper for the registry.
     """
-    dockerConfigDir = os.environ.get('DOCKER_CONFIG', '~')
+    docker_config_dir = os.environ.get('DOCKER_CONFIG', '~/.docker')
+    docker_config_dir_path = Path(os.path.expanduser(docker_config_dir))
     docker_config_file_path = Path(
-        os.path.expanduser(dockerConfigDir + '/.docker/config.json')
+        os.path.expanduser(docker_config_dir + '/config.json')
     )
     target_conf = {}
+
     if docker_config_file_path.exists():
         with docker_config_file_path.open('r+') as f:
             target_conf = json.load(f)
@@ -23,6 +25,10 @@ def deploy_hubble_docker_credential_helper_for(*registries: str):
         target_conf['credHelpers'] = {}
     for registry in registries:
         target_conf['credHelpers'][registry] = 'jina-hubble'
+
+    if not docker_config_dir_path.exists():
+        docker_config_dir_path.mkdir(parents=True, exist_ok=True)
+
     with docker_config_file_path.open('w') as f:
         json.dump(target_conf, f, sort_keys=True, indent=2)
         f.write('\n')
