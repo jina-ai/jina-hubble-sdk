@@ -174,7 +174,7 @@ def get_ci_vendor() -> Optional[str]:
                         return c['constant']
 
 
-def get_full_version(jina_env: Optional[Dict] = None) -> Optional[Tuple[Dict, Dict]]:
+def get_full_version() -> Optional[Tuple[Dict, Dict]]:
     """
     Get the version of libraries used in Jina and environment variables.
 
@@ -184,58 +184,28 @@ def get_full_version(jina_env: Optional[Dict] = None) -> Optional[Tuple[Dict, Di
     import platform
     from uuid import getnode
 
-    if jina_env is None:
-        jina_env = {}
-
-    import yaml
     from hubble import __uptime__
     from hubble import __version__ as __hubble_version__
 
     try:
-        import grpc
-        from grpc import _grpcio_metadata
+        from jina.helper import get_full_version
 
-        grpc_version = getattr(grpc, '__version__', _grpcio_metadata.__version__)
+        metas, env_info = get_full_version()
     except ImportError:
-        grpc_version = __unset_msg__
-
-    try:
-        import google.protobuf
-        from google.protobuf.internal import api_implementation
-
-        protobuf_version = google.protobuf.__version__
-        proto_backend = api_implementation.Type()
-    except ImportError:
-        protobuf_version = __unset_msg__
-        proto_backend = __unset_msg__
-
-    try:
-        from jcloud import __version__ as __jcloud_version__
-    except ImportError:
-        __jcloud_version__ = __unset_msg__
-
-    try:
-        from jina import (
-            __docarray_version__,
-            __jina_env__,
-            __proto_version__,
-            __version__,
-        )
-    except ImportError:
-        __docarray_version__ = __proto_version__ = __version__ = __unset_msg__
-        __jina_env__ = ()
+        metas, env_info = {}, {}
 
     try:
         info = {
-            'jina': jina_env.get('jina', __version__),
-            'docarray': jina_env.get('docarray', __docarray_version__),
-            'jcloud': jina_env.get('jcloud', __jcloud_version__),
-            'jina-proto': jina_env.get('jina-proto', __proto_version__),
-            'protobuf': jina_env.get('protobuf', protobuf_version),
-            'proto-backend': jina_env.get('proto-backend', proto_backend),
-            'grpcio': jina_env.get('grpcio', grpc_version),
+            **metas,
+            'jina': metas.get('jina') or __unset_msg__,
+            'docarray': metas.get('docarray') or __unset_msg__,
+            'jcloud': metas.get('jcloud') or __unset_msg__,
+            'jina-proto': metas.get('jina-proto') or __unset_msg__,
+            'protobuf': metas.get('protobuf') or __unset_msg__,
+            'proto-backend': metas.get('proto-backend') or __unset_msg__,
+            'grpcio': metas.get('grpcio') or __unset_msg__,
+            'pyyaml': metas.get('pyyaml') or __unset_msg__,
             'jina-hubble-sdk': __hubble_version__,
-            'pyyaml': yaml.__version__,
             'python': platform.python_version(),
             'platform': platform.system(),
             'platform-release': platform.release(),
@@ -250,10 +220,6 @@ def get_full_version(jina_env: Optional[Dict] = None) -> Optional[Tuple[Dict, Di
             in os.getenv('GITHUB_ACTION_REPOSITORY', __unset_msg__),
         }
 
-        env_info = {
-            k: os.getenv(k, __unset_msg__)
-            for k in jina_env.get('__jina_env__', __jina_env__)
-        }
         full_version = info, env_info
     except Exception as e:
         default_logger.error(str(e))
@@ -262,12 +228,12 @@ def get_full_version(jina_env: Optional[Dict] = None) -> Optional[Tuple[Dict, Di
     return full_version
 
 
-def get_request_header(jina_env: Optional[Dict] = None) -> Dict:
+def get_request_header() -> Dict:
     """Return the header of request with an authorization token.
 
     :return: request header
     """
-    metas, envs = get_full_version(jina_env)
+    metas, envs = get_full_version()
 
     headers = {
         **{f'jinameta-{k}': str(v) for k, v in metas.items()},

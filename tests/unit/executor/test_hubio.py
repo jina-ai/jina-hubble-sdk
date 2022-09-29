@@ -14,11 +14,7 @@ import pytest
 import requests
 import yaml
 from hubble.executor import hubio
-from hubble.executor.helper import (
-    __unset_msg__,
-    disk_cache_offline,
-    get_requirements_env_variables,
-)
+from hubble.executor.helper import disk_cache_offline, get_requirements_env_variables
 from hubble.executor.hubapi import get_secret_path
 from hubble.executor.hubio import HubExecutor, HubIO
 from hubble.executor.parsers import (
@@ -327,10 +323,6 @@ class StatusPostMockResponse:
 @pytest.mark.parametrize('build_env', ['DOMAIN=github.com DOWNLOAD=download'])
 @pytest.mark.parametrize('is_login', [True, False])
 @pytest.mark.parametrize('verbose', [False, True])
-@pytest.mark.parametrize(
-    'jina_env',
-    [None, {'jina': '2.1.3', 'protobuf': '3.17.3', '__jina_env__': ('TEST_ENV',)}],
-)
 def test_push(
     mocker,
     monkeypatch,
@@ -343,7 +335,6 @@ def test_push(
     build_env,
     is_login,
     verbose,
-    jina_env,
 ):
     mock = mocker.Mock()
 
@@ -397,23 +388,13 @@ def test_push(
 
     with monkeypatch.context() as m:
         m.setattr(hubble, 'is_logged_in', lambda: is_login)
-        HubIO(args, jina_env=jina_env).push()
+        HubIO(args).push()
 
     exec_config_path = get_secret_path(os.stat(exec_path).st_ino)
     shutil.rmtree(exec_config_path)
 
     _, mock_kwargs = mock.call_args_list[0]
-    headers = mock_kwargs['headers']
-
-    if jina_env:
-        assert headers.get('jinameta-jina') == jina_env.get('jina')
-        assert headers.get('jinameta-protobuf') == jina_env.get('protobuf')
-        assert headers.get(jina_env['__jina_env__'][0]) == __unset_msg__
-    else:
-        assert headers.get('jinameta-jina') == __unset_msg__
-        assert headers.get('jinameta-protobuf') == __unset_msg__
-
-    c_type, c_data = cgi.parse_header(headers['Content-Type'])
+    c_type, c_data = cgi.parse_header(mock_kwargs['headers']['Content-Type'])
 
     assert c_type == 'multipart/form-data'
 
@@ -831,11 +812,7 @@ def test_status_with_error(
 
 
 @pytest.mark.parametrize('rebuild_image', [True, False])
-@pytest.mark.parametrize(
-    'jina_env',
-    [None, {'jina': '2.1.3', 'protobuf': '3.17.3', '__jina_env__': ('TEST_ENV',)}],
-)
-def test_fetch(mocker, monkeypatch, rebuild_image, jina_env):
+def test_fetch(mocker, monkeypatch, rebuild_image):
     mock = mocker.Mock()
 
     def _mock_post(url, json, headers=None):
@@ -849,7 +826,6 @@ def test_fetch(mocker, monkeypatch, rebuild_image, jina_env):
         'dummy_mwu_encoder',
         None,
         rebuild_image=rebuild_image,
-        jina_env=jina_env,
         force=True,
     )
 
@@ -861,16 +837,6 @@ def test_fetch(mocker, monkeypatch, rebuild_image, jina_env):
 
     _, mock_kwargs = mock.call_args_list[0]
     assert mock_kwargs['json']['rebuildImage'] is rebuild_image
-
-    headers = mock_kwargs['headers']
-
-    if jina_env:
-        assert headers.get('jinameta-jina') == jina_env.get('jina')
-        assert headers.get('jinameta-protobuf') == jina_env.get('protobuf')
-        assert headers.get(jina_env['__jina_env__'][0]) == __unset_msg__
-    else:
-        assert headers.get('jinameta-jina') == __unset_msg__
-        assert headers.get('jinameta-protobuf') == __unset_msg__
 
     executor, _ = HubIO(args).fetch_meta('dummy_mwu_encoder', '', force=True)
     assert executor.tag == 'v0'
@@ -1419,11 +1385,7 @@ def test_deploy_public_sandbox_existing(mocker, monkeypatch):
     assert kwargs['json']['secret'] == 'dummy_secret'
 
 
-@pytest.mark.parametrize(
-    'jina_env',
-    [None, {'jina': '2.1.3', 'protobuf': '3.17.3', '__jina_env__': ('TEST_ENV',)}],
-)
-def test_deploy_public_sandbox_create_new(mocker, monkeypatch, jina_env):
+def test_deploy_public_sandbox_create_new(mocker, monkeypatch):
     mock = mocker.Mock()
 
     def _mock_post(url, json, headers=None):
@@ -1436,19 +1398,6 @@ def test_deploy_public_sandbox_create_new(mocker, monkeypatch, jina_env):
     monkeypatch.setattr(requests, 'post', _mock_post)
 
     args = Namespace(uses='jinahub+sandbox://dummy_mwu_encoder')
-    host, port = HubIO.deploy_public_sandbox(args, jina_env=jina_env)
+    host, port = HubIO.deploy_public_sandbox(args)
     assert host == 'http://test_new_deployment.com'
     assert port == 4322
-
-    _, mock_kwargs = mock.call_args_list[0]
-    headers = mock_kwargs['headers']
-
-    if jina_env:
-        assert mock_kwargs['json']['jina'] == jina_env.get('jina')
-        assert headers.get('jinameta-jina') == jina_env.get('jina')
-        assert headers.get('jinameta-protobuf') == jina_env.get('protobuf')
-        assert headers.get(jina_env['__jina_env__'][0]) == __unset_msg__
-    else:
-        assert mock_kwargs['json']['jina'] == __unset_msg__
-        assert headers.get('jinameta-jina') == __unset_msg__
-        assert headers.get('jinameta-protobuf') == __unset_msg__
