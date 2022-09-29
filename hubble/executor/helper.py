@@ -14,12 +14,11 @@ import urllib
 import uuid
 import warnings
 import zipfile
-from argparse import ArgumentParser, Namespace
 from contextlib import nullcontext
 from enum import IntEnum
 from functools import lru_cache, wraps
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Dict, Optional, Tuple
 from urllib.parse import urlparse
 
 from hubble import get_token
@@ -83,101 +82,6 @@ def get_download_cache_dir() -> Path:
         cache_dir.mkdir(parents=True, exist_ok=True)
 
     return cache_dir
-
-
-class ArgNamespace:
-    """Helper function for argparse.Namespace object."""
-
-    @staticmethod
-    def kwargs2list(kwargs: Dict) -> List[str]:
-        """
-        Convert dict to an argparse-friendly list.
-
-        :param kwargs: dictionary of key-values to be converted
-        :return: argument list
-        """
-        args = []
-        try:
-            from jina.serve.executors import BaseExecutor
-        except ImportError:
-            BaseExecutor = None
-
-        for k, v in kwargs.items():
-            k = k.replace('_', '-')
-            if v is not None:
-                if isinstance(v, bool):
-                    if v:
-                        args.append(f'--{k}')
-                elif isinstance(v, list):  # for nargs
-                    args.extend([f'--{k}', *(str(vv) for vv in v)])
-                elif isinstance(v, dict):
-                    args.extend([f'--{k}', json.dumps(v)])
-                elif (
-                    BaseExecutor and isinstance(v, type) and issubclass(v, BaseExecutor)
-                ):
-                    args.extend([f'--{k}', v.__name__])
-                else:
-                    args.extend([f'--{k}', str(v)])
-        return args
-
-    @staticmethod
-    def kwargs2namespace(
-        kwargs: Dict[str, Union[str, int, bool]],
-        parser: ArgumentParser,
-    ) -> Namespace:
-        """
-        Convert dict to a namespace.
-
-        :param kwargs: dictionary of key-values to be converted
-        :param parser: the parser for building kwargs into a namespace
-        :return: argument list
-        """
-        args = ArgNamespace.kwargs2list(kwargs)
-        p_args, _ = parser.parse_known_args(args)
-        return p_args
-
-    @staticmethod
-    def get_non_defaults_args(
-        args: Namespace, parser: ArgumentParser, taboo: Optional[Set[str]] = None
-    ) -> Dict:
-        """
-        Get non-default args in a dict.
-
-        :param args: the namespace to parse
-        :param parser: the parser for referring the default values
-        :param taboo: exclude keys in the final result
-        :return: non defaults
-        """
-        if taboo is None:
-            taboo = set()
-        non_defaults = {}
-        _defaults = vars(parser.parse_args([]))
-        for k, v in vars(args).items():
-            if k in _defaults and k not in taboo and _defaults[k] != v:
-                non_defaults[k] = v
-        return non_defaults
-
-    @staticmethod
-    def flatten_to_dict(
-        args: Union[Dict[str, 'Namespace'], 'Namespace']
-    ) -> Dict[str, Any]:
-        """Convert argparse.Namespace to dict to be uploaded via REST.
-
-        :param args: namespace or dict or namespace to dict.
-        :return: pod args
-        """
-        if isinstance(args, Namespace):
-            return vars(args)
-        elif isinstance(args, dict):
-            pod_args = {}
-            for k, v in args.items():
-                if isinstance(v, Namespace):
-                    pod_args[k] = vars(v)
-                elif isinstance(v, list):
-                    pod_args[k] = [vars(_) for _ in v]
-                else:
-                    pod_args[k] = v
-            return pod_args
 
 
 def get_rich_console():

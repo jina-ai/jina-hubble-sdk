@@ -14,7 +14,6 @@ from urllib.parse import urljoin
 import hubble
 from hubble.executor import HubExecutor
 from hubble.executor.helper import (
-    ArgNamespace,
     __resources_path__,
     __unset_msg__,
     archive_package,
@@ -40,7 +39,6 @@ from hubble.executor.hubapi import (
     install_package_dependencies,
     load_secret,
 )
-from hubble.executor.parsers import get_main_parser
 
 
 class HubIO:
@@ -59,13 +57,9 @@ class HubIO:
     :param args: arguments
     """
 
-    def __init__(self, args: Optional[argparse.Namespace] = None, **kwargs):
-        self.jina_env: Optional[Dict] = kwargs.pop('jina_env', None)
-
-        if args and isinstance(args, argparse.Namespace):
-            self.args = args
-        else:
-            self.args = ArgNamespace.kwargs2namespace(kwargs, get_main_parser())
+    def __init__(self, args: argparse.Namespace, *, jina_env: Optional[Dict] = None):
+        self.jina_env = jina_env
+        self.args = args
         self.logger = logging.getLogger(self.__class__.__name__)
 
     def new(self) -> None:
