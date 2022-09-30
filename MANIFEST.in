@@ -1,2 +1,3 @@
+recursive-include hubble/resources *
 include requirements.txt
 include requirements-dev.txt

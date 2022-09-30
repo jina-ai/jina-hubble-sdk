@@ -295,3 +295,13 @@ class _ColoredHelpFormatter(argparse.ArgumentDefaultsHelpFormatter):
 
 
 _chf = _ColoredHelpFormatter
+
+
+def add_arg_group(parser, title):
+    """Add the arguments for a specific group to the parser
+
+    :param parser: the parser configure
+    :param title: the group name
+    :return: the new parser
+    """
+    return parser.add_argument_group(f'{title} arguments')

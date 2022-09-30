@@ -74,15 +74,15 @@ SRC_CODE = hubble/ tests/
 
 ## Run the flake linter
 flake:
-	flake8 $(SRC_CODE)
+	flake8 $(SRC_CODE) --exclude hubble/resources
 
 ## Run the black formatter
 black:
-	black $(SRC_CODE)
+	black $(SRC_CODE) --extend-exclude hubble/resources
 
 ## Dry run the black formatter
 black-check:
-	black --check $(SRC_CODE)
+	black --check $(SRC_CODE) --extend-exclude hubble/resources
 
 ## Run the isort import formatter
 isort:

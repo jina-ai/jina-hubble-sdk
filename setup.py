@@ -82,6 +82,7 @@ if __name__ == '__main__':
         entry_points={
             'console_scripts': [
                 'jina-auth=hubble.__main__:main',
+                'jina-hub=hubble.executor.__main__:main',
                 'docker-credential-jina-hubble=hubble.dockerauth:main',
             ],
         },
