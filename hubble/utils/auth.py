@@ -9,7 +9,7 @@ import requests
 from hubble.client.session import HubbleAPISession
 from hubble.utils.api_utils import get_base_url
 from hubble.utils.config import config
-from rich import print
+from rich import print as rich_print
 
 
 class Auth:
@@ -66,7 +66,7 @@ class Auth:
                     event = item['event']
                     if event == 'redirect':
                         print(
-                            f':point_right: Your browser is going to open the login page. '
+                            f'Your browser is going to open the login page.\n'
                             f'If this fails please open the following link: {item["data"]["redirectTo"]}'
                         )
                         webbrowser.open(item['data']['redirectTo'])
@@ -74,19 +74,19 @@ class Auth:
                         if item['data']['code'] and item['data']['state']:
                             auth_info = item['data']
                         else:
-                            print(
+                            rich_print(
                                 ':rotating_light: Authentication failed: {}'.format(
                                     item['data']['error_description']
                                 )
                             )
                     elif event == 'error':
-                        print(
+                        rich_print(
                             ':rotating_light: Authentication failed: {}'.format(
                                 item['data']
                             )
                         )
                     else:
-                        print(':rotating_light: Unknown event: {}'.format(event))
+                        rich_print(':rotating_light: Unknown event: {}'.format(event))
 
         if auth_info is None:
             return
@@ -109,7 +109,7 @@ class Auth:
 
                 auto_deploy_hubble_docker_credential_helper()
 
-                print(
+                rich_print(
                     f':closed_lock_with_key: [green]Successfully logged in to Jina AI[/] as [b]{user}[/b]!'
                 )
 
@@ -120,7 +120,7 @@ class Auth:
         token = Auth.get_auth_token()
         token_from_config = Auth.get_auth_token_from_config()
         if token != token_from_config:
-            print(':warning: The token from environment variable is ignored.')
+            rich_print(':warning: The token from environment variable is ignored.')
 
         async with aiohttp.ClientSession(trust_env=True) as session:
             session.headers.update({'Authorization': f'token {token_from_config}'})
@@ -130,13 +130,13 @@ class Auth:
             ) as response:
                 json_response = await response.json()
                 if json_response['code'] == 401:
-                    print(
+                    rich_print(
                         ':unlock: You are not logged in locally. There is no need to log out.'
                     )
                 elif json_response['code'] == 200:
-                    print(':unlock: You have successfully logged out.')
+                    rich_print(':unlock: You have successfully logged out.')
                     config.delete('auth_token')
                 else:
-                    print(
+                    rich_print(
                         f':rotating_light: Failed to log out. {json_response["message"]}'
                     )
