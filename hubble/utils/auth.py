@@ -66,7 +66,7 @@ class Auth:
                     event = item['event']
                     if event == 'redirect':
                         print(
-                            f'Your browser is going to open the login page. '
+                            f'Your browser is going to open the login page.\n'
                             f'If this fails please open the following link: {item["data"]["redirectTo"]}'
                         )
                         webbrowser.open(item['data']['redirectTo'])
