@@ -1007,13 +1007,12 @@ def test_pull(mocker, monkeypatch, executor_name, build_env):
     monkeypatch.setattr(requests, 'get', _mock_download)
     monkeypatch.setattr(requests, 'head', _mock_head)
 
-    def _mock_get_prettyprint_usage(self, console, executor_name, usage_kind=None):
+    def _mock_prettyprint_usage(self, console, executor_name):
         mock(console=console)
-        mock(usage_kind=usage_kind)
-        print('_mock_get_prettyprint_usage executor_name:', executor_name)
+        print('_mock_prettyprint_usage executor_name:', executor_name)
         assert executor_name != 'None'
 
-    monkeypatch.setattr(HubIO, '_get_prettyprint_usage', _mock_get_prettyprint_usage)
+    monkeypatch.setattr(HubIO, '_prettyprint_usage', _mock_prettyprint_usage)
 
     monkeypatch.setenv('DOWNLOAD', 'download')
     monkeypatch.setenv('DOMAIN', 'github.com')
