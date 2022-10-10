@@ -718,11 +718,11 @@ metas:
         ) + (f'/{tag}' if tag else '')
 
         if not self.args.no_usage:
-            self._get_prettyprint_usage(console, usage)
+            self._prettyprint_usage(console, usage)
 
         return uuid8, secret
 
-    def _get_prettyprint_usage(self, console, executor_name, usage_kind=None):
+    def _prettyprint_usage(self, console, executor_name):
         from rich import box
         from rich.panel import Panel
         from rich.syntax import Syntax
@@ -730,29 +730,50 @@ metas:
 
         param_str = Table(
             box=box.SIMPLE,
+            show_header=False,
         )
         param_str.add_column('')
-        param_str.add_column('YAML')
-        param_str.add_column('Python')
+        param_str.add_column('')
+        param_str.add_column('')
+
         param_str.add_row(
             'Container',
+            'YAML',
             Syntax(f"uses: jinahub+docker://{executor_name}", 'yaml'),
+        )
+        param_str.add_row(
+            None,
+            'Python',
             Syntax(f".add(uses='jinahub+docker://{executor_name}')", 'python'),
         )
 
+        param_str.add_row()
         param_str.add_row(
             'Sandbox',
+            'YAML',
             Syntax(f"uses: jinahub+sandbox://{executor_name}", 'yaml'),
+        )
+        param_str.add_row(
+            '',
+            'Python',
             Syntax(f".add(uses='jinahub+sandbox://{executor_name}')", 'python'),
         )
 
+        param_str.add_row()
         param_str.add_row(
             'Source',
+            'YAML',
             Syntax(f"uses: jinahub://{executor_name}", 'yaml'),
+        )
+        param_str.add_row(
+            '',
+            'Python',
             Syntax(f".add(uses='jinahub://{executor_name}')", 'python'),
         )
 
-        console.print(Panel(param_str, title='Usage', expand=False, width=100))
+        console.print(
+            Panel(param_str, title='Usage', expand=False, width=len(executor_name) + 65)
+        )
 
     def _prettyprint_build_env_usage(self, console, build_env, usage_kind=None):
         from rich import box
@@ -1170,7 +1191,6 @@ metas:
         console = get_rich_console()
         cached_zip_file = None
         executor_name = None
-        usage_kind = None
         build_env = None
 
         try:
@@ -1216,7 +1236,6 @@ metas:
                             log_stream,
                             console,
                         )
-                    usage_kind = 'docker'
                     return f'docker://{executor.image_name}'
                 elif scheme == 'jinahub':
                     import filelock
@@ -1278,7 +1297,6 @@ metas:
 
                             pkg_path, _ = get_dist_path_of_executor(executor)
 
-                        usage_kind = 'source'
                         return f'{pkg_path / "config.yml"}'
                 else:
                     raise ValueError(f'{self.args.uri} is not a valid scheme')
@@ -1293,4 +1311,4 @@ metas:
                 cached_zip_file.unlink()
 
             if not self.args.no_usage and executor_name:
-                self._get_prettyprint_usage(console, executor_name, usage_kind)
+                self._prettyprint_usage(console, executor_name)
