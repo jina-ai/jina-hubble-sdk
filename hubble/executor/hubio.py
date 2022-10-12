@@ -42,11 +42,11 @@ from hubble.executor.hubapi import (
 
 
 class HubIO:
-    """:class:`HubIO` is the way to interact with Jina Hub registry.
-    You can use it with the CLI to package a directory into a Jina Hub Executor and publish it to the world.
+    """:class:`HubIO` lets you interact with the Jina Hub registry.
+    You can use it from the CLI to package a directory into a Jina Hub Executor and publish it to the world.
     Examples:
         - :command:`jina hub push my_executor/` to push the Executor package to Jina Hub
-        - :command:`jina hub pull UUID8` to download the Executor identified by its UUID
+        - :command:`jina hub pull <UUID8>` to download the Executor identified by its UUID
 
     To create a :class:`HubIO` object, simply:
 
@@ -78,7 +78,7 @@ class HubIO:
                 '''
 An [bold green]Executor[/bold green] is how Jina processes [bold]Documents[/bold].
 
-This guide helps you to create your own Executor in 30 seconds.''',
+This guide helps you create an Executor in 30 seconds.''',
                 title='Create New Executor',
             )
         )
@@ -97,7 +97,7 @@ This guide helps you to create your own Executor in 30 seconds.''',
             self.args.path
             if self.args.path
             else Prompt.ask(
-                ':grey_question: [bold]Which folder[/bold] to store your Executor?',
+                ':grey_question: Which [bold]folder[/bold] do you want to store your Executor in?',
                 default=os.path.join(os.getcwd(), exec_name),
             )
         )
@@ -109,7 +109,7 @@ This guide helps you to create your own Executor in 30 seconds.''',
 
         if self.args.advance_configuration or Confirm.ask(
             '[green]That\'s all we need to create an Executor![/green]\n'
-            ':grey_question: Or do you want to proceed to advanced configuration '
+            ':grey_question: Or do you want to proceed to advanced configuration? '
             '[dim](GPU support, meta information on Hub, etc.)[/]',
             default=False,
         ):
@@ -117,16 +117,16 @@ This guide helps you to create your own Executor in 30 seconds.''',
                 Panel.fit(
                     '''
 [bold]Dockerfile[/bold] describes how this Executor will be built. It is useful when
-your Executor has non-trivial dependencies or must be run under certain environment.
+your Executor has non-trivial dependencies or must be run in a certain environment.
 
 - If [bold]Dockerfile[/bold] is not given, Jina Cloud automatically generates one.
-- If [bold]Dockerfile[/bold] is provided by you, then Jina Cloud will respect it when building the Executor.
+- If you provide a [bold]Dockerfile[/bold], then Jina Cloud will respect it when building the Executor.
 
-Here are some Dockerfile templates for you to choose from:
+Here are some Dockerfile templates to choose from:
 - [b]cpu[/b]: CPU-only Executor with Jina as base image;
-- [b]torch-gpu[/b]: GPU enabled Executor with PyTorch as the base image;
-- [b]tf-gpu[/b]: GPU enabled Executor with Tensorflow as the base image;
-- [b]jax-gpu[/b]: GPU enabled Executor with JAX installed.
+- [b]torch-gpu[/b]: GPU-enabled Executor with PyTorch as the base image;
+- [b]tf-gpu[/b]: GPU-enabled Executor with TensorFlow as the base image;
+- [b]jax-gpu[/b]: GPU-enabled Executor with JAX installed.
 ''',
                     title=':package: [bold]Dockerfile[/bold]',
                     width=80,
@@ -134,7 +134,7 @@ Here are some Dockerfile templates for you to choose from:
             )
 
             is_dockerfile = self.args.dockerfile or Prompt.ask(
-                ':grey_question: Select how you want to generate the [bold]Dockerfile[/bold] for this Executor?',
+                ':grey_question: How do you want to generate the [bold]Dockerfile[/bold] for this Executor?',
                 choices=['cpu', 'torch-gpu', 'tf-gpu', 'jax-gpu', 'none'],
                 default='cpu',
             )
@@ -142,7 +142,7 @@ Here are some Dockerfile templates for you to choose from:
             print(
                 Panel.fit(
                     '''
-Meta information helps other users to identify, search and reuse your Executor on Jina Cloud.
+Metadata helps other users identify, search and reuse your Executor on Jina Cloud.
 ''',
                     title=':name_badge: [bold]Meta Info[/bold]',
                     width=80,
@@ -154,7 +154,7 @@ Meta information helps other users to identify, search and reuse your Executor o
                 if self.args.description
                 else (
                     Prompt.ask(
-                        ':grey_question: Please give a [bold]short description[/bold] of your Executor?\n'
+                        ':grey_question: Please give a [bold]short description[/bold] of your Executor:\n'
                         f'[dim]Example: {exec_name} embeds images into 128-dim vectors using ResNet.[/dim]'
                     )
                 )
@@ -166,8 +166,8 @@ Meta information helps other users to identify, search and reuse your Executor o
                 else (
                     Prompt.ask(
                         ':grey_question: Please give some [bold]keywords[/bold] '
-                        'to help people search your Executor [dim](separated by comma)[/dim]\n'
-                        '[dim]Example: image cv embedding encoding resnet[/dim]'
+                        'to help people search your Executor [dim](separated by commas)[/dim]\n'
+                        '[dim]Example: image, cv, embedding, encoding, resnet[/dim]'
                     )
                 )
             )
@@ -177,7 +177,7 @@ Meta information helps other users to identify, search and reuse your Executor o
                 if self.args.url
                 else (
                     Prompt.ask(
-                        ':grey_question: What is the [bold]URL[/bold] for GitHub repo?\n'
+                        ':grey_question: What is the [bold]URL[/bold] of the Executor\'s GitHub repo?\n'
                         '[dim]Example: https://github.com/yourname/my-executor[/dim]'
                     )
                 )
@@ -240,9 +240,9 @@ Meta information helps other users to identify, search and reuse your Executor o
         # adding the columns in order of `ls` output
         table.add_row(
             'config.yml',
-            'The YAML config file of the Executor. You can define [bold]__init__[/bold] '
-            'arguments using [bold]with[/bold] keyword.'
-            + '\nYou can also define metadata for the Executor, for better appeal on Jina Hub.',
+            'The YAML configuration file of the Executor. You can define [bold]__init__[/bold] '
+            'arguments using the [bold]with[/bold] keyword.'
+            + '\nYou can also define metadata for the Executor, for easier discovery on Jina Hub.',
         )
 
         table.add_row(
@@ -279,14 +279,14 @@ metas:
                 'The Dockerfile describes how this Executor will be built.',
             )
 
-        table.add_row('executor.py', 'The main logic file of the Executor.')
-        table.add_row('README.md', 'A usage guide of the Executor.')
-        table.add_row('requirements.txt', 'The Python dependencies of the Executor.')
+        table.add_row('executor.py', 'The Executor\s main logic file.')
+        table.add_row('README.md', 'The Executor\'s usage guide.')
+        table.add_row('requirements.txt', 'The Executor\'s Python dependencies.')
 
         final_table = Table(box=None)
 
         final_table.add_row(
-            'Congrats! You have successfully created an Executor! Here are the next steps:'
+            'Congratulations! You have successfully created an Executor! Here are the next steps:'
         )
 
         p0 = Panel(
@@ -297,14 +297,14 @@ metas:
                 line_numbers=True,
                 word_wrap=True,
             ),
-            title='1. Check out the generated Executor',
+            title='1. Check out your Executor',
             width=120,
             expand=False,
         )
 
         p1 = Panel(
             table,
-            title='2. Understand folder structure',
+            title='2. Understand Executor folder structure',
             width=120,
             expand=False,
         )
@@ -317,7 +317,7 @@ metas:
                 line_numbers=True,
                 word_wrap=True,
             ),
-            title='3. Test the Executor locally',
+            title='3. Test your Executor locally',
             width=120,
             expand=False,
         )
@@ -330,7 +330,7 @@ metas:
                 line_numbers=True,
                 word_wrap=True,
             ),
-            title='4. Share it to Jina Hub',
+            title='4. Share your Executor on Jina Hub',
             width=120,
             expand=False,
         )
@@ -530,13 +530,13 @@ metas:
                 env_list = env.split('=')
                 if len(env_list) != 2:
                     raise Exception(
-                        f'The `--build-env` parameter: `{env}` is wrong format. '
+                        f'The `--build-env` parameter: `{env}` is in the wrong format. '
                         f'you can use: `--build-env {env}=YOUR_VALUE`.'
                     )
                 if check_requirements_env_variable(env_list[0]) is False:
                     raise Exception(
                         f'The `--build-env` parameter key:`{env_list[0]}` can only '
-                        'consist of uppercase letter and number and underline.'
+                        'consist of numbers, upper-case letters and underline.'
                     )
                 build_env_dict[env_list[0]] = env_list[1]
             build_env = build_env_dict if build_env_dict else None
@@ -552,13 +552,13 @@ metas:
                 if check_requirements_env_variable(env) is False:
                     raise Exception(
                         f'The requirements.txt environment variables:`${env}` '
-                        'can only consist of uppercase letter and number and underline.'
+                        'can only consist of numbers, upper-case letter and underline.'
                     )
 
         if len(requirements_env_variables) and not build_env:
             env_variables_str = ','.join(requirements_env_variables)
             error_str = (
-                'The requirements.txt set environment variables as follows:'
+                'requirements.txt sets environment variables as follows:'
                 f'`{env_variables_str}` should use `--build-env'
             )
             for item in requirements_env_variables:
@@ -572,7 +572,7 @@ metas:
             if len(diff_env_variables):
                 diff_env_variables_str = ",".join(diff_env_variables)
                 error_str = (
-                    'The requirements.txt set environment variables as follows:'
+                    'requirements.txt sets environment variables as follows:'
                     f'`{diff_env_variables_str}` should use `--build-env'
                 )
                 for item in diff_env_variables:
@@ -681,7 +681,7 @@ metas:
             table.add_row(':name_badge: Name', image['name'])
 
         table.add_row(
-            ':link: Hub URL',
+            ':link: Jina Hub URL',
             f'[link=https://hub.jina.ai/executor/{uuid8}/]https://hub.jina.ai/executor/{uuid8}/[/link]',
         )
 
@@ -811,18 +811,18 @@ metas:
         )
 
         param_str.add_column(
-            'If you don\'t want to wait for the Executor\'s build status, you can use \'Ctrl + C\', '
-            'after that you can always get the status of the Executor anytime using the command!'
+            'If you don\'t want to wait for the Executor\'s build status, you can use \'Ctrl + C\'. '
+            'After that you can get the status of the Executor any time using the command!'
         )
         param_str.add_row(
-            f'You can use `jina hub status {work_path}` get the last build status of the Executor',
+            f'Use `jina hub status {work_path}` to get the last build status of the Executor',
         )
 
         if task_id:
             param_str.add_row('')
             param_str.add_row(
                 f'You can also use `jina hub status --id {task_id}` '
-                'get the specified build status of the Executor.',
+                'to get the specified build status of the Executor.',
             )
 
         console.print(
@@ -961,7 +961,7 @@ metas:
 
         if not task_id:
             raise Exception(
-                'Error: can\'t get task_id! You can set `--id your task_id` to get building progress info!'
+                'Error: Can\'t get task_id! You can set `--id your task_id` to get build progress info!'
             )
 
         verbose = True if self.args.verbose else False
@@ -990,18 +990,18 @@ metas:
         force: bool = False,
     ) -> HubExecutor:
         """Fetch Executor metadata from Jina Hub.
-        :param name: the UUID/Name of the Executor
+        :param name: the UUID/name of the Executor
         :param tag: the tag of the Executor if available, otherwise, use `None` as the value
         :param secret: the access secret of the Executor
-        :param image_required: it indicates whether a Docker image is required or not
-        :param rebuild_image: it indicates whether Jina Hub need to rebuild image or not
+        :param image_required: indicates whether a Docker image is required or not
+        :param rebuild_image: indicates whether Jina Hub need to rebuild image or not
         :param force: if set to True, access to fetch_meta will always pull latest Executor metas, otherwise, default
             to local cache
         :return: meta of Executor
 
         .. note::
-            The significant parameters like `name` and `tag` should be passed via ``args``
-            and `force` and `secret` as ``kwargs``, otherwise, cache does not work.
+            Significant parameters like `name` and `tag` should be passed via ``args``
+            and `force` and `secret` as ``kwargs``, otherwise, cache will not work.
         """
         import requests
 
@@ -1118,7 +1118,7 @@ metas:
                 console.log('🎉 Deployment completed, using it.')
             except BaseException:
                 console.log(
-                    '🚨 Deployment failed, feel free to raise an issue. https://github.com/jina-ai/jina/issues/new'
+                    '🚨 Deployment failed. Please raise an issue: https://github.com/jina-ai/jina/issues/new'
                 )
                 raise
 
@@ -1178,7 +1178,7 @@ metas:
             )
         except docker.errors.DockerException:
             self.logger.critical(
-                'Docker daemon seems not running. Please run Docker daemon and try again.'
+                'Docker daemon doesn\'t seem to be running. Please run the Docker daemon and try again.'
             )
             exit(1)
 
