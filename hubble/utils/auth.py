@@ -249,8 +249,8 @@ The function also requires `ipywidgets`.
                 urlencode({'provider': 'jina-login'})
             ),
         )
-        session = requests.Session()
-        response = session.get(url, stream=True)
+
+        response = requests.get(url, stream=True)
 
         # iterate through response
         for line in response.iter_lines():
@@ -278,8 +278,6 @@ The function also requires `ipywidgets`.
                 err = f'Unknown event: {event}'
                 if error_callback:
                     error_callback(err=err)
-
-        session.close()
 
         if auth_info is None:
             return
