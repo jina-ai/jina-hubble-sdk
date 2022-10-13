@@ -1259,7 +1259,9 @@ metas:
                                     f'{pkg_path} need to be upgraded'
                                 )
 
-                            st.update('Installing depdencies from [bold]requirements.txt[/bold]...')
+                            st.update(
+                                'Installing depdencies from [bold]requirements.txt[/bold]...'
+                            )
                             install_package_dependencies(
                                 install_deps=self.args.install_requirements,
                                 pkg_dist_path=pkg_dist_path,
