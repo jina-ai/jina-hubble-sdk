@@ -156,6 +156,25 @@ The function also requires `ipywidgets`.
             layout=layout,
         )
 
+        # callback functions for login_async to communicate events
+        def _success_callback(**kwargs):
+            clear_output()
+            display(success_widget)
+
+        def _redirect_callback(href=None, **kwargs):
+            redirect_url_widget.value = NOTEBOOK_REDIRECT_HTML.format(
+                LOGO=JINA_LOGO, HREF=href
+            )
+            clear_output()
+            display(redirect_widget)
+
+        def _error_callback(err=None, **kwargs):
+            error_description_widget.value = NOTEBOOK_ERROR_HTML.format(
+                LOGO=JINA_LOGO, ERR=err
+            )
+            clear_output()
+            display(error_widget)
+
         # login function called when pressing the login button
         def _login(*args):
 
@@ -165,85 +184,24 @@ The function also requires `ipywidgets`.
             token_widget.disabled = True
             button_widget.disabled = True
 
-            # verify token
+            # verify token before login function
             if token != "":
                 try:
                     Auth.validate_token(token)
-                    # clearing output and displaying success
+                    config.set('auth_token', token)
                     clear_output()
                     display(success_widget)
                     return
                 except AuthenticationFailedError:
                     pass
 
-            api_host = get_base_url()
-            auth_info = None
-
-            # authorize user
-            url = urljoin(
-                api_host,
-                'user.identity.proxiedAuthorize?{}'.format(
-                    urlencode({'provider': 'jina-login'})
-                ),
+            Auth.login_sync(
+                force=force,
+                success_callback=_success_callback,
+                redirect_callback=_redirect_callback,
+                error_callback=_error_callback,
+                **kwargs,
             )
-            session = requests.Session()
-            response = session.get(url, stream=True)
-
-            # iterate through response
-            for line in response.iter_lines():
-
-                item = json.loads(line.decode('utf-8'))
-                event = item['event']
-
-                if event == 'redirect':
-                    redirect_url_widget.value = NOTEBOOK_REDIRECT_HTML.format(
-                        LOGO=JINA_LOGO, HREF=item['data']["redirectTo"]
-                    )
-                    clear_output()
-                    display(redirect_widget)
-                elif event == 'authorize':
-                    if item['data']['code'] and item['data']['state']:
-                        auth_info = item['data']
-                    else:
-                        error_description_widget.value = NOTEBOOK_ERROR_HTML.format(
-                            LOGO=JINA_LOGO, ERR=item['data']["error_description"]
-                        )
-                        clear_output()
-                        display(error_widget)
-                elif event == 'error':
-                    error_description_widget.value = NOTEBOOK_ERROR_HTML.format(
-                        LOGO=JINA_LOGO, ERR=json.dumps(item['data'], indent=4)
-                    )
-                    clear_output()
-                    display(error_widget)
-                else:
-                    error_description_widget.value = NOTEBOOK_ERROR_HTML.format(
-                        LOGO=JINA_LOGO, ERR=f'Unknown event: {event}'
-                    )
-                    clear_output()
-                    display(error_widget)
-
-            session.close()
-
-            if auth_info is None:
-                return
-
-            # retrieving and saving token
-            url = urljoin(api_host, 'user.identity.grant.auto')
-            response = requests.post(url, json=auth_info)
-            response.raise_for_status()
-            json_response = response.json()
-            token = json_response['data']['token']
-            config.set('auth_token', token)
-
-            # dockerauth
-            from hubble.dockerauth import auto_deploy_hubble_docker_credential_helper
-
-            auto_deploy_hubble_docker_credential_helper()
-
-            # clear output and show success widget
-            clear_output()
-            display(success_widget)
 
         button_widget.on_click(_login)
 
@@ -260,6 +218,87 @@ The function also requires `ipywidgets`.
 
         # show login widget
         display(login_widget)
+
+    @staticmethod
+    def login_sync(
+        force=False,
+        success_callback=None,
+        redirect_callback=None,
+        error_callback=None,
+        **kwargs,
+    ):
+        # verify if token already exists, authenticate token if exists
+        if not force:
+            token = Auth.get_auth_token()
+            if token:
+                try:
+                    Auth.validate_token(token)
+                    if success_callback:
+                        success_callback()
+                    return
+                except AuthenticationFailedError:
+                    pass
+
+        api_host = get_base_url()
+        auth_info = None
+
+        # authorize user
+        url = urljoin(
+            api_host,
+            'user.identity.proxiedAuthorize?{}'.format(
+                urlencode({'provider': 'jina-login'})
+            ),
+        )
+        session = requests.Session()
+        response = session.get(url, stream=True)
+
+        # iterate through response
+        for line in response.iter_lines():
+            item = json.loads(line.decode('utf-8'))
+            event = item['event']
+
+            if event == 'redirect':
+                href = item['data']["redirectTo"]
+                if redirect_callback:
+                    redirect_callback(href=href)
+
+            elif event == 'authorize':
+                if item['data']['code'] and item['data']['state']:
+                    auth_info = item['data']
+                else:
+                    err = item['data']["error_description"]
+                    if error_callback:
+                        error_callback(err=err)
+
+            elif event == 'error':
+                err = json.dumps(item['data'], indent=4)
+                if error_callback:
+                    error_callback(err=err)
+            else:
+                err = f'Unknown event: {event}'
+                if error_callback:
+                    error_callback(err=err)
+
+        session.close()
+
+        if auth_info is None:
+            return
+
+        # retrieving and saving token
+        url = urljoin(api_host, 'user.identity.grant.auto')
+        response = requests.post(url, json=auth_info)
+        response.raise_for_status()
+        json_response = response.json()
+        token = json_response['data']['token']
+        config.set('auth_token', token)
+
+        # dockerauth
+        from hubble.dockerauth import auto_deploy_hubble_docker_credential_helper
+
+        auto_deploy_hubble_docker_credential_helper()
+
+        if success_callback:
+            success_callback()
 
     @staticmethod
     async def login(force=False, **kwargs):
