@@ -119,4 +119,3 @@ async def test_login_logout(
     assert authorized_token == expected_token
 
     await Auth.logout()
-
