@@ -7,19 +7,20 @@ from urllib.parse import urlencode, urljoin
 import aiohttp
 import requests
 from hubble.client.session import HubbleAPISession
+from hubble.excepts import AuthenticationFailedError
 from hubble.utils.api_utils import get_base_url
 from hubble.utils.config import config
-from hubble.excepts import AuthenticationFailedError
 from rich import print as rich_print
 
-
-JINA_LOGO = 'https://d2vchdhjlcm3i6.cloudfront.net/Company+Logo/Light/Company+logo_light.svg'
+JINA_LOGO = (
+    'https://d2vchdhjlcm3i6.cloudfront.net/Company+Logo/Light/Company+logo_light.svg'
+)
 
 NOTEBOOK_LOGIN_HTML = f"""
 <center>
     <img src={JINA_LOGO} width=175 alt="Jina AI">
     <p><br></p>
-    <p> 
+    <p>
         Copy a <b>Personal Access Token</b>, paste it below, and press the Login button.
         <br>
         If you do not have a token, press the Login button to login via the browser.
@@ -86,7 +87,6 @@ class Auth:
 
         return token_from_env if token_from_env else token_from_config
 
-
     @staticmethod
     def validate_token(token):
         try:
@@ -96,7 +96,6 @@ class Auth:
             resp.raise_for_status()
         except requests.exceptions.HTTPError:
             raise AuthenticationFailedError("Could not validate token")
-
 
     @staticmethod
     def login_notebook(force=False, **kwargs):
@@ -114,48 +113,46 @@ The function also requires `ipywidgets`.
                 """
             )
 
-        # creating widgets 
+        # creating widgets
         # reusable layout, for all widgets
         layout = widgets.Layout(
             display="flex", flex_flow="column", align_items="center"
-        )    
+        )
 
         # login widget
-        token_widget = widgets.Password(placeholder="Personal Access Token (PAT)", layer=widgets.Layout(width="300px"))
-        button_widget = widgets.Button(description="Login", layout=widgets.Layout(width="300px"))
+        token_widget = widgets.Password(
+            placeholder="Personal Access Token (PAT)",
+            layer=widgets.Layout(width="300px"),
+        )
+        button_widget = widgets.Button(
+            description="Login", layout=widgets.Layout(width="300px")
+        )
         login_widget = widgets.VBox(
-            [
-                widgets.HTML(NOTEBOOK_LOGIN_HTML),
-                token_widget,
-                button_widget
-            ],
+            [widgets.HTML(NOTEBOOK_LOGIN_HTML), token_widget, button_widget],
             layout=layout,
         )
-        
+
         # sucess widget
         success_widget = widgets.VBox(
-            [
-                widgets.HTML(NOTEBOOK_SUCCESS_HTML)
-            ],
-            layout=layout
+            [widgets.HTML(NOTEBOOK_SUCCESS_HTML)], layout=layout
         )
 
         # redirect url widget
         redirect_url_widget = widgets.HTML(value="")
         redirect_widget = widgets.VBox(
             [
-                redirect_url_widget, 
+                redirect_url_widget,
             ],
-            layout=layout
+            layout=layout,
         )
 
         # error widget
         error_description_widget = widgets.HTML(value="")
         error_widget = widgets.VBox(
             [
-                error_description_widget, 
+                error_description_widget,
             ],
-            layout=layout
+            layout=layout,
         )
 
         # login function called when pressing the login button
@@ -182,7 +179,12 @@ The function also requires `ipywidgets`.
             auth_info = None
 
             # authorize user
-            url=urljoin(api_host, 'user.identity.proxiedAuthorize?{}'.format(urlencode({'provider': 'jina-login'})))   
+            url = urljoin(
+                api_host,
+                'user.identity.proxiedAuthorize?{}'.format(
+                    urlencode({'provider': 'jina-login'})
+                ),
+            )
             session = requests.Session()
             response = session.get(url, stream=True)
 
@@ -193,22 +195,30 @@ The function also requires `ipywidgets`.
                 event = item['event']
 
                 if event == 'redirect':
-                    redirect_url_widget.value = NOTEBOOK_REDIRECT_HTML.format(LOGO=JINA_LOGO, HREF=item['data']["redirectTo"])
+                    redirect_url_widget.value = NOTEBOOK_REDIRECT_HTML.format(
+                        LOGO=JINA_LOGO, HREF=item['data']["redirectTo"]
+                    )
                     clear_output()
-                    display(redirect_url_widget)
+                    display(redirect_widget)
                 elif event == 'authorize':
                     if item['data']['code'] and item['data']['state']:
                         auth_info = item['data']
                     else:
-                        error_description_widget.value = NOTEBOOK_ERROR_HTML.format(LOGO=JINA_LOGO, ERR=item['data']["error_description"])
+                        error_description_widget.value = NOTEBOOK_ERROR_HTML.format(
+                            LOGO=JINA_LOGO, ERR=item['data']["error_description"]
+                        )
                         clear_output()
                         display(error_widget)
                 elif event == 'error':
-                    error_description_widget.value = NOTEBOOK_ERROR_HTML.format(LOGO=JINA_LOGO, ERR=json.dumps(item['data'], indent=4))
+                    error_description_widget.value = NOTEBOOK_ERROR_HTML.format(
+                        LOGO=JINA_LOGO, ERR=json.dumps(item['data'], indent=4)
+                    )
                     clear_output()
                     display(error_widget)
                 else:
-                    error_description_widget.value = NOTEBOOK_ERROR_HTML.format(LOGO=JINA_LOGO, ERR=f'Unknown event: {event}')
+                    error_description_widget.value = NOTEBOOK_ERROR_HTML.format(
+                        LOGO=JINA_LOGO, ERR=f'Unknown event: {event}'
+                    )
                     clear_output()
                     display(error_widget)
 
@@ -218,21 +228,18 @@ The function also requires `ipywidgets`.
                 return
 
             # retrieving and saving token
-            url=urljoin(api_host, 'user.identity.grant.auto')
+            url = urljoin(api_host, 'user.identity.grant.auto')
             response = requests.post(url, json=auth_info)
             response.raise_for_status()
             json_response = response.json()
             token = json_response['data']['token']
-            user = json_response['data']['user']['nickname']
             config.set('auth_token', token)
 
             # dockerauth
-            from hubble.dockerauth import (
-                auto_deploy_hubble_docker_credential_helper,
-            )
+            from hubble.dockerauth import auto_deploy_hubble_docker_credential_helper
 
             auto_deploy_hubble_docker_credential_helper()
-            
+
             # clear output and show success widget
             clear_output()
             display(success_widget)
@@ -252,7 +259,6 @@ The function also requires `ipywidgets`.
 
         # show login widget
         display(login_widget)
-
 
     @staticmethod
     async def login(force=False, **kwargs):
