@@ -1260,7 +1260,7 @@ metas:
                                 )
 
                             st.update(
-                                'Installing depdencies from [bold]requirements.txt[/bold]...'
+                                'Installing dependencies from [bold]requirements.txt[/bold]...'
                             )
                             install_package_dependencies(
                                 install_deps=self.args.install_requirements,
