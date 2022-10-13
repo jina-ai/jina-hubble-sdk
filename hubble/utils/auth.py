@@ -57,6 +57,7 @@ NOTEBOOK_ERROR_HTML = """
 NOTEBOOK_REDIRECT_HTML = """
 <center>
     <img src={LOGO} width=175 alt="Jina AI">
+    <p><br></p>
     <p>
         Please open the following <a href='{HREF}' target='_blank'>link</a> to continue the login process.
     </p>
