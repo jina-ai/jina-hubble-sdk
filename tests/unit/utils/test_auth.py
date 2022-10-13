@@ -126,3 +126,53 @@ async def test_login_logout(
     # putting back config token
     if config_token:
         config.set('auth_token', config_token)
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    'existing_token, expected_token, validate_status_code, force',
+    [
+        ['EXISTING_TOKEN', 'SOME_TOKEN', 200, True],
+        ['EXISTING_TOKEN', 'EXISTING_TOKEN', 200, False],
+        ['EXISTING_TOKEN', 'SOME_TOKEN', 400, False],
+        [None, 'SOME_TOKEN', 200, True],
+        [None, 'SOME_TOKEN', 200, False],
+    ],
+)
+async def sync_test_login_logout(
+    mocker, monkeypatch, existing_token, expected_token, validate_status_code, force
+):
+    def _mock_get_aiohttp(*args, **kwargs):
+        mock_response = AuthorizeResponse(status_code=200)
+        return mock_response
+
+    def _mock_post_aiohttp(*args, **kwargs):
+        mock_response = GrantResponse(status_code=200)
+        return mock_response
+
+    def _mock_post_requests(*args, **kwargs):
+        mock_response = ValidateResponse(status_code=validate_status_code)
+        return mock_response
+
+    monkeypatch.setattr('aiohttp.ClientSession.get', _mock_get_aiohttp)
+    monkeypatch.setattr('aiohttp.ClientSession.post', _mock_post_aiohttp)
+    monkeypatch.setattr('requests.post', _mock_post_requests)
+
+    # fetching config token before overriding
+    config_token = config.get('auth_token')
+
+    if existing_token:
+        config.set('auth_token', existing_token)
+    else:
+        config.delete('auth_token')
+
+    Auth.login_sync(force=force)
+
+    authorized_token = config.get('auth_token')
+    assert authorized_token == expected_token
+
+    await Auth.logout()
+
+    # putting back config token
+    if config_token:
+        config.set('auth_token', config_token)
