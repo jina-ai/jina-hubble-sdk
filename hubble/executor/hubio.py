@@ -279,7 +279,7 @@ metas:
                 'The Dockerfile describes how this Executor will be built.',
             )
 
-        table.add_row('executor.py', 'The Executor\s main logic file.')
+        table.add_row('executor.py', 'The Executor\'s main logic file.')
         table.add_row('README.md', 'The Executor\'s usage guide.')
         table.add_row('requirements.txt', 'The Executor\'s Python dependencies.')
 
