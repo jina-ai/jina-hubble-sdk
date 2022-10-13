@@ -108,6 +108,9 @@ async def test_login_logout(
     monkeypatch.setattr('aiohttp.ClientSession.post', _mock_post_aiohttp)
     monkeypatch.setattr('requests.post', _mock_post_requests)
 
+    # fetching config token before overriding
+    config_token = config.get('auth_token')
+
     if existing_token:
         config.set('auth_token', existing_token)
     else:
@@ -119,3 +122,7 @@ async def test_login_logout(
     assert authorized_token == expected_token
 
     await Auth.logout()
+
+    # putting back config token
+    if config_token:
+        config.set('auth_token', config_token)
