@@ -32,7 +32,7 @@ NOTEBOOK_SUCCESS_HTML = f"""
     <img src={JINA_LOGO} width=175 alt="Jina AI">
     <p><br></p>
     <p>
-        You are logged to Jina AI!
+        You are logged in to Jina AI!
     </p>
     <p>
         If you want to re-login, run <code>hubble.notebook_login(force=True)</code>.
@@ -175,16 +175,8 @@ The function also requires `ipywidgets`.
                     clear_output()
                     display(success_widget)
                     return
-                except AuthenticationFailedError as e:
-                    err_obj = {
-                        'error': 'Authentication error.',
-                        'message': str(e)
-                    }
-                    error_description_widget.value = NOTEBOOK_ERROR_HTML.format(LOGO=JINA_LOGO, ERR=json.dumps(err_obj, indent=4))
-                    clear_output()
-                    display(error_widget)
-                    return
-                    # pass
+                except AuthenticationFailedError:
+                    pass
 
             api_host = get_base_url()
             auth_info = None
