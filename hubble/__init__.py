@@ -60,10 +60,9 @@ def login(**kwargs):
     asyncio.run(Auth.login(**kwargs))
 
 
-# FIXME: this function cannot work properly because of some reasons lol 
-def notebook_login():
+def notebook_login(**kwargs):
     """This function guides user to log-in via P.A.T. or via browser."""
-    Auth.login_notebook()
+    Auth.login_notebook(**kwargs)
 
 
 def logout():

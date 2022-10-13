@@ -27,17 +27,33 @@ NOTEBOOK_LOGIN_HTML = f"""
 </center>
 """
 
-NOTEBOOK_LOGGED_IN_HTML = f"""
+NOTEBOOK_SUCCESS_HTML = f"""
 <center>
     <img src={JINA_LOGO} width=175 alt="Jina AI">
     <p><br></p>
     <p>
         You are logged to Jina AI!
     </p>
+    <p>
+        If you want to re-login, run <code>hubble.notebook_login(force=True)</code>.
+    </p>
 </center>
 """
 
-NOTEBOOK_LOGIN_REDIRECT_HTML = """
+NOTEBOOK_ERROR_HTML = """
+<center>
+    <img src={LOGO} width=175 alt="Jina AI">
+    <p><br></p>
+    <p style="color:#d03c38;">
+        An error occured, see the details below.
+    </p>
+    <div style="text-align:left;background-color:WhiteSmoke;padding:10px;line-height:16px;">
+        <pre><code>{ERR}</code></pre>
+    </div>
+</center>
+"""
+
+NOTEBOOK_REDIRECT_HTML = """
 <center>
     <img src={LOGO} width=175 alt="Jina AI">
     <p>
@@ -82,9 +98,8 @@ class Auth:
             raise AuthenticationFailedError("Could not validate token")
 
 
-    # TODO: refactor this function to first check if there is an existing token and then construct widgets
     @staticmethod
-    def login_notebook(**kwargs):
+    def login_notebook(force=False, **kwargs):
         """Login user in notebook environments like colab"""
 
         # trying to import utilities (only available in notebook env)
@@ -99,12 +114,13 @@ The function also requires `ipywidgets`.
                 """
             )
 
-        # creating widgets
-
+        # creating widgets 
+        # reusable layout, for all widgets
         layout = widgets.Layout(
             display="flex", flex_flow="column", align_items="center"
         )    
 
+        # login widget
         token_widget = widgets.Password(placeholder="Personal Access Token (PAT)", layer=widgets.Layout(width="300px"))
         button_widget = widgets.Button(description="Login", layout=widgets.Layout(width="300px"))
         login_widget = widgets.VBox(
@@ -115,14 +131,16 @@ The function also requires `ipywidgets`.
             ],
             layout=layout,
         )
-
-        loggedin_widget = widgets.VBox(
+        
+        # sucess widget
+        success_widget = widgets.VBox(
             [
-                widgets.HTML(NOTEBOOK_LOGGED_IN_HTML)
+                widgets.HTML(NOTEBOOK_SUCCESS_HTML)
             ],
             layout=layout
         )
 
+        # redirect url widget
         redirect_url_widget = widgets.HTML(value="")
         redirect_widget = widgets.VBox(
             [
@@ -131,27 +149,42 @@ The function also requires `ipywidgets`.
             layout=layout
         )
 
+        # error widget
+        error_description_widget = widgets.HTML(value="")
+        error_widget = widgets.VBox(
+            [
+                error_description_widget, 
+            ],
+            layout=layout
+        )
+
+        # login function called when pressing the login button
         def _login(*args):
 
-            # reading token and clearing form
+            # reading token, clearing form, disabling elements
             token = token_widget.value
             token_widget.value = ""
+            token_widget.disabled = True
+            button_widget.disabled = True
 
-            # set token as auth token
+            # verify token
             if token != "":
-                config.set('auth_token', token)
-
-            # verifying existing toiken
-            token = Auth.get_auth_token()
-            if token:
                 try:
                     Auth.validate_token(token)
                     # clearing output and displaying success
                     clear_output()
-                    display(loggedin_widget)
+                    display(success_widget)
                     return
-                except AuthenticationFailedError:
-                    pass
+                except AuthenticationFailedError as e:
+                    err_obj = {
+                        'error': 'Authentication error.',
+                        'message': str(e)
+                    }
+                    error_description_widget.value = NOTEBOOK_ERROR_HTML.format(LOGO=JINA_LOGO, ERR=json.dumps(err_obj, indent=4))
+                    clear_output()
+                    display(error_widget)
+                    return
+                    # pass
 
             api_host = get_base_url()
             auth_info = None
@@ -167,51 +200,65 @@ The function also requires `ipywidgets`.
                 item = json.loads(line.decode('utf-8'))
                 event = item['event']
 
-                # TODO: better error message
                 if event == 'redirect':
-                    # f'Please open the following link {item["data"]["redirectTo"]}'
-                    print('should redirect')
-                    redirect_url_widget.value = NOTEBOOK_LOGIN_REDIRECT_HTML.format(LOGO=JINA_LOGO, HREF=item['data']["redirectTo"])
+                    redirect_url_widget.value = NOTEBOOK_REDIRECT_HTML.format(LOGO=JINA_LOGO, HREF=item['data']["redirectTo"])
                     clear_output()
                     display(redirect_url_widget)
                 elif event == 'authorize':
                     if item['data']['code'] and item['data']['state']:
                         auth_info = item['data']
                     else:
-                        print(f'Authentication failed: {item["data"]["error_description"]}')
+                        error_description_widget.value = NOTEBOOK_ERROR_HTML.format(LOGO=JINA_LOGO, ERR=item['data']["error_description"])
+                        clear_output()
+                        display(error_widget)
                 elif event == 'error':
-                    print(f'Authentication failed: {item["data"]}')
+                    error_description_widget.value = NOTEBOOK_ERROR_HTML.format(LOGO=JINA_LOGO, ERR=json.dumps(item['data'], indent=4))
+                    clear_output()
+                    display(error_widget)
                 else:
-                    print(f'Unknown event: {event}')
+                    error_description_widget.value = NOTEBOOK_ERROR_HTML.format(LOGO=JINA_LOGO, ERR=f'Unknown event: {event}')
+                    clear_output()
+                    display(error_widget)
 
             session.close()
 
-            # FIXME: show error message here 
             if auth_info is None:
                 return
 
-            # retrieving token
+            # retrieving and saving token
             url=urljoin(api_host, 'user.identity.grant.auto')
             response = requests.post(url, json=auth_info)
             response.raise_for_status()
             json_response = response.json()
             token = json_response['data']['token']
             user = json_response['data']['user']['nickname']
-
             config.set('auth_token', token)
 
-            # FIXME: do we need docker auth ?
+            # dockerauth
             from hubble.dockerauth import (
                 auto_deploy_hubble_docker_credential_helper,
             )
 
             auto_deploy_hubble_docker_credential_helper()
-
+            
+            # clear output and show success widget
             clear_output()
-            display(loggedin_widget)
+            display(success_widget)
 
         button_widget.on_click(_login)
 
+        # verifying existing token
+        token = Auth.get_auth_token()
+        if token and not force:
+            try:
+                Auth.validate_token(token)
+                clear_output()
+                display(success_widget)
+                return
+            except AuthenticationFailedError:
+                pass
+
+        # show login widget
         display(login_widget)
 
 
