@@ -536,7 +536,7 @@ metas:
                 if check_requirements_env_variable(env_list[0]) is False:
                     raise Exception(
                         f'The `--build-env` parameter key:`{env_list[0]}` can only '
-                        'consist of numbers, upper-case letters and underline.'
+                        'consist of numbers, upper-case letters and underscore.'
                     )
                 build_env_dict[env_list[0]] = env_list[1]
             build_env = build_env_dict if build_env_dict else None
@@ -552,7 +552,7 @@ metas:
                 if check_requirements_env_variable(env) is False:
                     raise Exception(
                         f'The requirements.txt environment variables:`${env}` '
-                        'can only consist of numbers, upper-case letter and underline.'
+                        'can only consist of numbers, upper-case letter and underscore.'
                     )
 
         if len(requirements_env_variables) and not build_env:
@@ -812,7 +812,7 @@ metas:
 
         param_str.add_column(
             'If you don\'t want to wait for the Executor\'s build status, you can use \'Ctrl + C\'. '
-            'After that you can get the status of the Executor any time using the command!'
+            'After that you can get the status of the Executor any time using the command.'
         )
         param_str.add_row(
             f'Use `jina hub status {work_path}` to get the last build status of the Executor',
@@ -961,7 +961,7 @@ metas:
 
         if not task_id:
             raise Exception(
-                'Error: Can\'t get task_id! You can set `--id your task_id` to get build progress info!'
+                'Error: Can\'t get task_id! You can set `--id your task_id` to get build progress info.'
             )
 
         verbose = True if self.args.verbose else False
@@ -994,14 +994,14 @@ metas:
         :param tag: the tag of the Executor if available, otherwise, use `None` as the value
         :param secret: the access secret of the Executor
         :param image_required: indicates whether a Docker image is required or not
-        :param rebuild_image: indicates whether Jina Hub need to rebuild image or not
+        :param rebuild_image: indicates whether Jina Hub needs to rebuild image or not
         :param force: if set to True, access to fetch_meta will always pull latest Executor metas, otherwise, default
             to local cache
         :return: meta of Executor
 
         .. note::
             Significant parameters like `name` and `tag` should be passed via ``args``
-            and `force` and `secret` as ``kwargs``, otherwise, cache will not work.
+            and `force` and `secret` as ``kwargs``, otherwise, caching will not work.
         """
         import requests
 
@@ -1259,7 +1259,7 @@ metas:
                                     f'{pkg_path} need to be upgraded'
                                 )
 
-                            st.update('Installing [bold]requirements.txt[/bold]...')
+                            st.update('Installing depdencies from [bold]requirements.txt[/bold]...')
                             install_package_dependencies(
                                 install_deps=self.args.install_requirements,
                                 pkg_dist_path=pkg_dist_path,
