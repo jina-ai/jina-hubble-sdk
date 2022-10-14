@@ -21,23 +21,16 @@ NOTEBOOK_LOGIN_HTML = f"""
     <img src={JINA_LOGO} width=175 alt="Jina AI">
     <p><br></p>
     <p>
-        Copy a <b>Personal Access Token</b>, paste it below, and press the Login button.
+        Copy a <b>Personal Access Token</b>, paste it below, and press the <b>Login with Token</b> button.
         <br>
-        If you do not have a token, press the Login button to login via the browser.
+        If you don't have a token, press the <b>Login via Browser</b> button to log in via the browser.
     </p>
-</center>
-"""
-
-NOTEBOOK_LOGIN_HTML_NOTE = """
-<center>
-    <p><br></p>
-    <p>
-        <i>
-            You can create a <b>Personal Access Token</b> on the
-            <a href='https://hub.jina.ai/user/tokens' target='__blank'>tokens</a>
-            page.
-        </i>
-    </p>
+    <a
+        href='https://hub.jina.ai/user/tokens'
+        target='__blank'
+        style='color:#009191;position:relative;top:32px;right:-120px;z-index:99;'>
+            Create
+    </a>
 </center>
 """
 
@@ -138,15 +131,36 @@ The function also requires `ipywidgets`.
             placeholder="Personal Access Token (PAT)",
             layer=widgets.Layout(width="300px"),
         )
-        button_widget = widgets.Button(
-            description="Login", layout=widgets.Layout(width="300px")
+
+        token_button_widget = widgets.Button(
+            description="Login with Token",
+            disabled=True,
+            layout=widgets.Layout(width="300px", border="1px solid #009191"),
+            style={'button_color': '#009191', 'text_color': 'white'},
         )
+
+        def _handle_token_change(change):
+            if change.new is not None and change.new != '':
+                token_button_widget.disabled = False
+            else:
+                token_button_widget.disabled = True
+
+        token_widget.observe(_handle_token_change, names='value')
+
+        browser_button_widget = widgets.Button(
+            description="Login via Browser",
+            layout=widgets.Layout(
+                width="300px", border="1px solid #009191", margin="16px 0 0 0"
+            ),
+            style={"button_color": "white", "text_color": "#009191"},
+        )
+
         login_widget = widgets.VBox(
             [
                 widgets.HTML(NOTEBOOK_LOGIN_HTML),
                 token_widget,
-                button_widget,
-                widgets.HTML(NOTEBOOK_LOGIN_HTML_NOTE),
+                token_button_widget,
+                browser_button_widget,
             ],
             layout=layout,
         )
@@ -200,7 +214,8 @@ The function also requires `ipywidgets`.
             token = token_widget.value
             token_widget.value = ""
             token_widget.disabled = True
-            button_widget.disabled = True
+            token_button_widget.disabled = True
+            browser_button_widget.disabled = True
 
             # verify token before login function
             if token != "":
@@ -221,7 +236,8 @@ The function also requires `ipywidgets`.
                 **kwargs,
             )
 
-        button_widget.on_click(_login)
+        token_button_widget.on_click(_login)
+        browser_button_widget.on_click(_login)
 
         # verifying existing token
         token = Auth.get_auth_token()
