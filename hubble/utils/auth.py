@@ -260,13 +260,7 @@ The function also requires `ipywidgets`.
                     display(success_widget)
                     return
                 except AuthenticationFailedError:
-                    err = {
-                        'name': 'Authentication error',
-                        'description': 'Authentication failed',
-                    }
-                    err = json.dumps(err, indent=4)
-                    _error_callback(err=err)
-                    return
+                    pass
 
             Auth.login_sync(
                 force=force,
@@ -288,13 +282,7 @@ The function also requires `ipywidgets`.
                 display(success_widget)
                 return
             except AuthenticationFailedError:
-                err = {
-                    'name': 'Authentication error',
-                    'description': 'Authentication failed',
-                }
-                err = json.dumps(err, indent=4)
-                _error_callback(err=err)
-                return
+                pass
 
         # show login widget
         display(login_widget)
