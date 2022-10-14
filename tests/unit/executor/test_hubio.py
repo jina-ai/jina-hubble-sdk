@@ -22,6 +22,7 @@ from hubble.executor.parsers import (
     set_hub_pull_parser,
     set_hub_push_parser,
     set_hub_status_parser,
+    set_hub_list_parser,
 )
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1400,3 +1401,8 @@ def test_deploy_public_sandbox_create_new(mocker, monkeypatch):
     host, port = HubIO.deploy_public_sandbox(args)
     assert host == 'http://test_new_deployment.com'
     assert port == 4322
+
+
+def test_list(mocker, monkeypatch):
+    args = set_hub_list_parser().parse_args([])
+    HubIO(args).list()

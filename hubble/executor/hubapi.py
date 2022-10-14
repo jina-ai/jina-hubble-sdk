@@ -5,6 +5,7 @@ import os
 import shutil
 from pathlib import Path
 from typing import Tuple
+import yaml
 
 from hubble.executor import HubExecutor
 from hubble.executor.helper import (
@@ -232,7 +233,7 @@ def list_local():
     :return: the list of local executors (if found)
     """
     result = []
-    for dist_name in get_hub_packages_dir().glob(r'*/v*.dist-info'):
+    for dist_name in get_hub_packages_dir().glob(r'*/*.dist-info'):
         result.append(dist_name)
 
     return result
@@ -250,3 +251,18 @@ def exist_local(uuid: str, tag: str = None) -> bool:
         return True
     except FileNotFoundError:
         return False
+
+
+def load_manifest(yaml_path: Path) -> Dict:
+    """Load manifest of executor from YAML file."""
+    with open(yaml_path / 'manifest.yml') as fp:
+        tmp = yaml.safe_load(
+            fp
+        )
+
+    return tmp
+
+
+def get_tag_from_dist_info_path(path: Path) -> str:
+    stem = path.stem;
+    return stem.replace(r'.dist-info', '') if stem else None;
