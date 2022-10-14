@@ -1,4 +1,5 @@
 import json
+import os
 
 import aiohttp
 import pytest
@@ -160,16 +161,26 @@ async def test_login_logout(
     else:
         config.delete('auth_token')
 
+    # fetching and deleting env token
+    env_token = os.environ.get('JINA_AUTH_TOKEN')
+    if env_token:
+        del os.environ['JINA_AUTH_TOKEN']
+
     await Auth.login(force=force)
 
     authorized_token = config.get('auth_token')
     assert authorized_token == expected_token
 
     await Auth.logout()
+    config.delete('auth_token')
 
     # putting back config token
     if config_token:
         config.set('auth_token', config_token)
+
+    # putting back env token
+    if env_token:
+        os.environ['JINA_AUTH_TOKEN'] = env_token
 
 
 @pytest.mark.asyncio
@@ -209,13 +220,23 @@ async def test_login_logout__sync(
     else:
         config.delete('auth_token')
 
+    # fetching and deleting env token
+    env_token = os.environ.get('JINA_AUTH_TOKEN')
+    if env_token:
+        del os.environ['JINA_AUTH_TOKEN']
+
     Auth.login_sync(force=force)
 
     authorized_token = config.get('auth_token')
     assert authorized_token == expected_token
 
     await Auth.logout()
+    config.delete('auth_token')
 
     # putting back config token
     if config_token:
         config.set('auth_token', config_token)
+
+    # putting back env token
+    if env_token:
+        os.environ['JINA_AUTH_TOKEN'] = env_token
