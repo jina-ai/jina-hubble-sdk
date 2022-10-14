@@ -63,21 +63,39 @@ NOTEBOOK_LOGIN_HTML = f"""
 """
 
 NOTEBOOK_SUCCESS_HTML = f"""
-<center>
-    <img src={JINA_LOGO} width=175 alt='Jina AI'>
-    <p><br></p>
-    <p>
-        You are logged in to Jina AI!
-    </p>
-    <p>
-        If you want to log in again, run <code>hubble.notebook_login(force=True)</code>.
-    </p>
-</center>
+<div class='custom-container'>
+    <style>
+        .custom-container {{
+            margin-top: 10px;
+            margin-bottom: 0;
+        }}
+        .spaced {{
+            margin: 20px 0;
+        }}
+    </style>
+    <center>
+        <img src={JINA_LOGO} width=175 alt='Jina AI'>
+        <div class='spaced'></div>
+        <p>
+            You are logged in to Jina AI!
+        </p>
+        <p>
+            If you want to log in again, run <code>hubble.notebook_login(force=True)</code>.
+        </p>
+    </center>
+</div>
 """
 
 NOTEBOOK_ERROR_HTML = """
-<div>
+<div class='custom-container'>
     <style>
+        .custom-container {{
+            margin-top: 10px;
+            margin-bottom: 0;
+        }}
+        .spaced {{
+            margin: 20px 0;
+        }}
         .error {{
             text-align: left !important;
             background-color: WhiteSmoke;
@@ -90,7 +108,7 @@ NOTEBOOK_ERROR_HTML = """
     </style>
     <center>
         <img src={LOGO} width=175 alt='Jina AI'>
-        <p><br></p>
+        <div class='spaced'></div>
         <p class='red'>
             An error occured, see the details below.
         </p>
@@ -102,13 +120,24 @@ NOTEBOOK_ERROR_HTML = """
 """
 
 NOTEBOOK_REDIRECT_HTML = """
-<center>
-    <img src={LOGO} width=175 alt="Jina AI">
-    <p><br></p>
-    <p>
-        Please open the following <a href='{HREF}' target='_blank'>link</a> to continue the login process.
-    </p>
-</center>
+<div class='custom-container'>
+    <style>
+        .custom-container {{
+            margin-top: 10px;
+            margin-bottom: 0;
+        }}
+        .spaced {{
+            margin: 20px 0;
+        }}
+    </style>
+    <center>
+        <img src={LOGO} width=175 alt="Jina AI">
+        <div class='spaced'></div>
+        <p>
+            Please open the following <a href='{HREF}' target='_blank'>link</a> to continue the login process.
+        </p>
+    </center>
+</div>
 """
 
 
