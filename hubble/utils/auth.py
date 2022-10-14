@@ -135,7 +135,7 @@ NOTEBOOK_REDIRECT_HTML = """
         <img src={LOGO} width=175 alt="Jina AI">
         <div class='spaced'></div>
         <p>
-            Please open the following <a href='{HREF}' target='_blank'>link</a> to continue the login process.
+            Please open <a href='{HREF}' target='_blank'>this link</a> to continue the login process.
         </p>
     </center>
 </div>
