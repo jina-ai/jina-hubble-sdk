@@ -48,9 +48,9 @@ NOTEBOOK_LOGIN_HTML = f"""
         <img src={JINA_LOGO} width=175 alt='Jina AI'>
         <div class='spaced'></div>
         <p>
-            Copy a <b>Personal Access Token</b>, paste it below, and press the <b>Login with Token</b> button.
+            Copy a <b>Personal Access Token</b>, paste it below, and press the <b>Token login</b> button.
             <br>
-            If you don't have a token, press the <b>Login via Browser</b> button to log in via the browser.
+            If you don't have a token, press the <b>Browser login</b> button to log in via the browser.
         </p>
         <a
             href='https://hub.jina.ai/user/tokens'
@@ -204,7 +204,7 @@ The function also requires `ipywidgets`.
         )
 
         token_button_widget = widgets.Button(
-            description="Login with Token",
+            description="Token login",
             disabled=True,
             layout=widgets.Layout(width="300px"),
         )
@@ -220,7 +220,7 @@ The function also requires `ipywidgets`.
         token_widget.observe(_handle_token_change, names='value')
 
         browser_button_widget = widgets.Button(
-            description="Login via Browser",
+            description="Browser login",
             layout=widgets.Layout(width="300px", margin="10px 0 0 0"),
         )
 
