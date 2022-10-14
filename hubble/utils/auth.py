@@ -305,14 +305,7 @@ The function also requires `ipywidgets`.
                         success_callback()
                     return
                 except AuthenticationFailedError:
-                    err = {
-                        'name': 'Authentication error',
-                        'description': 'Authentication failed',
-                    }
-                    if error_callback:
-                        err = json.dumps(err, indent=4)
-                        error_callback(err=err)
-                    return
+                    pass
 
         api_host = get_base_url()
         auth_info = None
