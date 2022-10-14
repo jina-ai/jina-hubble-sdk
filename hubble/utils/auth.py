@@ -72,7 +72,7 @@ NOTEBOOK_ERROR_HTML = """
 <div>
     <style>
         .error {{
-            text-align: left;
+            text-align: left !important;
             background-color: WhiteSmoke;
             padding: 10px;
             line-height: 16px;
@@ -260,7 +260,13 @@ The function also requires `ipywidgets`.
                     display(success_widget)
                     return
                 except AuthenticationFailedError:
-                    pass
+                    err = {
+                        'name': 'Authentication error',
+                        'description': 'Authentication failed',
+                    }
+                    err = json.dumps(err, indent=4)
+                    _error_callback(err=err)
+                    return
 
             Auth.login_sync(
                 force=force,
@@ -282,7 +288,13 @@ The function also requires `ipywidgets`.
                 display(success_widget)
                 return
             except AuthenticationFailedError:
-                pass
+                err = {
+                    'name': 'Authentication error',
+                    'description': 'Authentication failed',
+                }
+                err = json.dumps(err, indent=4)
+                _error_callback(err=err)
+                return
 
         # show login widget
         display(login_widget)
@@ -305,7 +317,14 @@ The function also requires `ipywidgets`.
                         success_callback()
                     return
                 except AuthenticationFailedError:
-                    pass
+                    err = {
+                        'name': 'Authentication error',
+                        'description': 'Authentication failed',
+                    }
+                    if error_callback:
+                        err = json.dumps(err, indent=4)
+                        error_callback(err=err)
+                    return
 
         api_host = get_base_url()
         auth_info = None
