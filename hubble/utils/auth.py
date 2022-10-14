@@ -17,7 +17,7 @@ JINA_LOGO = (
 )
 
 NOTEBOOK_LOGIN_HTML = f"""
-<div>
+<div class='custom-container'>
     <style>
         .button1 {{
             color: white;
@@ -32,14 +32,21 @@ NOTEBOOK_LOGIN_HTML = f"""
         .link1 {{
             color:#009191;
             position: relative;
-            top: 32px;
+            top: 22px;
             right: -120px;
             z-index: 99;
+        }}
+        .custom-container {{
+            margin-top: 10px;
+            margin-bottom: -10px;
+        }}
+        .spaced {{
+            margin: 20px 0;
         }}
     </style>
     <center>
         <img src={JINA_LOGO} width=175 alt='Jina AI'>
-        <p><br></p>
+        <div class='spaced'></div>
         <p>
             Copy a <b>Personal Access Token</b>, paste it below, and press the <b>Login with Token</b> button.
             <br>
@@ -184,7 +191,7 @@ The function also requires `ipywidgets`.
 
         browser_button_widget = widgets.Button(
             description="Login via Browser",
-            layout=widgets.Layout(width="300px", margin="16px 0 0 0"),
+            layout=widgets.Layout(width="300px", margin="10px 0 0 0"),
         )
 
         browser_button_widget.add_class('button2')
