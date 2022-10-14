@@ -33,7 +33,7 @@ NOTEBOOK_LOGIN_HTML_NOTE = """
     <p><br></p>
     <p>
         <i>
-            You can create a personal access token on the
+            You can create a <b>Personal Access Token</b> on the
             <a href='https://hub.jina.ai/user/tokens' target='__blank'>tokens</a>
             page.
         </i>
