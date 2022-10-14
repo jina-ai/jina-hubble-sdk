@@ -17,64 +17,128 @@ JINA_LOGO = (
 )
 
 NOTEBOOK_LOGIN_HTML = f"""
-<center>
-    <img src={JINA_LOGO} width=175 alt="Jina AI">
-    <p><br></p>
-    <p>
-        Copy a <b>Personal Access Token</b>, paste it below, and press the Login button.
-        <br>
-        If you do not have a token, press the Login button to login via the browser.
-    </p>
-</center>
-"""
-
-NOTEBOOK_LOGIN_HTML_NOTE = """
-<center>
-    <p><br></p>
-    <p>
-        <i>
-            You can create a <b>Personal Access Token</b> on the
-            <a href='https://hub.jina.ai/user/tokens' target='__blank'>tokens</a>
-            page.
-        </i>
-    </p>
-</center>
+<div class='custom-container'>
+    <style>
+        .button1 {{
+            color: white;
+            background-color: #009191;
+            border: 1px solid #009191;
+        }}
+        .button2 {{
+            color: #009191;
+            background-color: white;
+            border: 1px solid #009191;
+        }}
+        .link1 {{
+            color:#009191;
+            position: relative;
+            top: 22px;
+            right: -120px;
+            z-index: 99;
+        }}
+        .custom-container {{
+            margin-top: 10px;
+            margin-bottom: -10px;
+        }}
+        .spaced {{
+            margin: 20px 0;
+        }}
+    </style>
+    <center>
+        <img src={JINA_LOGO} width=175 alt='Jina AI'>
+        <div class='spaced'></div>
+        <p>
+            Copy a <b>Personal Access Token</b>, paste it below, and press the <b>Token login</b> button.
+            <br>
+            If you don't have a token, press the <b>Browser login</b> button to log in via the browser.
+        </p>
+        <a
+            href='https://hub.jina.ai/user/tokens'
+            target='__blank'
+            class='link1'>
+                Create
+        </a>
+    </center>
+</div>
 """
 
 NOTEBOOK_SUCCESS_HTML = f"""
-<center>
-    <img src={JINA_LOGO} width=175 alt="Jina AI">
-    <p><br></p>
-    <p>
-        You are logged in to Jina AI!
-    </p>
-    <p>
-        If you want to re-login, run <code>hubble.notebook_login(force=True)</code>.
-    </p>
-</center>
+<div class='custom-container'>
+    <style>
+        .custom-container {{
+            margin-top: 10px;
+            margin-bottom: 0;
+        }}
+        .spaced {{
+            margin: 20px 0;
+        }}
+    </style>
+    <center>
+        <img src={JINA_LOGO} width=175 alt='Jina AI'>
+        <div class='spaced'></div>
+        <p>
+            You are logged in to Jina AI!
+        </p>
+        <p>
+            If you want to log in again, run <code>notebook_login(force=True)</code>.
+        </p>
+    </center>
+</div>
 """
 
 NOTEBOOK_ERROR_HTML = """
-<center>
-    <img src={LOGO} width=175 alt="Jina AI">
-    <p><br></p>
-    <p style="color:#d03c38;">
-        An error occured, see the details below.
-    </p>
-    <div style="text-align:left;background-color:WhiteSmoke;padding:10px;line-height:16px;">
-        <pre><code>{ERR}</code></pre>
-    </div>
-</center>
+<div class='custom-container'>
+    <style>
+        .custom-container {{
+            margin-top: 10px;
+            margin-bottom: 0;
+        }}
+        .spaced {{
+            margin: 20px 0;
+        }}
+        .error {{
+            text-align: left !important;
+            background-color: WhiteSmoke;
+            margin: 10px 0 !important;
+            padding: 10px 50px 10px 20px;
+            line-height: 16px;
+        }}
+        .red {{
+            color: #d03c38;
+        }}
+    </style>
+    <center>
+        <img src={LOGO} width=175 alt='Jina AI'>
+        <div class='spaced'></div>
+        <p class='red'>
+            An error occured, see the details below.
+        </p>
+        <div class='error'>
+            <pre><code>{ERR}</code></pre>
+        </div>
+    </center>
+</div>
 """
 
 NOTEBOOK_REDIRECT_HTML = """
-<center>
-    <img src={LOGO} width=175 alt="Jina AI">
-    <p><br></p>
-    <p>
-        Please open the following <a href='{HREF}' target='_blank'>link</a> to continue the login process.
-    </p>
-</center>
+<div class='custom-container'>
+    <style>
+        .custom-container {{
+            margin-top: 10px;
+            margin-bottom: 0;
+        }}
+        .spaced {{
+            margin: 20px 0;
+        }}
+    </style>
+    <center>
+        <img src={LOGO} width=175 alt="Jina AI">
+        <div class='spaced'></div>
+        <p>
+            Please open <a href='{HREF}' target='_blank'>this link</a> to continue the login process.
+        </p>
+    </center>
+</div>
 """
 
 
@@ -138,15 +202,36 @@ The function also requires `ipywidgets`.
             placeholder="Personal Access Token (PAT)",
             layer=widgets.Layout(width="300px"),
         )
-        button_widget = widgets.Button(
-            description="Login", layout=widgets.Layout(width="300px")
+
+        token_button_widget = widgets.Button(
+            description="Token login",
+            disabled=True,
+            layout=widgets.Layout(width="300px"),
         )
+
+        token_button_widget.add_class('button1')
+
+        def _handle_token_change(change):
+            if change.new is not None and change.new != '':
+                token_button_widget.disabled = False
+            else:
+                token_button_widget.disabled = True
+
+        token_widget.observe(_handle_token_change, names='value')
+
+        browser_button_widget = widgets.Button(
+            description="Browser login",
+            layout=widgets.Layout(width="300px", margin="10px 0 0 0"),
+        )
+
+        browser_button_widget.add_class('button2')
+
         login_widget = widgets.VBox(
             [
                 widgets.HTML(NOTEBOOK_LOGIN_HTML),
                 token_widget,
-                button_widget,
-                widgets.HTML(NOTEBOOK_LOGIN_HTML_NOTE),
+                token_button_widget,
+                browser_button_widget,
             ],
             layout=layout,
         )
@@ -200,7 +285,8 @@ The function also requires `ipywidgets`.
             token = token_widget.value
             token_widget.value = ""
             token_widget.disabled = True
-            button_widget.disabled = True
+            token_button_widget.disabled = True
+            browser_button_widget.disabled = True
 
             # verify token before login function
             if token != "":
@@ -221,7 +307,8 @@ The function also requires `ipywidgets`.
                 **kwargs,
             )
 
-        button_widget.on_click(_login)
+        token_button_widget.on_click(_login)
+        browser_button_widget.on_click(_login)
 
         # verifying existing token
         token = Auth.get_auth_token()
