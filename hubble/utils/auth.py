@@ -28,6 +28,19 @@ NOTEBOOK_LOGIN_HTML = f"""
 </center>
 """
 
+NOTEBOOK_LOGIN_HTML_NOTE = """
+<center>
+    <p><br></p>
+    <p>
+        <i>
+            You can create a personal access token on the
+            <a href='https://hub.jina.ai/user/tokens' target='__blank'>tokens</a>
+            page.
+        </i>
+    </p>
+</center>
+"""
+
 NOTEBOOK_SUCCESS_HTML = f"""
 <center>
     <img src={JINA_LOGO} width=175 alt="Jina AI">
@@ -129,7 +142,12 @@ The function also requires `ipywidgets`.
             description="Login", layout=widgets.Layout(width="300px")
         )
         login_widget = widgets.VBox(
-            [widgets.HTML(NOTEBOOK_LOGIN_HTML), token_widget, button_widget],
+            [
+                widgets.HTML(NOTEBOOK_LOGIN_HTML),
+                token_widget,
+                button_widget,
+                widgets.HTML(NOTEBOOK_LOGIN_HTML_NOTE),
+            ],
             layout=layout,
         )
 
