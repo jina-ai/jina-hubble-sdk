@@ -99,7 +99,8 @@ NOTEBOOK_ERROR_HTML = """
         .error {{
             text-align: left !important;
             background-color: WhiteSmoke;
-            padding: 10px;
+            margin: 10px 0 !important;
+            padding: 10px 50px 10px 20px;
             line-height: 16px;
         }}
         .red {{
