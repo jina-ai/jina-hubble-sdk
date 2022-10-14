@@ -64,6 +64,16 @@ import hubble
 hubble.login()
 ```
 
+### Login to Hubble from notebook environments (like Google Colab).
+
+```python
+import hubble
+
+# Use Personal Access Token or browser to login.
+# Token will be saved locally.
+hubble.notebook_login()
+```
+
 ### Logout
 
 ```python
@@ -211,7 +221,7 @@ jina auth token delete <name of PAT>
 
 ### Run into `RuntimeError: asyncio.run() cannot be called from a running event loop` in Google Colab?
 
-You could run into a problem when you trying to run these codes in Google Colab 
+You could run into a problem when you trying to run this code in Google Colab.
 
 ```python
 import hubble
@@ -219,14 +229,13 @@ import hubble
 hubble.login()
 ```
 
-The way to bypass this problem is adding `nest_asyncio` and use it first.
+The way to bypass this problem is using `hubble.notebook_login()`, 
+specially designed for logging into Jina from notebook environments.
 
 ```python
 import hubble
-import nest_asyncio
 
-nest_asyncio.apply()
-hubble.login()
+hubble.notebook_login()
 ```
 
 
