@@ -17,47 +17,81 @@ JINA_LOGO = (
 )
 
 NOTEBOOK_LOGIN_HTML = f"""
-<center>
-    <img src={JINA_LOGO} width=175 alt="Jina AI">
-    <p><br></p>
-    <p>
-        Copy a <b>Personal Access Token</b>, paste it below, and press the <b>Login with Token</b> button.
-        <br>
-        If you don't have a token, press the <b>Login via Browser</b> button to log in via the browser.
-    </p>
-    <a
-        href='https://hub.jina.ai/user/tokens'
-        target='__blank'
-        style='color:#009191;position:relative;top:32px;right:-120px;z-index:99;'>
-            Create
-    </a>
-</center>
+<div>
+    <style>
+        .button1 {{
+            color: white;
+            background-color: #009191;
+            border: 1px solid #009191;
+        }}
+        .button2 {{
+            color: #009191;
+            background-color: white;
+            border: 1px solid #009191;
+        }}
+        .link1 {{
+            color:#009191;
+            position: relative;
+            top: 32px;
+            right: -120px;
+            z-index: 99;
+        }}
+    </style>
+    <center>
+        <img src={JINA_LOGO} width=175 alt='Jina AI'>
+        <p><br></p>
+        <p>
+            Copy a <b>Personal Access Token</b>, paste it below, and press the <b>Login with Token</b> button.
+            <br>
+            If you don't have a token, press the <b>Login via Browser</b> button to log in via the browser.
+        </p>
+        <a
+            href='https://hub.jina.ai/user/tokens'
+            target='__blank'
+            class='link1'>
+                Create
+        </a>
+    </center>
+</div>
 """
 
 NOTEBOOK_SUCCESS_HTML = f"""
 <center>
-    <img src={JINA_LOGO} width=175 alt="Jina AI">
+    <img src={JINA_LOGO} width=175 alt='Jina AI'>
     <p><br></p>
     <p>
         You are logged in to Jina AI!
     </p>
     <p>
-        If you want to re-login, run <code>hubble.notebook_login(force=True)</code>.
+        If you want to log in again, run <code>hubble.notebook_login(force=True)</code>.
     </p>
 </center>
 """
 
 NOTEBOOK_ERROR_HTML = """
-<center>
-    <img src={LOGO} width=175 alt="Jina AI">
-    <p><br></p>
-    <p style="color:#d03c38;">
-        An error occured, see the details below.
-    </p>
-    <div style="text-align:left;background-color:WhiteSmoke;padding:10px;line-height:16px;">
-        <pre><code>{ERR}</code></pre>
-    </div>
-</center>
+<div>
+    <style>
+        .error {{
+            text-align: left;
+            background-color: WhiteSmoke;
+            padding: 10px;
+            line-height: 16px;
+        }}
+        .red {{
+            color: #d03c38;
+        }}
+    </style>
+    <center>
+        <img src={LOGO} width=175 alt='Jina AI'>
+        <p><br></p>
+        <p class='red'>
+            An error occured, see the details below.
+        </p>
+        <div class='error'>
+            <pre><code>{ERR}</code></pre>
+        </div>
+    </center>
+</div>
 """
 
 NOTEBOOK_REDIRECT_HTML = """
@@ -135,9 +169,10 @@ The function also requires `ipywidgets`.
         token_button_widget = widgets.Button(
             description="Login with Token",
             disabled=True,
-            layout=widgets.Layout(width="300px", border="1px solid #009191"),
-            style={'button_color': '#009191', 'text_color': 'white'},
+            layout=widgets.Layout(width="300px"),
         )
+
+        token_button_widget.add_class('button1')
 
         def _handle_token_change(change):
             if change.new is not None and change.new != '':
@@ -149,11 +184,10 @@ The function also requires `ipywidgets`.
 
         browser_button_widget = widgets.Button(
             description="Login via Browser",
-            layout=widgets.Layout(
-                width="300px", border="1px solid #009191", margin="16px 0 0 0"
-            ),
-            style={"button_color": "white", "text_color": "#009191"},
+            layout=widgets.Layout(width="300px", margin="16px 0 0 0"),
         )
+
+        browser_button_widget.add_class('button2')
 
         login_widget = widgets.VBox(
             [
