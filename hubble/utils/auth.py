@@ -279,6 +279,8 @@ The function also requires `ipywidgets`.
                 href = item['data']["redirectTo"]
                 if redirect_callback:
                     redirect_callback(href=href)
+                else:
+                    print(f'Please open the following link: {href}')
 
             elif event == 'authorize':
                 if item['data']['code'] and item['data']['state']:
@@ -287,15 +289,22 @@ The function also requires `ipywidgets`.
                     err = item['data']["error_description"]
                     if error_callback:
                         error_callback(err=err)
+                    else:
+                        print('Authentication failed: {}'.format(err))
 
             elif event == 'error':
-                err = json.dumps(item['data'], indent=4)
+                err = item['data']
                 if error_callback:
+                    err = json.dumps(err, indent=4)
                     error_callback(err=err)
+                else:
+                    print('Authentication failed: {}'.format(err))
             else:
                 err = f'Unknown event: {event}'
                 if error_callback:
                     error_callback(err=err)
+                else:
+                    print(err)
 
         if auth_info is None:
             return
