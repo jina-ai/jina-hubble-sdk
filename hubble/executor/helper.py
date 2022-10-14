@@ -38,7 +38,7 @@ __resources_path__ = os.path.join(
 
 __unset_msg__ = '(unset)'
 
-__cache_path__ = f'{os.path.expanduser("~")}/.cache/{__package__}'
+__cache_path__ = f'{os.path.expanduser("~")}/.cache/jina'
 if not Path(__cache_path__).exists():
     Path(__cache_path__).mkdir(parents=True, exist_ok=True)
 
