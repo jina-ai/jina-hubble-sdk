@@ -176,7 +176,7 @@ class Auth:
             raise AuthenticationFailedError("Could not validate token")
 
     @staticmethod
-    def login_notebook(force=False, **kwargs):
+    def login_notebook(force=False, onclick_callback=None, **kwargs):
         """Login user in notebook environments like colab"""
 
         # trying to import utilities (only available in notebook env)
@@ -307,8 +307,8 @@ The function also requires `ipywidgets`.
                 **kwargs,
             )
 
-        token_button_widget.on_click(_login)
-        browser_button_widget.on_click(_login)
+        token_button_widget.on_click(_login, callback=onclick_callback)
+        browser_button_widget.on_click(_login, callback=onclick_callback)
 
         # verifying existing token
         token = Auth.get_auth_token()
