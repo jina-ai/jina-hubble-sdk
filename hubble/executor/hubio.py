@@ -39,7 +39,7 @@ from hubble.executor.hubapi import (
     install_local,
     install_package_dependencies,
     list_local,
-    load_manifest,
+    load_config,
     load_secret,
 )
 
@@ -981,7 +981,7 @@ metas:
             else:
                 console.log(f'Waiting `{task_id}` ...')
 
-    def _prettyprint_list_usage(self, console, executors, usage_kind=None):
+    def _prettyprint_list_usage(self, console, executors):
         from rich import box
         from rich.panel import Panel
         from rich.table import Table
@@ -993,7 +993,7 @@ metas:
         param_str.add_column('executor')
         param_str.add_column('path')
 
-        for index, item in enumerate(executors):
+        for item in executors:
             name = item['name']
             path = item['path']
             tag = item.get('tag', None)
@@ -1016,10 +1016,10 @@ metas:
         executors = []
         for executor_dist_info_path in list_local():
             executor_path = executor_dist_info_path.parent
-            manifest = load_manifest(executor_path)
+            config = load_config(executor_path)
             tag = get_tag_from_dist_info_path(executor_dist_info_path)
             executors.append(
-                {'name': manifest['name'], 'tag': tag, 'path': executor_path}
+                {'name': config['jtype'], 'tag': tag, 'path': executor_path}
             )
 
         console = get_rich_console()

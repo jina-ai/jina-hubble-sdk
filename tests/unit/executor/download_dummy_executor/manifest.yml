@@ -1,4 +1,0 @@
-manifest_version: 1
-name: download_dummy_executor
-url: https://github.com/jina-ai/dummy_executor
-keywords: [indexer]

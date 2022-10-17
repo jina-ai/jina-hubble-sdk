@@ -1406,7 +1406,7 @@ def test_deploy_public_sandbox_create_new(mocker, monkeypatch):
     assert port == 4322
 
 
-@pytest.mark.parametrize('path', ['download_dummy_executor'])
+@pytest.mark.parametrize('path', ['dummy_executor'])
 def test_list(mocker, monkeypatch, path):
     exec_path = os.path.join(cur_dir, path)
     args = set_hub_list_parser().parse_args([])

@@ -253,9 +253,9 @@ def exist_local(uuid: str, tag: str = None) -> bool:
         return False
 
 
-def load_manifest(yaml_path: Path) -> Dict:
-    """Load manifest of executor from YAML file."""
-    with open(yaml_path / 'manifest.yml') as fp:
+def load_config(yaml_path: Path) -> Dict:
+    """Load config of executor from YAML file."""
+    with open(yaml_path / 'config.yml') as fp:
         tmp = yaml.safe_load(fp)
 
     return tmp
