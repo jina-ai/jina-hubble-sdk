@@ -441,14 +441,17 @@ def test_push(
     [
         (
             'The `--build-env` parameter key:`{build_env_key}` can only consist of '
-            'uppercase letter and number and underline.'
+            'numbers, upper-case letters and underscore.'
         )
     ],
 )
 @pytest.mark.parametrize(
     'env_variable_format_error',
     [
-        'The `--build-env` parameter: `{build_env}` is wrong format. you can use: `--build-env {build_env}=YOUR_VALUE`.'
+        (
+            'The `--build-env` parameter: `{build_env}` is in the wrong format. '
+            'you can use: `--build-env {build_env}=YOUR_VALUE`.'
+        )
     ],
 )
 @pytest.mark.parametrize('path', ['dummy_executor_fail'])
@@ -498,7 +501,7 @@ def test_push_wrong_build_env(
 @pytest.mark.parametrize(
     'requirements_file_need_build_env_error',
     [
-        'The requirements.txt set environment variables as follows:`{env_variables_str}` should use `--build-env'
+        'requirements.txt sets environment variables as follows:`{env_variables_str}` should use `--build-env'
     ],
 )
 @pytest.mark.parametrize('path', ['dummy_executor_fail'])
@@ -545,7 +548,7 @@ def test_push_requirements_file_require_set_env_variables(
 @pytest.mark.parametrize(
     'diff_env_variables_error',
     [
-        'The requirements.txt set environment variables as follows:`{env_variables_str}` should use `--build-env'
+        'requirements.txt sets environment variables as follows:`{env_variables_str}` should use `--build-env'
     ],
 )
 @pytest.mark.parametrize('path', ['dummy_executor_fail'])
@@ -763,7 +766,7 @@ def test_status(mocker, monkeypatch, path, verbose, replay, task_id, is_login):
 @pytest.mark.parametrize(
     'response_task_id_error',
     [
-        'Error: can\'t get task_id',
+        'Error: Can\'t get task_id',
     ],
 )
 def test_status_with_error(
@@ -896,7 +899,7 @@ def test_fetch_with_no_image(mocker, monkeypatch):
     with pytest.raises(RuntimeError) as exc_info:
         HubIO.fetch_meta('dummy_mwu_encoder', tag=None, force=True)
 
-    assert exc_info.match('No image found for executor "dummy_mwu_encoder"')
+    assert exc_info.match('No image found for Executor "dummy_mwu_encoder"')
 
     executor, _ = HubIO.fetch_meta(
         'dummy_mwu_encoder', tag=None, image_required=False, force=True
