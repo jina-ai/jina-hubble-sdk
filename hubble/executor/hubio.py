@@ -29,7 +29,7 @@ from hubble.executor.helper import (
     parse_hub_uri,
     retry,
     status_task,
-    upload_file
+    upload_file,
 )
 from hubble.executor.hubapi import (
     dump_secret,
@@ -40,7 +40,7 @@ from hubble.executor.hubapi import (
     load_secret,
     list_local,
     get_tag_from_dist_info_path,
-    load_manifest
+    load_manifest,
 )
 
 
@@ -981,9 +981,7 @@ metas:
             else:
                 console.log(f'Waiting `{task_id}` ...')
 
-    def _prettyprint_list_usage(
-        self, console, executors, usage_kind=None
-    ):
+    def _prettyprint_list_usage(self, console, executors, usage_kind=None):
         from rich import box
         from rich.panel import Panel
         from rich.table import Table
@@ -992,12 +990,8 @@ metas:
             box=box.SIMPLE,
         )
 
-        param_str.add_column(
-            'executor'
-        )
-        param_str.add_column(
-            'path'
-        )
+        param_str.add_column('executor')
+        param_str.add_column('path')
 
         for index, item in enumerate(executors):
             name = item['name']
@@ -1024,11 +1018,9 @@ metas:
             executor_path = executor_dist_info_path.parent
             manifest = load_manifest(executor_path)
             tag = get_tag_from_dist_info_path(executor_dist_info_path)
-            executors.append({
-                'name': manifest['name'],
-                'tag': tag,
-                'path': executor_path
-            })
+            executors.append(
+                {'name': manifest['name'], 'tag': tag, 'path': executor_path}
+            )
 
         console = get_rich_console()
         self._prettyprint_list_usage(console, executors)
