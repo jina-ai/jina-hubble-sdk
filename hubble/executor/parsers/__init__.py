@@ -72,6 +72,7 @@ def set_hub_status_parser(parser=None):
     mixin_hub_status_parser(parser)
     return parser
 
+
 def set_hub_list_parser(parser=None):
     """Set the parser for the hub list
     :param parser: an optional existing parser to build upon
