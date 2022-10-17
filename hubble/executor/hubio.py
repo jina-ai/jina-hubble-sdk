@@ -43,6 +43,7 @@ from hubble.executor.hubapi import (
     load_manifest
 )
 
+
 class HubIO:
     """:class:`HubIO` lets you interact with the Jina Hub registry.
     You can use it from the CLI to package a directory into a Jina Hub Executor and publish it to the world.
@@ -1018,7 +1019,7 @@ metas:
         )
 
     def list(self) -> None:
-        executors = [];
+        executors = []
         for executor_dist_info_path in list_local():
             executor_path = executor_dist_info_path.parent
             manifest = load_manifest(executor_path)
@@ -1029,8 +1030,8 @@ metas:
                 'path': executor_path
             })
 
-        console = get_rich_console();
-        self._prettyprint_list_usage(console, executors);
+        console = get_rich_console()
+        self._prettyprint_list_usage(console, executors)
 
     @staticmethod
     @disk_cache_offline(cache_file=str(get_cache_db()))

@@ -264,5 +264,5 @@ def load_manifest(yaml_path: Path) -> Dict:
 
 
 def get_tag_from_dist_info_path(path: Path) -> str:
-    stem = path.stem;
-    return stem.replace(r'.dist-info', '') if stem else None;
+    stem = path.stem
+    return stem.replace(r'.dist-info', '') if stem else None
