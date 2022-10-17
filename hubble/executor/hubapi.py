@@ -4,7 +4,7 @@ import json
 import os
 import shutil
 from pathlib import Path
-from typing import Tuple
+from typing import Tuple, Dict
 import yaml
 
 from hubble.executor import HubExecutor

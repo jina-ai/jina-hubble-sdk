@@ -1403,6 +1403,11 @@ def test_deploy_public_sandbox_create_new(mocker, monkeypatch):
     assert port == 4322
 
 
-def test_list(mocker, monkeypatch):
+@pytest.mark.parametrize('path', ['download_dummy_executor'])
+def test_list(mocker, monkeypatch, path):
+    exec_path = os.path.join(cur_dir, path)
     args = set_hub_list_parser().parse_args([])
-    HubIO(args).list()
+
+    with monkeypatch.context() as m:
+        m.setattr(hubble.executor.hubio, 'list_local', lambda: [Path(f'{exec_path}/latest.dist-info')])
+        HubIO(args).list()

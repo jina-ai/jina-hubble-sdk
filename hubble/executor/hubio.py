@@ -26,12 +26,10 @@ from hubble.executor.helper import (
     get_request_header,
     get_requirements_env_variables,
     get_rich_console,
-    get_tag_from_dist_info_path,
     parse_hub_uri,
     retry,
     status_task,
-    upload_file,
-    load_manifest
+    upload_file
 )
 from hubble.executor.hubapi import (
     dump_secret,
@@ -41,6 +39,8 @@ from hubble.executor.hubapi import (
     install_package_dependencies,
     load_secret,
     list_local,
+    get_tag_from_dist_info_path,
+    load_manifest
 )
 
 class HubIO:
@@ -985,7 +985,6 @@ metas:
     ):
         from rich import box
         from rich.panel import Panel
-        from rich.syntax import Syntax
         from rich.table import Table
 
         param_str = Table(
@@ -1002,7 +1001,7 @@ metas:
         for index, item in enumerate(executors):
             name = item['name']
             path = item['path']
-            tag = item.get('tag')
+            tag = item.get('tag', None)
             param_str.add_row(
                 f'{name}/{tag}' if tag else f'{name}',
                 f'{path}',
@@ -1014,7 +1013,7 @@ metas:
                 param_str,
                 title='List',
                 expand=False,
-                width=100,
+                width=120,
             )
         )
 
