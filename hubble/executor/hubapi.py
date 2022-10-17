@@ -262,5 +262,6 @@ def load_config(yaml_path: Path) -> Dict:
 
 
 def get_tag_from_dist_info_path(path: Path) -> str:
+    """Get tag from stem of path."""
     stem = path.stem
     return stem.replace(r'.dist-info', '') if stem else None
