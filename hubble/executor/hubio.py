@@ -35,12 +35,12 @@ from hubble.executor.hubapi import (
     dump_secret,
     get_dist_path_of_executor,
     get_lockfile,
+    get_tag_from_dist_info_path,
     install_local,
     install_package_dependencies,
-    load_secret,
     list_local,
-    get_tag_from_dist_info_path,
     load_manifest,
+    load_secret,
 )
 
 

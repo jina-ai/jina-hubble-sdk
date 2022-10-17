@@ -18,11 +18,11 @@ from hubble.executor.helper import disk_cache_offline, get_requirements_env_vari
 from hubble.executor.hubapi import get_secret_path
 from hubble.executor.hubio import HubExecutor, HubIO
 from hubble.executor.parsers import (
+    set_hub_list_parser,
     set_hub_new_parser,
     set_hub_pull_parser,
     set_hub_push_parser,
     set_hub_status_parser,
-    set_hub_list_parser,
 )
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))

@@ -4,9 +4,9 @@ import json
 import os
 import shutil
 from pathlib import Path
-from typing import Tuple, Dict
-import yaml
+from typing import Dict, Tuple
 
+import yaml
 from hubble.executor import HubExecutor
 from hubble.executor.helper import (
     __cache_path__,
