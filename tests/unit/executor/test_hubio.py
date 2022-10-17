@@ -1412,5 +1412,5 @@ def test_list(mocker, monkeypatch, path):
     args = set_hub_list_parser().parse_args([])
 
     with monkeypatch.context() as m:
-        m.setattr(hubble.executor.hubio, 'list_local', lambda: [Path(f'{exec_path}/latest.dist-info')])
+        m.setattr(hubio, 'list_local', lambda: [Path(f'{exec_path}/latest.dist-info')])
         HubIO(args).list()
