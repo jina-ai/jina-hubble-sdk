@@ -1411,8 +1411,9 @@ def test_deploy_public_sandbox_create_new(mocker, monkeypatch):
 def test_list(mocker, monkeypatch, path, name):
     mock = mocker.Mock()
 
-    def _mock_prettyprint_list_usage(self, console, executors):
+    def _mock_prettyprint_list_usage(self, console, executors, base_path):
         mock(console=console)
+        assert base_path is not None
         assert len(executors) == 1
         assert executors[0]['name'] == name
 
