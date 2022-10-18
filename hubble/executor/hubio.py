@@ -22,6 +22,7 @@ from hubble.executor.helper import (
     download_with_resume,
     get_cache_db,
     get_download_cache_dir,
+    get_hub_packages_dir,
     get_hubble_error_message,
     get_request_header,
     get_requirements_env_variables,
@@ -981,27 +982,30 @@ metas:
             else:
                 console.log(f'Waiting `{task_id}` ...')
 
-    def _prettyprint_list_usage(self, console, executors):
+    def _prettyprint_list_usage(self, console, executors, base_path):
         from rich import box
         from rich.panel import Panel
         from rich.table import Table
 
         param_str = Table(
+            title=f'[red]base_path: {base_path}[/red]',
             box=box.SIMPLE,
+            show_lines=True,
         )
 
-        param_str.add_column('executor')
-        param_str.add_column('path')
+        param_str.add_column('Executor')
+        param_str.add_column('Tag')
+        param_str.add_column('Relative_path')
 
         for item in executors:
             name = item['name']
-            path = item['path']
+            relative_path = item['relative_path']
             tag = item.get('tag', None)
             param_str.add_row(
-                f'{name}/{tag}' if tag else f'{name}',
-                f'{path}',
+                f'{name}',
+                f'{tag}' if tag else '',
+                f'{relative_path}',
             )
-            param_str.add_row()
 
         console.print(
             Panel(
@@ -1014,16 +1018,22 @@ metas:
 
     def list(self) -> None:
         executors = []
+        base_path = get_hub_packages_dir()
         for executor_dist_info_path in list_local():
             executor_path = executor_dist_info_path.parent
             config = load_config(executor_path)
             tag = get_tag_from_dist_info_path(executor_dist_info_path)
+            relative_executor_path = executor_path.stem
             executors.append(
-                {'name': config['jtype'], 'tag': tag, 'path': executor_path}
+                {
+                    'name': config['jtype'],
+                    'tag': tag,
+                    'relative_path': f'./{relative_executor_path}',
+                }
             )
 
         console = get_rich_console()
-        self._prettyprint_list_usage(console, executors)
+        self._prettyprint_list_usage(console, executors, base_path)
 
     @staticmethod
     @disk_cache_offline(cache_file=str(get_cache_db()))
