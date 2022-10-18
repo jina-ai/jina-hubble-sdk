@@ -19,7 +19,7 @@ jobs:
       - name: Install semantic-release
         run: npm install --global semantic-release @semantic-release/git semantic-release-pypi
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: 3.7
       - name: Install requirements
