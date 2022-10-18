@@ -143,8 +143,8 @@ def get_main_parser(parser=None):
     set_hub_list_parser(
         sp.add_parser(
             'list',
-            help='display a list of local Jina executors',
-            description='Display a list of local Jina executors',
+            help='list your local Jina Executors',
+            description='List your local Jina Executors',
             formatter_class=_chf,
         )
     )

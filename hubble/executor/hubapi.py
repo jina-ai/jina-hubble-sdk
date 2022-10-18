@@ -253,15 +253,13 @@ def exist_local(uuid: str, tag: str = None) -> bool:
         return False
 
 
-def load_config(yaml_path: Path) -> Dict:
-    """Load config of executor from YAML file."""
-    with open(yaml_path / 'config.yml') as fp:
+def load_config(path: Path) -> Dict:
+    """Load config of executor from YAML file.
+
+    :param path: the path of the local executor
+    :return: dict
+    """
+    with open(path / 'config.yml') as fp:
         tmp = yaml.safe_load(fp)
 
     return tmp
-
-
-def get_tag_from_dist_info_path(path: Path) -> str:
-    """Get tag from stem of path."""
-    stem = path.stem
-    return stem.replace(r'.dist-info', '') if stem else None

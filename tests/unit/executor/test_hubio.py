@@ -1407,7 +1407,18 @@ def test_deploy_public_sandbox_create_new(mocker, monkeypatch):
 
 
 @pytest.mark.parametrize('path', ['dummy_executor'])
-def test_list(mocker, monkeypatch, path):
+@pytest.mark.parametrize('name', ['dummy_executor'])
+def test_list(mocker, monkeypatch, path, name):
+    mock = mocker.Mock()
+
+    def _mock_prettyprint_list_usage(self, console, executors):
+        mock(console=console)
+        print('_mock_prettyprint_list_usage executors:', executors)
+        assert len(executors) == 1
+        assert executors[0]['name'] == name
+
+    monkeypatch.setattr(HubIO, '_prettyprint_list_usage', _mock_prettyprint_list_usage)
+
     exec_path = os.path.join(cur_dir, path)
     args = set_hub_list_parser().parse_args([])
 
