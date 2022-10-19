@@ -990,9 +990,9 @@ metas:
         param_str = Table(
             Column(header="Executor", no_wrap=True),
             Column(header="Tag", no_wrap=True),
-            Column(header="RelativePath", no_wrap=True),
+            Column(header="Relative path", no_wrap=True),
             box=box.SIMPLE,
-            title=f'BasePath: {base_path}',
+            title=f'Base path: {base_path}',
             title_style='blue',
             show_lines=True,
             min_width=30 + len(str(base_path)),
