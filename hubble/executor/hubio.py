@@ -986,16 +986,18 @@ metas:
         from rich import box
         from rich.panel import Panel
         from rich.table import Table
+        from rich.table import Column
 
         param_str = Table(
-            title=f'[red]base_path: {base_path}[/red]',
+            Column(header="Executor", no_wrap=True),
+            Column(header="Tag", no_wrap=True),
+            Column(header="RelativePath", no_wrap=True),
             box=box.SIMPLE,
+            title=f'BasePath: {base_path}',
+            title_style='blue',
             show_lines=True,
+            min_width=30 + len(str(base_path)),
         )
-
-        param_str.add_column('Executor')
-        param_str.add_column('Tag')
-        param_str.add_column('Relative_path')
 
         for item in executors:
             name = item['name']
