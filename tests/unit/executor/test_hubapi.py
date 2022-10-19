@@ -63,3 +63,12 @@ def test_load_dump_secret_existing_encryption_key():
     assert new_uuid8 == uuid8
     assert new_secret == secret
     assert task_id == new_task_id
+
+
+@pytest.mark.parametrize('path', ['dummy_executor'])
+@pytest.mark.parametrize('name', ['dummy_executor'])
+def test_load_config(mocker, path, name):
+    exec_path = os.path.join(cur_dir, path)
+    config = hubapi.load_config(Path(exec_path))
+
+    assert config['jtype'] == name

@@ -18,6 +18,7 @@ from hubble.executor.helper import disk_cache_offline, get_requirements_env_vari
 from hubble.executor.hubapi import get_secret_path
 from hubble.executor.hubio import HubExecutor, HubIO
 from hubble.executor.parsers import (
+    set_hub_list_parser,
     set_hub_new_parser,
     set_hub_pull_parser,
     set_hub_push_parser,
@@ -1403,3 +1404,27 @@ def test_deploy_public_sandbox_create_new(mocker, monkeypatch):
     host, port = HubIO.deploy_public_sandbox(args)
     assert host == 'http://test_new_deployment.com'
     assert port == 4322
+
+
+@pytest.mark.parametrize('path', ['dummy_executor'])
+@pytest.mark.parametrize('name', ['dummy_executor', None])
+def test_list(mocker, monkeypatch, path, name):
+    mock = mocker.Mock()
+
+    def _mock_prettyprint_list_usage(self, console, executors, base_path):
+        mock(console=console)
+        assert base_path is not None
+        assert len(executors) == 1
+        assert executors[0]['name'] == name
+
+    if name:
+        monkeypatch.setattr(
+            HubIO, '_prettyprint_list_usage', _mock_prettyprint_list_usage
+        )
+
+    exec_path = os.path.join(cur_dir, path)
+    args = set_hub_list_parser().parse_args([])
+
+    with monkeypatch.context() as m:
+        m.setattr(hubio, 'list_local', lambda: [Path(f'{exec_path}/latest.dist-info')])
+        HubIO(args).list()

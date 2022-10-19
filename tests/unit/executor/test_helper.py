@@ -213,3 +213,12 @@ def test_fail_replace_env_variables(mocker, monkeypatch, env_variable_error, bui
             Path(__file__).parent / 'dummy_executor_fail' / 'requirements.txt'
         )
     assert env_variable_error.format(var_name=build_env) in str(info.value)
+
+
+@pytest.mark.parametrize('tag', ['latest'])
+def test_load_config(mocker, tag):
+    info_tag = helper.get_tag_from_dist_info_path(
+        Path(__file__).parent / 'dummy_executor' / 'latest.dist-info'
+    )
+
+    assert info_tag == tag

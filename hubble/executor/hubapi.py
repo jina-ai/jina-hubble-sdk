@@ -4,8 +4,9 @@ import json
 import os
 import shutil
 from pathlib import Path
-from typing import Tuple
+from typing import Dict, Tuple
 
+import yaml
 from hubble.executor import HubExecutor
 from hubble.executor.helper import (
     __cache_path__,
@@ -232,7 +233,7 @@ def list_local():
     :return: the list of local executors (if found)
     """
     result = []
-    for dist_name in get_hub_packages_dir().glob(r'*/v*.dist-info'):
+    for dist_name in get_hub_packages_dir().glob(r'*/*.dist-info'):
         result.append(dist_name)
 
     return result
@@ -250,3 +251,15 @@ def exist_local(uuid: str, tag: str = None) -> bool:
         return True
     except FileNotFoundError:
         return False
+
+
+def load_config(path: Path) -> Dict:
+    """Load config of executor from YAML file.
+
+    :param path: the path of the local executor
+    :return: dict
+    """
+    with open(path / 'config.yml') as fp:
+        tmp = yaml.safe_load(fp)
+
+    return tmp
