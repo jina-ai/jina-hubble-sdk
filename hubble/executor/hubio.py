@@ -985,8 +985,7 @@ metas:
     def _prettyprint_list_usage(self, console, executors, base_path):
         from rich import box
         from rich.panel import Panel
-        from rich.table import Table
-        from rich.table import Column
+        from rich.table import Column, Table
 
         param_str = Table(
             Column(header="Executor", no_wrap=True),
