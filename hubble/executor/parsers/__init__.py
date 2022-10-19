@@ -73,6 +73,20 @@ def set_hub_status_parser(parser=None):
     return parser
 
 
+def set_hub_list_parser(parser=None):
+    """Set the parser for the hub list
+    :param parser: an optional existing parser to build upon
+    :return: the parser
+    """
+    if not parser:
+        parser = set_base_parser()
+
+    from hubble.executor.parsers.list import mixin_hub_list_parser
+
+    mixin_hub_list_parser(parser)
+    return parser
+
+
 def get_main_parser(parser=None):
     """The main parser for Jina Hub CLI
     :return: the parser
@@ -122,6 +136,15 @@ def get_main_parser(parser=None):
             'status',
             help='query an executor building status of of a pushed Executor from Jina hub',
             description='Query an executor building status of of a pushed Executor from Jina hub',
+            formatter_class=_chf,
+        )
+    )
+
+    set_hub_list_parser(
+        sp.add_parser(
+            'list',
+            help='list your local Jina Executors',
+            description='List your local Jina Executors',
             formatter_class=_chf,
         )
     )

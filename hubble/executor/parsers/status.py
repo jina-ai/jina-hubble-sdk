@@ -1,11 +1,11 @@
-"""Argparser module for hub query"""
+"""Argparser module for hub status"""
 import os
 
 from hubble.parsers.helper import add_arg_group
 
 
 def mixin_hub_status_parser(parser):
-    """Add the arguments for hub query to the parser
+    """Add the arguments for hub status to the parser
     :param parser: the parser configure
     """
 

@@ -1,0 +1,5 @@
+jtype: dummy_executor
+with:
+  match_args: {}
+metas:
+  workspace: workspace/
