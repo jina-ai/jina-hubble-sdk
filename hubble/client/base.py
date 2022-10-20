@@ -38,7 +38,13 @@ class BaseClient(object):
 
     def _handle_error_request(self, resp: Union[requests.Response, dict]):
         if isinstance(resp, requests.Response):
-            resp = resp.json()
+            try:
+                resp = resp.json()
+            except Exception:
+                resp = {
+                    'message': resp.text,
+                    'code': resp.status_code,
+                }
 
         message = resp.get('message', None)
         code = resp.get('status', -1)
