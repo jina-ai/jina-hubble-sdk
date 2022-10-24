@@ -28,5 +28,7 @@ def get_json_from_response(resp: Response) -> dict:
         return resp.json()
     except JSONDecodeError as err:
         raise JSONDecodeError(
-            f'{err.msg}; Response: {resp.text}, status code: {resp.status_code}'
+            f'Response: {resp.text}, status code: {resp.status_code}; {err.msg}',
+            err.doc,
+            err.pos,
         ) from err
