@@ -4,6 +4,7 @@ from typing import Dict, List, Optional, Union
 
 import requests
 
+from ..utils.api_utils import get_json_from_response
 from .base import BaseClient
 from .endpoints import EndpointsV2
 
@@ -170,7 +171,7 @@ class Client(BaseClient):
 
         # Second download artifact.
         if isinstance(resp, requests.Response):
-            resp = resp.json()
+            resp = get_json_from_response(resp)
         download_url = resp['data']['download']
 
         pbar = get_progressbar(disable=not show_progress)

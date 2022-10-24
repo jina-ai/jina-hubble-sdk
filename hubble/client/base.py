@@ -3,7 +3,7 @@ from typing import IO, Any, MutableMapping, Optional, Text, Union
 import requests
 
 from ..excepts import errorcodes
-from ..utils.api_utils import get_base_url
+from ..utils.api_utils import get_base_url, get_json_from_response
 from ..utils.auth import Auth
 from .session import HubbleAPISession
 
@@ -38,7 +38,7 @@ class BaseClient(object):
 
     def _handle_error_request(self, resp: Union[requests.Response, dict]):
         if isinstance(resp, requests.Response):
-            resp = resp.json()
+            resp = get_json_from_response(resp)
 
         message = resp.get('message', None)
         code = resp.get('status', -1)
@@ -82,6 +82,6 @@ class BaseClient(object):
             self._handle_error_request(resp)
 
         if self._jsonify:
-            return resp.json()
+            resp = get_json_from_response(resp)
 
         return resp

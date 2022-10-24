@@ -4,6 +4,7 @@ from . import Client
 from . import login as _login
 from . import logout as _logout
 from .excepts import AuthenticationFailedError, AuthenticationRequiredError
+from .utils.api_utils import get_json_from_response
 
 
 def logout(*args):
@@ -53,7 +54,8 @@ def token(args):
         )
 
         response.raise_for_status()
-        token = response.json()['data']['token']
+        json_response = get_json_from_response(response)
+        token = json_response['data']['token']
 
         import rich
         from rich.panel import Panel
@@ -88,7 +90,8 @@ You can set it as an env var [b]JINA_AUTH_TOKEN[/b]''',
     if args.operation == 'list':
         response = client.list_personal_access_tokens()
         response.raise_for_status()
-        tokens = response.json()['data']['personal_access_tokens']
+        json_response = get_json_from_response(response)
+        tokens = json_response['data']['personal_access_tokens']
 
         import rich
         from rich.table import Table
