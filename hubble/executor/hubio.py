@@ -43,6 +43,7 @@ from hubble.executor.hubapi import (
     load_config,
     load_secret,
 )
+from hubble.utils.api_utils import get_json_from_response
 
 
 class HubIO:
@@ -1086,7 +1087,7 @@ metas:
         req_header = get_request_header()
 
         resp = _send_request_with_retry(pull_url, json=payload, headers=req_header)
-        resp = resp.json()['data']
+        resp = get_json_from_response(resp)['data']
 
         images = resp['package'].get('containers', [])
         image_name = images[0] if images else None
@@ -1144,11 +1145,12 @@ metas:
         port = None
 
         headers = get_request_header()
-        json_response = requests.post(
+        response = requests.post(
             url=urljoin(hubble.utils.get_base_url(), 'sandbox.get'),
             json=payload,
             headers=headers,
-        ).json()
+        )
+        json_response = get_json_from_response(response)
         if json_response.get('code') == 200:
             host = json_response.get('data', {}).get('host', None)
             port = json_response.get('data', {}).get('port', None)
@@ -1161,11 +1163,12 @@ metas:
             f'[bold green]🚧 Deploying sandbox for [bold white]{name}[/bold white] since none exists...'
         ):
             try:
-                json_response = requests.post(
+                response = requests.post(
                     url=urljoin(hubble.utils.get_base_url(), 'sandbox.create'),
                     json=payload,
                     headers=headers,
-                ).json()
+                )
+                json_response = get_json_from_response(response)
 
                 data = json_response.get('data') or {}
                 host = data.get('host', None)

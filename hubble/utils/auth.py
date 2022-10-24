@@ -8,7 +8,7 @@ import aiohttp
 import requests
 from hubble.client.session import HubbleAPISession
 from hubble.excepts import AuthenticationFailedError
-from hubble.utils.api_utils import get_base_url
+from hubble.utils.api_utils import get_base_url, get_json_from_response
 from hubble.utils.config import config
 from rich import print as rich_print
 
@@ -404,7 +404,7 @@ The function also requires `ipywidgets`.
         url = urljoin(api_host, 'user.identity.grant.auto')
         response = requests.post(url, json=auth_info)
         response.raise_for_status()
-        json_response = response.json()
+        json_response = get_json_from_response(response)
         token = json_response['data']['token']
         config.set('auth_token', token)
 
