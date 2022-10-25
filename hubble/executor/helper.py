@@ -437,7 +437,7 @@ def download_with_resume(
             'MD5 checksum failed.'
             'Might happen when the network is unstable, please retry.'
             'If still not work, feel free to raise an issue.'
-            'https://github.com/jina-ai/jina/issues/new'
+            'https://github.com/jina-ai/jina-hubble-sdk/issues/new'
         )
 
     return filepath

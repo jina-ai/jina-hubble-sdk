@@ -661,7 +661,7 @@ metas:
             except Exception as e:  # IO related errors
                 self.logger.error(
                     f'Please report this session_id: [yellow bold]{req_header["jinameta-session-id"]}[/] '
-                    'to https://github.com/jina-ai/jina/issues'
+                    'to https://github.com/jina-ai/jina-hubble-sdk/issues'
                 )
                 raise e
 
@@ -1179,7 +1179,7 @@ metas:
                 console.log('🎉 Deployment completed, using it.')
             except BaseException:
                 console.log(
-                    '🚨 Deployment failed. Please raise an issue: https://github.com/jina-ai/jina/issues/new'
+                    '🚨 Deployment failed. Please raise an issue: https://github.com/jina-ai/jina-hubble-sdk/issues/new'
                 )
                 raise
 
