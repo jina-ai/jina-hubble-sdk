@@ -1,7 +1,7 @@
 import json
 import os
 import webbrowser
-from typing import Callable, Optional
+from typing import Optional
 from urllib.parse import urlencode, urljoin
 
 import aiohttp
@@ -176,9 +176,7 @@ class Auth:
             raise AuthenticationFailedError("Could not validate token")
 
     @staticmethod
-    def login_notebook(
-        force: bool = False, post_success: Optional[Callable] = None, **kwargs
-    ):
+    def login_notebook(force: bool = False, **kwargs):
         """Login user in notebook environments like colab"""
 
         # trying to import utilities (only available in notebook env)
@@ -265,8 +263,6 @@ The function also requires `ipywidgets`.
         def _success_callback(**kwargs):
             clear_output()
             display(success_widget)
-            if post_success:
-                post_success()
 
         def _redirect_callback(href=None, **kwargs):
             redirect_url_widget.value = NOTEBOOK_REDIRECT_HTML.format(
@@ -334,6 +330,7 @@ The function also requires `ipywidgets`.
         success_callback=None,
         redirect_callback=None,
         error_callback=None,
+        post_success=None,
         **kwargs,
     ):
         # verify if token already exists, authenticate token if exists
@@ -344,6 +341,8 @@ The function also requires `ipywidgets`.
                     Auth.validate_token(token)
                     if success_callback:
                         success_callback()
+                    if post_success:
+                        post_success()
                     return
                 except AuthenticationFailedError:
                     pass
@@ -415,6 +414,9 @@ The function also requires `ipywidgets`.
 
         if success_callback:
             success_callback()
+
+        if post_success:
+            post_success()
 
     @staticmethod
     async def login(force=False, **kwargs):

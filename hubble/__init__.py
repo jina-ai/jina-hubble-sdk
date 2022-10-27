@@ -13,7 +13,12 @@ from importlib_metadata import version
 from .client.client import Client  # noqa F401
 from .excepts import AuthenticationRequiredError
 from .utils.auth import Auth  # noqa F401
-from .utils.notebook import is_notebook  # noqa F401
+from .utils.notebook import (  # noqa F401
+    GOOGLE_COLAB,
+    JUPYTER_LAB,
+    JUPYTER_NOTEBOOK,
+    get_python_environment,
+)
 
 try:
     __version__ = version("jina-hubble-sdk")
@@ -58,9 +63,12 @@ def login_required(func):
 
 def login(**kwargs):
     """This function guides user to login."""
-    is_notebook_env = is_notebook()
-    if is_notebook_env:
+    current_env = get_python_environment()
+    print(current_env)
+    if current_env == GOOGLE_COLAB or current_env == JUPYTER_NOTEBOOK:
         Auth.login_notebook(**kwargs)
+    elif current_env == JUPYTER_LAB:
+        Auth.login_sync(**kwargs)
     else:
         asyncio.run(Auth.login(**kwargs))
 
