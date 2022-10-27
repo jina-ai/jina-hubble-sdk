@@ -82,8 +82,8 @@ jobs:
       - name: Generate conda recipe
         run: python scripts/generate-conda-recipe.py
       - name: Use conda build
-        run: conda build -c conda-forge --python 3.7 conda --output-folder anaconda 
+        run: conda build -c conda-forge --python 3.7 conda --output-folder dist 
       - name: Anaconda login 
         run: anaconda login --username  ${{ secrets.ANACONDA_USERNAME }} --password ${{ secrets.ANACONDA_PASSWORD }}
       - name: Anaconda upload  
-        run: anaconda upload -c conda-forge --label main anaconda/*/${{ matrix.project-name }}*.tar.bz2
+        run: anaconda upload -c conda-forge --label main dist/*/${{ matrix.project-name }}*.tar.bz2
