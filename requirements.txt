@@ -7,3 +7,4 @@ pathspec
 cryptography
 docker
 pyyaml
+psutil
