@@ -46,13 +46,13 @@ def replace_package_name(requirements: list, old: str, new: str):
     return replace_requirements 
 
 
-def generate_meta_yaml(source_path: str, target_path: str):
+def generate_meta_yaml(meta_path: str):
     """Generate conda meta yaml"""
 
-    save_lines = get_lines(source_path, 0, 2)
-    delete_lines(source_path, 2)
+    save_lines = get_lines(meta_path, 0, 2)
+    delete_lines(meta_path, 2)
 
-    with open(source_path) as f:
+    with open(meta_path) as f:
         meta_dict = yaml.safe_load(f)
         meta_dict['package'] = {'name': '<{ name|lower }>', 'version': '<{ version }>'}
 
@@ -79,11 +79,8 @@ def generate_meta_yaml(source_path: str, target_path: str):
         recipe_header =  f'{recipe_header}{line}'
     recipe = recipe_header + recipe
 
-    with open(source_path, 'w+') as fp:
-        fp.write(recipe)
-
-    with open(target_path, 'w+') as fp:
+    with open(meta_path, 'w+') as fp:
         fp.write(recipe)
 
 
-generate_meta_yaml(sys.argv[1], sys.argv[2])
+generate_meta_yaml(sys.argv[1])
