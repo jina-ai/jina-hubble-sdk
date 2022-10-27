@@ -687,7 +687,7 @@ metas:
 
         table.add_row(
             ':link: Jina Hub URL',
-            f'[link=https://hub.jina.ai/executor/{uuid8}/]https://hub.jina.ai/executor/{uuid8}/[/link]',
+            f'[link=https://cloud.jina.ai/executor/{uuid8}/]https://cloud.jina.ai/executor/{uuid8}/[/link]',
         )
 
         if secret:
