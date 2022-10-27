@@ -83,7 +83,7 @@ jobs:
         run: python scripts/generate-conda-recipe.py
       - name: Use conda build
         run: conda build -c conda-forge --python 3.7 conda --output-folder anaconda 
+      - name: Anaconda login 
+        run: anaconda login --username  ${{ secrets.ANACONDA_USERNAME }} --password ${{ secrets.ANACONDA_PASSWORD }}
       - name: Anaconda upload  
-        env: 
-          ANACONDA_API_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
         run: anaconda upload -c conda-forge --label main anaconda/*/${{ matrix.project-name }}*.tar.bz2
