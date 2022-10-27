@@ -75,8 +75,8 @@ jobs:
           update-conda: true
           python-version: 3.7
           conda-channels: anaconda, conda-forge
-      - name: Install anaconda-client conda-build
-        run: conda install -y anaconda-client conda-build
+      - name: Install anaconda-client conda-build conda-verify
+        run: conda install -y anaconda-client conda-build conda-verify
       - name: Use conda skeleton pypi ${{ matrix.project-name }}
         run: conda skeleton pypi ${{ matrix.project-name }} --python-version 3.7  --output-dir conda
       - name: Generate conda recipe
