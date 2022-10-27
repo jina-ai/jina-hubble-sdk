@@ -1,5 +1,4 @@
 import yaml
-import json
 
 class RecipeDumper(yaml.SafeDumper):
     """Adds a line break between top level objects and ignore aliases"""
@@ -39,7 +38,7 @@ def generate_meta_yaml(source_path: str, target_path: str):
         meta_dict = yaml.safe_load(f)
     
         meta_dict['package'] = {'name': '<{ name|lower }>', 'version': '<{ version }>'}
-        requirements = meta_dict['requirements']
+        meta_dict['build']['noarch'] = 'python'
         if(meta_dict['requirements'] and meta_dict['requirements']['host']):
             meta_dict['requirements']['host'] = ['docker-py' if item == 'docker' else item for item in meta_dict['requirements']['run']]
         if(meta_dict['requirements'] and meta_dict['requirements']['run']):
@@ -55,7 +54,7 @@ def generate_meta_yaml(source_path: str, target_path: str):
     recipe = recipe.replace('<{', '{{').replace('}>', '}}')
 
     recipe_header = ''
-    for index, line in enumerate(save_lines):
+    for line in save_lines:
         recipe_header =  f'{recipe_header}{line}'
     recipe = recipe_header + recipe
 
