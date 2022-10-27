@@ -15,7 +15,7 @@ class RecipeDumper(yaml.SafeDumper):
         return super().increase_indent(flow=flow, indentless=False)
 
 def delete_lines(file: str, line: int):
-    """delete a line from the file head"""
+    """Delete a line from the file head"""
     with open(file, 'r') as fr:
         read_lines = fr.readlines()
 
@@ -25,7 +25,7 @@ def delete_lines(file: str, line: int):
 
 
 def get_lines(file: str, start: int, end: int):
-    """get lines from the file"""
+    """Get lines from the file"""
 
     with open(file, 'r') as fr:
         read_lines = fr.readlines()
@@ -33,7 +33,7 @@ def get_lines(file: str, start: int, end: int):
 
 
 def generate_meta_yaml(source_path: str, target_path: str):
-    """generate conda meta yaml"""
+    """Generate conda meta yaml"""
 
     save_lines = get_lines(source_path, 0, 2)
     delete_lines(source_path, 2)
@@ -42,6 +42,8 @@ def generate_meta_yaml(source_path: str, target_path: str):
         meta_dict = yaml.safe_load(f)
     
         meta_dict['package'] = {'name': '<{ name|lower }>', 'version': '<{ version }>'}
+
+        # build noarch package
         meta_dict['build']['noarch'] = 'python'
         if(meta_dict['requirements'] and meta_dict['requirements']['host']):
             meta_dict['requirements']['host'] = ['docker-py' if item == 'docker' else item for item in meta_dict['requirements']['host']]
