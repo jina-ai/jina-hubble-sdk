@@ -80,7 +80,7 @@ jobs:
       - name: Use conda skeleton pypi ${{ matrix.project-name }}
         run: conda skeleton pypi ${{ matrix.project-name }} --output-dir conda
       - name: Generate conda recipe
-        run: python scripts/generate-conda-recipe.py
+        run: python scripts/generate-conda-recipe.py "conda/${{ matrix.project-name }}/meta.yaml" "conda/meta.yaml"
       - name: Use conda build
         run: conda build -c conda-forge conda --output-folder dist 
       - name: Anaconda login 
