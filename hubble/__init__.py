@@ -61,16 +61,20 @@ def login_required(func):
     return arg_wrapper
 
 
-def login(**kwargs):
+def login(interactive=None, **kwargs):
     """This function guides user to login."""
-    current_env = get_python_environment()
-    print(current_env)
-    if current_env == GOOGLE_COLAB or current_env == JUPYTER_NOTEBOOK:
+
+    if interactive is None:
+        current_env = get_python_environment()
+        if current_env in [GOOGLE_COLAB, JUPYTER_NOTEBOOK]:
+            interactive = True
+        else:
+            interactive = False
+
+    if interactive:
         Auth.login_notebook(**kwargs)
-    elif current_env == JUPYTER_LAB:
-        Auth.login_sync(**kwargs)
     else:
-        asyncio.run(Auth.login(**kwargs))
+        Auth.login_sync(**kwargs)
 
 
 def notebook_login(**kwargs):
