@@ -78,12 +78,12 @@ jobs:
       - name: Install anaconda-client conda-build conda-verify
         run: conda install -y anaconda-client conda-build conda-verify
       - name: Use conda skeleton pypi ${{ matrix.project-name }}
-        run: conda skeleton pypi ${{ matrix.project-name }} --output-dir conda
+        run: conda skeleton pypi ${{ matrix.project-name }} --output-dir ./conda/
       - name: Generate conda recipe
         run: python scripts/generate-conda-recipe.py "conda/${{ matrix.project-name }}/meta.yaml" "conda/meta.yaml"
       - name: Use conda build
-        run: conda build -c conda-forge conda --output-folder dist 
+        run: conda build ./conda/ --output-folder dist 
       - name: Anaconda login 
         run: anaconda login --username ${{ secrets.ANACONDA_USERNAME }} --password ${{ secrets.ANACONDA_PASSWORD }}
       - name: Anaconda upload  
-        run: anaconda upload -c conda-forge --label main dist/*/${{ matrix.project-name }}*.tar.bz2
+        run: anaconda upload -c conda-forge --label main --force  dist/*/${{ matrix.project-name }}*.tar.bz2
