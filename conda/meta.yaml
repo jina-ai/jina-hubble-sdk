@@ -56,7 +56,8 @@ about:
 
 extra:
   recipe-maintainers:
-    - mapleeit,
-    - floralatin,
-    - nomagick,
+    - mapleeit
+    - nomagick
     - delgermurun
+    - Andrei997
+    - floralatin
