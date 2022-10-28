@@ -1,0 +1,62 @@
+{% set name = "jina-hubble-sdk" %}
+{% set version = "0.22.5" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/jina-hubble-sdk-{{ version }}.tar.gz
+  sha256: 6fbd0baabfeb7249f7745391289be40c0be152244689c53de23aa13a83661c61
+
+build:
+  entry_points:
+    - jina-auth=hubble.__main__:main
+    - jina-hub=hubble.executor.__main__:main
+    - docker-credential-jina-hubble=hubble.dockerauth:main
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  number: 0
+
+requirements:
+  host:
+    - python >=3.7
+    - setuptools >=18.0
+    - wheel
+    - pip
+  run:
+    - python >=3.7
+    - requests
+    - aiohttp
+    - rich
+    - importlib-metadata
+    - filelock
+    - pathspec
+    - cryptography
+    - docker-py
+    - pyyaml
+
+test:
+  imports:
+    - hubble
+  commands:
+    - pip check
+    - jina-auth --help
+    - jina-hub --help
+    - docker-credential-jina-hubble --help
+  requires:
+    - pip
+
+about:
+  home: https://github.com/jina-ai/hubble-client-python/
+  summary: SDK for Hubble API at Jina AI.
+  dev_url: https://github.com/jina-ai/hubble-client-python/
+  license: TAPR-OHL-1.0
+  license_file: PLEASE_ADD_LICENSE_FILE
+
+extra:
+  recipe-maintainers:
+    - mapleeit,
+    - floralatin,
+    - nomagick,
+    - delgermurun

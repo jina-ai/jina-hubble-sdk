@@ -10,6 +10,10 @@
 pip install jina-hubble-sdk
 ```
 
+```shell
+conda install jina-hubble-sdk -c conda-forge
+```
+
 ## Core functionality
 
 * Python API and CLI.
