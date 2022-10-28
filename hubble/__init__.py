@@ -13,12 +13,7 @@ from importlib_metadata import version
 from .client.client import Client  # noqa F401
 from .excepts import AuthenticationRequiredError
 from .utils.auth import Auth  # noqa F401
-from .utils.notebook import (  # noqa F401
-    GOOGLE_COLAB,
-    JUPYTER_LAB,
-    JUPYTER_NOTEBOOK,
-    get_python_environment,
-)
+from .utils.notebook import is_notebook  # noqa F401
 
 try:
     __version__ = version("jina-hubble-sdk")
@@ -65,11 +60,7 @@ def login(interactive=None, **kwargs):
     """This function guides user to login."""
 
     if interactive is None:
-        current_env = get_python_environment()
-        if current_env in [GOOGLE_COLAB, JUPYTER_NOTEBOOK]:
-            interactive = True
-        else:
-            interactive = False
+        interactive = is_notebook()
 
     if interactive:
         Auth.login_notebook(**kwargs)

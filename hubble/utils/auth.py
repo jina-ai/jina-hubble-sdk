@@ -30,9 +30,9 @@ NOTEBOOK_LOGIN_HTML = f"""
             border: 1px solid #009191;
         }}
         .link1 {{
-            color:#009191;
+            color:#009191 !important;
             position: relative;
-            top: 22px;
+            top: 32px;
             right: -120px;
             z-index: 99;
         }}
@@ -53,7 +53,7 @@ NOTEBOOK_LOGIN_HTML = f"""
             If you don't have a token, press the <b>Browser login</b> button to log in via the browser.
         </p>
         <a
-            href='https://hub.jina.ai/user/tokens'
+            href='https://cloud.jina.ai/settings/tokens'
             target='__blank'
             class='link1'>
                 Create
@@ -130,12 +130,15 @@ NOTEBOOK_REDIRECT_HTML = """
         .spaced {{
             margin: 20px 0;
         }}
+        .link2 {{
+            color:#009191 !important;
+        }}
     </style>
     <center>
         <img src={LOGO} width=175 alt="Jina AI">
         <div class='spaced'></div>
         <p>
-            Please open <a href='{HREF}' target='_blank'>this link</a> to continue the login process.
+            Please open <a class='link2' href='{HREF}' target='_blank'>this link</a> to continue the login process.
         </p>
     </center>
 </div>
@@ -182,7 +185,7 @@ class Auth:
         # trying to import utilities (only available in notebook env)
         try:
             import ipywidgets.widgets as widgets
-            from IPython.display import clear_output, display
+            from IPython.display import display
         except ImportError:
             raise ImportError(
                 """
@@ -190,12 +193,6 @@ The `notebook_login` function can only be used in a notebook.
 The function also requires `ipywidgets`.
                 """
             )
-
-        # creating widgets
-        # reusable layout, for all widgets
-        layout = widgets.Layout(
-            display="flex", flex_flow="column", align_items="center"
-        )
 
         # login widget
         token_widget = widgets.Password(
@@ -233,12 +230,17 @@ The function also requires `ipywidgets`.
                 token_button_widget,
                 browser_button_widget,
             ],
-            layout=layout,
+            layout=widgets.Layout(
+                display="flex", flex_flow="column", align_items="center"
+            ),
         )
 
         # sucess widget
         success_widget = widgets.VBox(
-            [widgets.HTML(NOTEBOOK_SUCCESS_HTML)], layout=layout
+            [widgets.HTML(NOTEBOOK_SUCCESS_HTML)],
+            layout=widgets.Layout(
+                display="flex", flex_flow="column", align_items="center"
+            ),
         )
 
         # redirect url widget
@@ -247,7 +249,9 @@ The function also requires `ipywidgets`.
             [
                 redirect_url_widget,
             ],
-            layout=layout,
+            layout=widgets.Layout(
+                display="flex", flex_flow="column", align_items="center"
+            ),
         )
 
         # error widget
@@ -256,31 +260,42 @@ The function also requires `ipywidgets`.
             [
                 error_description_widget,
             ],
-            layout=layout,
+            layout=widgets.Layout(
+                display="flex", flex_flow="column", align_items="center"
+            ),
         )
 
         # callback functions for login_async to communicate events
         def _success_callback(**kwargs):
-            clear_output()
-            display(success_widget)
+            login_widget.layout.display = "none"
+            redirect_widget.layout.display = "none"
+            error_widget.layout.display = "none"
+            success_widget.layout.display = "flex"
 
         def _redirect_callback(href=None, **kwargs):
+            # format url
             redirect_url_widget.value = NOTEBOOK_REDIRECT_HTML.format(
                 LOGO=JINA_LOGO, HREF=href
             )
-            clear_output()
-            display(redirect_widget)
+
+            login_widget.layout.display = "none"
+            redirect_widget.layout.display = "flex"
+            error_widget.layout.display = "none"
+            success_widget.layout.display = "none"
 
         def _error_callback(err=None, **kwargs):
+            # format error
             error_description_widget.value = NOTEBOOK_ERROR_HTML.format(
                 LOGO=JINA_LOGO, ERR=err
             )
-            clear_output()
-            display(error_widget)
+
+            login_widget.layout.display = "none"
+            redirect_widget.layout.display = "none"
+            error_widget.layout.display = "flex"
+            success_widget.layout.display = "none"
 
         # login function called when pressing the login button
         def _login(*args):
-
             # reading token, clearing form, disabling elements
             token = token_widget.value
             token_widget.value = ""
@@ -293,8 +308,7 @@ The function also requires `ipywidgets`.
                 try:
                     Auth.validate_token(token)
                     config.set('auth_token', token)
-                    clear_output()
-                    display(success_widget)
+                    _success_callback()
                     return
                 except AuthenticationFailedError:
                     pass
@@ -315,14 +329,22 @@ The function also requires `ipywidgets`.
         if token and not force:
             try:
                 Auth.validate_token(token)
-                clear_output()
                 display(success_widget)
                 return
             except AuthenticationFailedError:
                 pass
 
-        # show login widget
-        display(login_widget)
+        all_widget = widgets.VBox(
+            [login_widget, redirect_widget, error_widget, success_widget],
+            layout=widgets.Layout(display="block"),
+        )
+
+        login_widget.layout.display = "flex"
+        redirect_widget.layout.display = "none"
+        error_widget.layout.display = "none"
+        success_widget.layout.display = "none"
+
+        display(all_widget)
 
     @staticmethod
     def login_sync(
