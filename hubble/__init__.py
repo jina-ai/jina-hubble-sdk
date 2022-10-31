@@ -56,7 +56,7 @@ def login_required(func):
     return arg_wrapper
 
 
-def login(interactive=None, **kwargs):
+def login(interactive: Optional[bool] = None, **kwargs):
     """This function guides user to login."""
 
     if interactive is None:
