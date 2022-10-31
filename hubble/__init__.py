@@ -13,6 +13,7 @@ from importlib_metadata import version
 from .client.client import Client  # noqa F401
 from .excepts import AuthenticationRequiredError
 from .utils.auth import Auth  # noqa F401
+from .utils.notebook import is_notebook  # noqa F401
 
 try:
     __version__ = version("jina-hubble-sdk")
@@ -55,9 +56,16 @@ def login_required(func):
     return arg_wrapper
 
 
-def login(**kwargs):
-    """This function guide user to browser log-in and get token."""
-    asyncio.run(Auth.login(**kwargs))
+def login(interactive: Optional[bool] = None, **kwargs):
+    """This function guides user to login."""
+
+    if interactive is None:
+        interactive = is_notebook()
+
+    if interactive:
+        Auth.login_notebook(**kwargs)
+    else:
+        Auth.login_sync(**kwargs)
 
 
 def notebook_login(**kwargs):
