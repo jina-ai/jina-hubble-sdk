@@ -6,3 +6,4 @@ filelock
 pathspec
 cryptography
 docker
+pyyaml
