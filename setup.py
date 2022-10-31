@@ -30,7 +30,7 @@ _project_urls = {
     'Source': 'https://github.com/jina-ai/hubble-client-python/',
     'Tracker': 'https://github.com/jina-ai/hubble-client-python/issues',
 }
-_license = 'Proprietary'
+_license = 'Apache 2.0'
 _package_exclude = ['*.tests', '*.tests.*', 'tests.*', 'tests']
 
 

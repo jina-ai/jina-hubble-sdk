@@ -41,8 +41,9 @@ about:
   home: https://github.com/jina-ai/hubble-client-python/
   summary: SDK for Hubble API at Jina AI.
   dev_url: https://github.com/jina-ai/hubble-client-python/
-  license: TAPR-OHL-1.0
-  license_file: PLEASE_ADD_LICENSE_FILE
+  license: Apache-2.0
+  license_family: Apache
+  license_file: LICENSE
 
 extra:
   recipe-maintainers:
