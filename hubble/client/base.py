@@ -1,3 +1,4 @@
+import logging
 from typing import IO, Any, MutableMapping, Optional, Text, Union
 
 import requests
@@ -22,6 +23,8 @@ class BaseClient(object):
         jsonify: bool = False,
     ):
         self._session = HubbleAPISession()
+
+        self.logger = logging.getLogger(self.__class__.__name__)
 
         self._token = token if token else Auth.get_auth_token()
         if self._token:
@@ -93,7 +96,11 @@ class BaseClient(object):
 
             if self._jsonify:
                 resp = get_json_from_response(resp)
-        except Exception as err:
-            raise Exception(f'{err or "Unknown Error"} session_id: {session_id}')
+        except Exception as e:
+            self.logger.error(
+                f'Please report this session_id: [yellow bold]{session_id}[/] '
+                'to https://github.com/jina-ai/jina-hubble-sdk/issues'
+            )
+            raise e
 
         return resp
