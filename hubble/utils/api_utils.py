@@ -1,12 +1,12 @@
-import os
-from json import JSONDecodeError
 import json
+import logging
+import os
 import sys
+import uuid
+from json import JSONDecodeError
+from typing import Dict, Optional, Tuple
 
 from requests import Response
-import uuid
-import logging
-from typing import Optional, Dict, Tuple
 
 DOMAIN = 'https://api.hubble.jina.ai'
 PROTOCOL = 'rpc'
@@ -17,6 +17,7 @@ default_logger = logging.getLogger(__name__)
 __resources_path__ = os.path.join(
     os.path.dirname(sys.modules['hubble'].__file__), 'resources'
 )
+
 
 def get_base_url():
     """Get the base url based on environment"""
@@ -71,57 +72,57 @@ def get_ci_vendor() -> Optional[str]:
 
 
 def get_full_version() -> Optional[Tuple[Dict, Dict]]:
-        """
-        Get the version of libraries used in Jina and environment variables.
+    """
+    Get the version of libraries used in Jina and environment variables.
 
-        :return: Version information and environment variables
-        """
-        import os
-        import platform
-        from uuid import getnode
+    :return: Version information and environment variables
+    """
+    import os
+    import platform
+    from uuid import getnode
 
-        from hubble import __uptime__
-        from hubble import __version__ as __hubble_version__
+    from hubble import __uptime__
+    from hubble import __version__ as __hubble_version__
 
-        try:
-            from jina.helper import get_full_version
+    try:
+        from jina.helper import get_full_version
 
-            metas, env_info = get_full_version()
-        except ImportError:
-            metas, env_info = {}, {}
+        metas, env_info = get_full_version()
+    except ImportError:
+        metas, env_info = {}, {}
 
-        try:
-            info = {
-                **metas,
-                'jina': metas.get('jina') or __unset_msg__,
-                'docarray': metas.get('docarray') or __unset_msg__,
-                'jcloud': metas.get('jcloud') or __unset_msg__,
-                'jina-proto': metas.get('jina-proto') or __unset_msg__,
-                'protobuf': metas.get('protobuf') or __unset_msg__,
-                'proto-backend': metas.get('proto-backend') or __unset_msg__,
-                'grpcio': metas.get('grpcio') or __unset_msg__,
-                'pyyaml': metas.get('pyyaml') or __unset_msg__,
-                'jina-hubble-sdk': __hubble_version__,
-                'python': platform.python_version(),
-                'platform': platform.system(),
-                'platform-release': platform.release(),
-                'platform-version': platform.version(),
-                'architecture': platform.machine(),
-                'processor': platform.processor(),
-                'uid': getnode(),
-                'session-id': str(random_uuid(use_uuid1=True)),
-                'uptime': __uptime__,
-                'ci-vendor': get_ci_vendor() or __unset_msg__,
-                'internal': 'jina-ai'
-                in os.getenv('GITHUB_ACTION_REPOSITORY', __unset_msg__),
-            }
+    try:
+        info = {
+            **metas,
+            'jina': metas.get('jina') or __unset_msg__,
+            'docarray': metas.get('docarray') or __unset_msg__,
+            'jcloud': metas.get('jcloud') or __unset_msg__,
+            'jina-proto': metas.get('jina-proto') or __unset_msg__,
+            'protobuf': metas.get('protobuf') or __unset_msg__,
+            'proto-backend': metas.get('proto-backend') or __unset_msg__,
+            'grpcio': metas.get('grpcio') or __unset_msg__,
+            'pyyaml': metas.get('pyyaml') or __unset_msg__,
+            'jina-hubble-sdk': __hubble_version__,
+            'python': platform.python_version(),
+            'platform': platform.system(),
+            'platform-release': platform.release(),
+            'platform-version': platform.version(),
+            'architecture': platform.machine(),
+            'processor': platform.processor(),
+            'uid': getnode(),
+            'session-id': str(random_uuid(use_uuid1=True)),
+            'uptime': __uptime__,
+            'ci-vendor': get_ci_vendor() or __unset_msg__,
+            'internal': 'jina-ai'
+            in os.getenv('GITHUB_ACTION_REPOSITORY', __unset_msg__),
+        }
 
-            full_version = info, env_info
-        except Exception as e:
-            default_logger.error(str(e))
-            full_version = None
+        full_version = info, env_info
+    except Exception as e:
+        default_logger.error(str(e))
+        full_version = None
 
-        return full_version
+    return full_version
 
 
 def get_request_header() -> Dict:

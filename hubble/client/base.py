@@ -72,7 +72,7 @@ class BaseClient(object):
         """
         default_headers = get_request_header()
         if headers:
-            headers.update(default_headers) 
+            headers.update(default_headers)
         else:
             headers = default_headers
 
@@ -95,6 +95,6 @@ class BaseClient(object):
                 resp = get_json_from_response(resp)
 
         except Exception as err:
-            raise Exception(f'Unknown Error, session_id: {session_id}')
+            raise Exception(f'{ err.msg or err.message or "Unknown Error"}, session_id: {session_id}')
 
         return resp
