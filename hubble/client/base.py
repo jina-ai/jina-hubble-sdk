@@ -93,8 +93,7 @@ class BaseClient(object):
 
             if self._jsonify:
                 resp = get_json_from_response(resp)
-
         except Exception as err:
-            raise Exception(f'{ err.msg or err.message or "Unknown Error"}, session_id: {session_id}')
+            raise Exception(f'{err or "Unknown Error"} session_id: {session_id}')
 
         return resp
