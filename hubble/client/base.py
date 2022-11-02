@@ -3,7 +3,7 @@ from typing import IO, Any, MutableMapping, Optional, Text, Union
 import requests
 
 from ..excepts import errorcodes
-from ..utils.api_utils import get_base_url, get_json_from_response
+from ..utils.api_utils import get_base_url, get_json_from_response, get_request_header
 from ..utils.auth import Auth
 from .session import HubbleAPISession
 
@@ -70,18 +70,31 @@ class BaseClient(object):
         :returns: `requests.Response` object as returned value
             or dict if jsonify.
         """
-        resp = self._session.request(
-            method=method,
-            url=url,
-            data=data if data else None,
-            files=files,
-            headers=headers,
-            json=json if json else None,
-        )
-        if resp.status_code >= 400:
-            self._handle_error_request(resp)
+        default_headers = get_request_header()
+        if headers:
+            headers.update(default_headers) 
+        else:
+            headers = default_headers
 
-        if self._jsonify:
-            resp = get_json_from_response(resp)
+        session_id = headers.get('jinameta-session-id')
+
+        try:
+            resp = self._session.request(
+                method=method,
+                url=url,
+                data=data if data else None,
+                files=files,
+                headers=headers,
+                json=json if json else None,
+            )
+
+            if resp.status_code >= 400:
+                self._handle_error_request(resp)
+
+            if self._jsonify:
+                resp = get_json_from_response(resp)
+
+        except Exception as err:
+            raise Exception(f'Unknown Error, session_id: {session_id}')
 
         return resp
