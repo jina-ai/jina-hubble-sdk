@@ -74,7 +74,7 @@ class BaseClient(object):
         :returns: `requests.Response` object as returned value
             or dict if jsonify.
         """
-        default_headers = {'jinameta-session-id': uuid.uuid1()}
+        default_headers = {'jinameta-session-id': str(uuid.uuid1())}
         if headers:
             headers.update(default_headers)
         else:
