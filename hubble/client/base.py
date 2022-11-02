@@ -1,10 +1,11 @@
 import logging
+import uuid
 from typing import IO, Any, MutableMapping, Optional, Text, Union
 
 import requests
 
 from ..excepts import errorcodes
-from ..utils.api_utils import get_base_url, get_json_from_response, get_request_header
+from ..utils.api_utils import get_base_url, get_json_from_response
 from ..utils.auth import Auth
 from .session import HubbleAPISession
 
@@ -73,7 +74,7 @@ class BaseClient(object):
         :returns: `requests.Response` object as returned value
             or dict if jsonify.
         """
-        default_headers = get_request_header()
+        default_headers = {'jinameta-session-id': uuid.uuid1()}
         if headers:
             headers.update(default_headers)
         else:
