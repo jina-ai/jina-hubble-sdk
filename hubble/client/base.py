@@ -1,3 +1,5 @@
+import logging
+import uuid
 from typing import IO, Any, MutableMapping, Optional, Text, Union
 
 import requests
@@ -22,6 +24,8 @@ class BaseClient(object):
         jsonify: bool = False,
     ):
         self._session = HubbleAPISession()
+
+        self.logger = logging.getLogger(self.__class__.__name__)
 
         self._token = token if token else Auth.get_auth_token()
         if self._token:
@@ -70,18 +74,34 @@ class BaseClient(object):
         :returns: `requests.Response` object as returned value
             or dict if jsonify.
         """
-        resp = self._session.request(
-            method=method,
-            url=url,
-            data=data if data else None,
-            files=files,
-            headers=headers,
-            json=json if json else None,
-        )
-        if resp.status_code >= 400:
-            self._handle_error_request(resp)
+        default_headers = {'jinameta-session-id': str(uuid.uuid1())}
+        if headers:
+            headers.update(default_headers)
+        else:
+            headers = default_headers
 
-        if self._jsonify:
-            resp = get_json_from_response(resp)
+        session_id = headers.get('jinameta-session-id')
+
+        try:
+            resp = self._session.request(
+                method=method,
+                url=url,
+                data=data if data else None,
+                files=files,
+                headers=headers,
+                json=json if json else None,
+            )
+
+            if resp.status_code >= 400:
+                self._handle_error_request(resp)
+
+            if self._jsonify:
+                resp = get_json_from_response(resp)
+        except Exception as e:
+            self.logger.error(
+                f'Please report this session_id: [yellow bold]{session_id}[/] '
+                'to https://github.com/jina-ai/jina-hubble-sdk/issues'
+            )
+            raise e
 
         return resp
