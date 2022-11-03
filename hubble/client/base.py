@@ -60,6 +60,7 @@ class BaseClient(object):
         files: Optional[MutableMapping[Text, IO[Any]]] = None,
         headers: Optional[dict] = None,
         json: Optional[dict] = None,
+        log_error: Optional[bool] = True,
     ) -> Union[requests.Response, dict]:
         """The basis request handler.
 
@@ -91,17 +92,17 @@ class BaseClient(object):
                 headers=headers,
                 json=json if json else None,
             )
-
             if resp.status_code >= 400:
                 self._handle_error_request(resp)
 
             if self._jsonify:
                 resp = get_json_from_response(resp)
         except Exception as e:
-            self.logger.error(
-                f'Please report this session_id: [yellow bold]{session_id}[/] '
-                'to https://github.com/jina-ai/jina-hubble-sdk/issues'
-            )
+            if log_error:
+                self.logger.error(
+                    f'Please report this session_id: [yellow bold]{session_id}[/] '
+                    'to https://github.com/jina-ai/jina-hubble-sdk/issues'
+                )
             raise e
 
         return resp
