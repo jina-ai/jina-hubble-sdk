@@ -138,7 +138,10 @@ NOTEBOOK_REDIRECT_HTML = """
         <img src={LOGO} width=175 alt="Jina AI">
         <div class='spaced'></div>
         <p>
-            Please open <a class='link2' href='{HREF}' target='_blank'>this link</a> to continue the login process.
+            Your browser is going to open the login page.
+        </p>
+        <p>
+            If this fails, please open <a class='link2' href='{HREF}' target='_blank'>this link</a> to log in.
         </p>
     </center>
 </div>
@@ -273,6 +276,7 @@ The function also requires `ipywidgets`.
             success_widget.layout.display = "flex"
 
         def _redirect_callback(href=None, **kwargs):
+
             # format url
             redirect_url_widget.value = NOTEBOOK_REDIRECT_HTML.format(
                 LOGO=JINA_LOGO, HREF=href
@@ -283,8 +287,12 @@ The function also requires `ipywidgets`.
             error_widget.layout.display = "none"
             success_widget.layout.display = "none"
 
+            # attempt to open the browser
+            webbrowser.open(href)
+
         def _error_callback(err=None, **kwargs):
             # format error
+            err = json.dumps(err, indent=4)
             error_description_widget.value = NOTEBOOK_ERROR_HTML.format(
                 LOGO=JINA_LOGO, ERR=err
             )
@@ -392,7 +400,11 @@ The function also requires `ipywidgets`.
                 if redirect_callback:
                     redirect_callback(href=href)
                 else:
-                    print(f'Please open the following link: {href}')
+                    print(
+                        f'Your browser is going to open the login page.\n'
+                        f'If this fails please open the following link: {href}'
+                    )
+                    webbrowser.open(href)
 
             elif event == 'authorize':
                 if item['data']['code'] and item['data']['state']:
@@ -402,21 +414,22 @@ The function also requires `ipywidgets`.
                     if error_callback:
                         error_callback(err=err)
                     else:
-                        print('Authentication failed: {}'.format(err))
+                        rich_print(
+                            ':rotating_light: Authentication failed: {}'.format(err)
+                        )
 
             elif event == 'error':
                 err = item['data']
                 if error_callback:
-                    err = json.dumps(err, indent=4)
                     error_callback(err=err)
                 else:
-                    print('Authentication failed: {}'.format(err))
+                    rich_print(':rotating_light: Authentication failed: {}'.format(err))
             else:
                 err = f'Unknown event: {event}'
                 if error_callback:
                     error_callback(err=err)
                 else:
-                    print(err)
+                    rich_print(':rotating_light: {}'.format(err))
 
         if auth_info is None:
             return
@@ -427,6 +440,7 @@ The function also requires `ipywidgets`.
         response.raise_for_status()
         json_response = get_json_from_response(response)
         token = json_response['data']['token']
+        user = json_response['data']['user']['nickname']
         config.set('auth_token', token)
 
         # dockerauth
@@ -436,6 +450,10 @@ The function also requires `ipywidgets`.
 
         if success_callback:
             success_callback()
+        else:
+            rich_print(
+                f':closed_lock_with_key: [green]Successfully logged in to Jina AI[/] as [b]{user}[/b]!'
+            )
 
         if post_success:
             post_success()
