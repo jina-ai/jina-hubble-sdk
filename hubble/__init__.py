@@ -65,7 +65,7 @@ def login(interactive: Optional[bool] = None, **kwargs):
     if interactive:
         Auth.login_notebook(**kwargs)
     else:
-        Auth.login_async(**kwargs)
+        asyncio.run(Auth.login_async(**kwargs))
 
 
 def notebook_login(**kwargs):
