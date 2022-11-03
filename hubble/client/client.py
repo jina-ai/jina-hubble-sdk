@@ -54,29 +54,27 @@ class Client(BaseClient):
             data={'name': name},
         )
 
-    def get_user_info(
-        self, print_logger: bool = True
-    ) -> Union[requests.Response, dict]:
+    def get_user_info(self, log_error: bool = True) -> Union[requests.Response, dict]:
         """Get current logged in user information.
 
         :returns: `requests.Response` object as returned value
             or indented json if jsonify.
         """
         return self.handle_request(
-            url=self._base_url + EndpointsV2.get_user_info, print_logger=print_logger
+            url=self._base_url + EndpointsV2.get_user_info, log_error=log_error
         )
 
     @property
     def token(self):
         try:
-            self.get_user_info(print_logger=False)
+            self.get_user_info(log_error=False)
             return self._token
         except Exception:
             return None
 
     @property
     def username(self) -> str:
-        return self.get_user_info(print_logger=False)['data']['nickname']
+        return self.get_user_info(log_error=False)['data']['nickname']
 
     def upload_artifact(
         self,
