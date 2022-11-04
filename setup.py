@@ -11,8 +11,8 @@ _keywords = (
     'fine-tuning pretrained-models triplet-loss metric-learning '
     'siamese-network few-shot-learning'
 )
-_url = 'https://github.com/jina-ai/hubble-client-python/'
-_download_url = 'https://github.com/jina-ai/hubble-client-python/tags'
+_url = 'https://github.com/jina-ai/jina-hubble-sdk/'
+_download_url = 'https://github.com/jina-ai/jina-hubble-sdk/tags'
 _classifiers = [
     'Development Status :: 3 - Alpha',
     'Intended Audience :: Developers',
@@ -27,10 +27,10 @@ _classifiers = [
     'Topic :: Scientific/Engineering :: Artificial Intelligence',
 ]
 _project_urls = {
-    'Source': 'https://github.com/jina-ai/hubble-client-python/',
-    'Tracker': 'https://github.com/jina-ai/hubble-client-python/issues',
+    'Source': 'https://github.com/jina-ai/jina-hubble-sdk/',
+    'Tracker': 'https://github.com/jina-ai/jina-hubble-sdk/issues',
 }
-_license = 'Proprietary'
+_license = 'Apache 2.0'
 _package_exclude = ['*.tests', '*.tests.*', 'tests.*', 'tests']
 
 
