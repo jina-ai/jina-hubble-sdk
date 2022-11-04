@@ -70,7 +70,7 @@ test:
 
 # ---------------------------------------------------------- Code style related targets
 
-SRC_CODE = hubble/ tests/
+SRC_CODE = hubble/ tests/  scripts/
 
 ## Run the flake linter
 flake:
