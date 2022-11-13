@@ -440,8 +440,10 @@ The function also requires `ipywidgets`.
         response.raise_for_status()
         json_response = get_json_from_response(response)
         token = json_response['data']['token']
-        user = json_response['data']['user']['nickname']
         config.set('auth_token', token)
+
+        user = json_response['data'].get('user', {})
+        username = user.get('nickname') or user.get('name')
 
         # dockerauth
         from hubble.dockerauth import auto_deploy_hubble_docker_credential_helper
@@ -452,7 +454,7 @@ The function also requires `ipywidgets`.
             success_callback()
         else:
             rich_print(
-                f':closed_lock_with_key: [green]Successfully logged in to Jina AI[/] as [b]{user}[/b]!'
+                f':closed_lock_with_key: [green]Successfully logged in to Jina AI[/] as [b]{username}[/b]!'
             )
 
         if post_success:
@@ -519,7 +521,9 @@ The function also requires `ipywidgets`.
                 response.raise_for_status()
                 json_response = await response.json()
                 token = json_response['data']['token']
-                user = json_response['data']['user']['nickname']
+
+                user = json_response['data'].get('user', {})
+                username = user.get('nickname') or user.get('name')
 
                 config.set('auth_token', token)
 
@@ -530,7 +534,7 @@ The function also requires `ipywidgets`.
                 auto_deploy_hubble_docker_credential_helper()
 
                 rich_print(
-                    f':closed_lock_with_key: [green]Successfully logged in to Jina AI[/] as [b]{user}[/b]!'
+                    f':closed_lock_with_key: [green]Successfully logged in to Jina AI[/] as [b]{username}[/b]!'
                 )
 
     @staticmethod

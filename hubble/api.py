@@ -13,14 +13,14 @@ def logout(*args):
 
 def login(args):
     client = Client(jsonify=True)
-    nickname = ''
+    username = ''
 
     if args.force:
         _login(prompt='login', force=True)
         return
 
     try:
-        nickname = client.username
+        username = client.username
     except Exception as ex:
         if isinstance(ex, (AuthenticationRequiredError, AuthenticationFailedError)):
             _login(prompt='login')
@@ -31,12 +31,12 @@ def login(args):
 
         auto_deploy_hubble_docker_credential_helper()
 
-        if nickname:
+        if username:
             from rich.console import Console
 
             console = Console()
             console.print(
-                f':closed_lock_with_key: You are already logged in as [b green]{nickname}[/b green].',
+                f':closed_lock_with_key: You are already logged in as [b green]{username}[/b green].',
                 '',
                 'If you want to log in to another account, please run either:',
                 '- [b]jina auth logout[/]',

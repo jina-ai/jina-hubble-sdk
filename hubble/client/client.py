@@ -74,7 +74,8 @@ class Client(BaseClient):
 
     @property
     def username(self) -> str:
-        return self.get_user_info(log_error=False)['data']['nickname']
+        user = self.get_user_info(log_error=False).get('data', {})
+        return user.get('nickname') or user.get('name')
 
     def upload_artifact(
         self,

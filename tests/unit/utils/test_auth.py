@@ -89,9 +89,7 @@ class GrantResponse:
 
 class GrantResponseSync:
 
-    _grant_response = {
-        'data': {'token': 'SOME_TOKEN', 'user': {'nickname': 'SOME_NICKNAME'}}
-    }
+    _grant_response = {'data': {'token': 'SOME_TOKEN', 'user': {'name': 'SOME_NAME'}}}
 
     _error_response = {}
 
