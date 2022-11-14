@@ -57,7 +57,20 @@ def test_upload_get_delete_artifact(client, tmpdir):
     if not client._jsonify:
         resp = resp.json()
 
-    artifact_id1 = resp['data']['_id']
+    data = resp['data']
+    artifact_id1 = data['_id']
+
+    assert data['visibility'] == 'private'
+    assert data.get('metaData', None) is None
+
+    resp = client.update_artifact(id=artifact_id1, is_public=True, metadata={'a': 1})
+    if not client._jsonify:
+        resp = resp.json()
+
+    data = resp['data']
+
+    assert data['visibility'] == 'public'
+    assert data['metaData'] == {'a': 1}
 
     # upload from bytesio
     resp = client.upload_artifact(

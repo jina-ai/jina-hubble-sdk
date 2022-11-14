@@ -234,6 +234,36 @@ class Client(BaseClient):
             data={'id': id} if id else {'name': name},
         )
 
+    def update_artifact(
+        self,
+        id: str,
+        *,
+        name: Optional[str] = None,
+        metadata: Optional[dict] = None,
+        is_public: Optional[bool] = None,
+    ) -> Union[requests.Response, dict]:
+        """Update artifact.
+
+        :param id: The id of the artifact to be updated.
+        :param name: Optional, a new name.
+        :param metadata: Optional, a new metadata.
+        :param public: Optional, change visibility to public or private.
+        :returns: `requests.Response` object as returned value
+            or indented json if jsonify.
+        """
+
+        data = {
+            'id': id,
+            'name': name,
+            'metaData': json.dumps(metadata) if metadata else None,
+            'public': is_public,
+        }
+
+        return self.handle_request(
+            url=self._base_url + EndpointsV2.update_artifact,
+            json={key: value for (key, value) in data.items() if value is not None},
+        )
+
     def list_artifacts(
         self,
         *,
