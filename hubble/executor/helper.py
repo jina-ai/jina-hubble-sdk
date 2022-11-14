@@ -247,8 +247,8 @@ def get_request_header() -> Dict:
     return headers
 
 
-def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
-    """Parse the uri of the Jina Hub executor.
+def parse_legacy_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
+    """Parse the legacy/old uri of the Jina Hub executor.
 
     :param uri_path: the uri of Jina Hub executor
     :return: a tuple of schema, id, tag, and secret
@@ -268,6 +268,39 @@ def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
     tag = parser.path.strip('/') if parser.path else None
 
     return scheme, name, tag, secret
+
+
+def parse_hub_uri(uri_path: str) -> Tuple[str, str, str, str]:
+    """Parse the uri of the Jina Hub executor.
+
+    :param uri_path: the uri of Jina Hub executor
+    :return: a tuple of schema, id, tag, and secret
+    """
+    if uri_path.startswith('jinahub'):
+        return parse_legacy_hub_uri(uri_path)
+
+    parser = urlparse(uri_path)
+    scheme = parser.scheme
+    if scheme not in {'jinaai', 'jinaai+docker', 'jinaai+sandbox'}:
+        raise ValueError(f'{uri_path} is not a valid Hub URI.')
+
+    if not parser.path:
+        raise ValueError(f'{uri_path} is not a valid Hub URI.')
+
+    items = parser.path.strip('/').split(':')
+
+    if len(items) > 2:
+        raise ValueError(f'{uri_path} is not a valid Hub URI.')
+
+    name = items[0].strip('/')
+    tag = items[1].strip('/') if len(items) > 1 else None
+
+    username = parser.netloc
+
+    if not username or not name:
+        raise ValueError(f'{uri_path} is not a valid Hub URI.')
+
+    return scheme, f'{username}/{name}', tag, None
 
 
 def replace_secret_of_hub_uri(uri_path: str, txt: str = '<secret>') -> str:

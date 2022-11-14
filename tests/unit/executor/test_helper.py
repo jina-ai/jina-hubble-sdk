@@ -12,21 +12,28 @@ def dummy_zip_file():
     return Path(__file__).parent / 'dummy_executor.zip'
 
 
-def test_parse_hub_uri():
-    result = helper.parse_hub_uri('jinahub://hello')
-    assert result == ('jinahub', 'hello', None, None)
+@pytest.mark.parametrize('plus_scheme', ['', '+docker', '+sandbox'])
+def test_parse_hub_legacy_uri(plus_scheme: str):
+    result = helper.parse_hub_uri(f'jinahub{plus_scheme}://executor1')
+    assert result == (f'jinahub{plus_scheme}', 'executor1', None, None)
 
-    result = helper.parse_hub_uri('jinahub+docker://hello')
-    assert result == ('jinahub+docker', 'hello', None, None)
+    result = helper.parse_hub_uri(f'jinahub{plus_scheme}://executor1/tag1')
+    assert result == (f'jinahub{plus_scheme}', 'executor1', 'tag1', None)
 
-    result = helper.parse_hub_uri('jinahub+docker://hello/world')
-    assert result == ('jinahub+docker', 'hello', 'world', None)
+    result = helper.parse_hub_uri(f'jinahub{plus_scheme}://executor1:secret1/tag1')
+    assert result == (f'jinahub{plus_scheme}', 'executor1', 'tag1', 'secret1')
 
-    result = helper.parse_hub_uri('jinahub+docker://hello:magic/world')
-    assert result == ('jinahub+docker', 'hello', 'world', 'magic')
 
-    result = helper.parse_hub_uri('jinahub+sandbox://hello:magic/world')
-    assert result == ('jinahub+sandbox', 'hello', 'world', 'magic')
+@pytest.mark.parametrize('plus_scheme', ['', '+docker', '+sandbox'])
+def test_parse_hub_uri(plus_scheme: str):
+    result = helper.parse_hub_uri(f'jinaai{plus_scheme}://user1/executor1')
+    assert result == (f'jinaai{plus_scheme}', 'user1/executor1', None, None)
+
+    result = helper.parse_hub_uri(f'jinaai{plus_scheme}://user1/executor1:tag1')
+    assert result == (f'jinaai{plus_scheme}', 'user1/executor1', 'tag1', None)
+
+    result = helper.parse_hub_uri(f'jinaai{plus_scheme}://user1/executor1/:/tag1/')
+    assert result == (f'jinaai{plus_scheme}', 'user1/executor1', 'tag1', None)
 
 
 @pytest.mark.parametrize(
@@ -34,13 +41,17 @@ def test_parse_hub_uri():
     [
         'different-scheme://hello',
         'jinahub://',
+        'jinaai://',
+        'jinaai://user1',
+        'jinaai://user1:tag1',
+        'jinaai://user1/MyExecutor:tag1:tag2',
     ],
 )
 def test_parse_wrong_hub_uri(uri_path):
     with pytest.raises(ValueError) as info:
         helper.parse_hub_uri(uri_path)
 
-    assert f'{uri_path} is not a valid Hub URI.' == str(info.value)
+    assert f'{uri_path} is not a valid Hub URI' in str(info.value)
 
 
 def test_replace_secret_of_hub_uri():
