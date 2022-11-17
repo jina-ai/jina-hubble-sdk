@@ -966,9 +966,13 @@ class DownloadMockResponse:
         return self.response_code
 
 
-@pytest.mark.parametrize('executor_name', ['alias_dummy', None])
+@pytest.mark.parametrize('executor_name', ['dummy_mwu_encoder', None])
 @pytest.mark.parametrize('build_env', [['DOWNLOAD', 'DOMAIN'], None])
-def test_pull(mocker, monkeypatch, executor_name, build_env):
+@pytest.mark.parametrize(
+    'executor_uri',
+    ['jinaai://user1/dummy_mwu_encoder:tag1', 'jinahub://dummy_mwu_encoder:secret'],
+)
+def test_pull(mocker, monkeypatch, executor_name, build_env, executor_uri):
     mock = mocker.Mock()
 
     def _mock_fetch(
@@ -1011,19 +1015,17 @@ def test_pull(mocker, monkeypatch, executor_name, build_env):
     monkeypatch.setattr(requests, 'get', _mock_download)
     monkeypatch.setattr(requests, 'head', _mock_head)
 
-    def _mock_prettyprint_usage(self, console, executor_name):
+    def _mock_prettyprint_usage(self, console, *, scheme_prefix, executor_name):
         mock(console=console)
         print('_mock_prettyprint_usage executor_name:', executor_name)
-        assert executor_name != 'None'
+        assert executor_name in executor_uri
+        assert executor_uri.startswith(scheme_prefix)
 
     monkeypatch.setattr(HubIO, '_prettyprint_usage', _mock_prettyprint_usage)
 
     monkeypatch.setenv('DOWNLOAD', 'download')
     monkeypatch.setenv('DOMAIN', 'github.com')
-    args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder'])
-    HubIO(args).pull()
-
-    args = set_hub_pull_parser().parse_args(['jinahub://dummy_mwu_encoder:secret'])
+    args = set_hub_pull_parser().parse_args([executor_uri])
     HubIO(args).pull()
 
 
