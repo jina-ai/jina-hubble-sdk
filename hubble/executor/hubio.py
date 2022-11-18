@@ -449,17 +449,18 @@ metas:
         verbose = form_data.get('verbose', False)
         image = None
         session_id = req_header.get('jinameta-session-id')
+
+        if resp.status_code >= 400:
+            json_resp = get_json_from_response(resp)
+            msg = json_resp.get('readableMessage')
+            raise Exception(f'{ msg or "Unknown Error"} session_id: {session_id}')
+
         for stream_line in resp.iter_lines():
 
             stream_msg = json.loads(stream_line)
             t = stream_msg.get('type')
             subject = stream_msg.get('subject')
             payload = stream_msg.get('payload', '')
-
-            # authentication error doesn't follow the streaming format
-            if stream_msg.get('code', 200) >= 400:
-                msg = stream_msg.get('readableMessage')
-                raise Exception(f'{ msg or "Unknown Error"} session_id: {session_id}')
 
             if t == 'error':
                 msg = stream_msg.get('message')
