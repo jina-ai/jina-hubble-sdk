@@ -105,9 +105,14 @@ def show_hint(interactive: bool = False) -> Optional[str]:  # noqa: E501
 
     c = Client(jsonify=True)
 
+    user = c.get_user_info(log_error=False).get('data', {})
+    name = user.get('nickname') or user.get('name')
+    username = user.get('name')
+
     try:
         print(
-            f':closed_lock_with_key: [green bold]You are logged in to Jina AI[/] as [bold]{c.username}[/]. '
+            f':closed_lock_with_key: [green bold]You are logged in to Jina AI[/] '
+            f'as [bold]{name} (username: {username})[/]. '
             f'To log out, use [dim]jina auth logout[/].'
         )
         return c.token
