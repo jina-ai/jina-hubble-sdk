@@ -449,6 +449,12 @@ metas:
         verbose = form_data.get('verbose', False)
         image = None
         session_id = req_header.get('jinameta-session-id')
+
+        if resp.status_code >= 400:
+            json_resp = get_json_from_response(resp)
+            msg = json_resp.get('readableMessage')
+            raise Exception(f'{ msg or "Unknown Error"} session_id: {session_id}')
+
         for stream_line in resp.iter_lines():
 
             stream_msg = json.loads(stream_line)
@@ -482,7 +488,8 @@ metas:
 
             elif t == 'complete':
                 image = stream_msg['payload']
-                warnings.append(stream_msg.get('warning'))
+                if stream_msg.get('warning'):
+                    warnings.append(stream_msg.get('warning'))
                 st.update(
                     f'Cloud building ... [dim]{subject}: {t} ({stream_msg["message"]})[/dim]'
                 )
@@ -715,19 +722,36 @@ metas:
         )
         console.print(p1)
 
-        presented_id = image.get('name', uuid8)
-        usage = (
-            presented_id
-            if visibility == 'public' or not secret
-            else f'{presented_id}:{secret}'
-        ) + (f'/{tag}' if tag else '')
+        name = image.get('name', uuid8)
+        owner_name = image.get('owner', {}).get('name', None)
+
+        # TODO: remove legacy "jinahub" support after the namespace release
+        if not owner_name or bool(secret):
+            scheme_prefix = 'jinahub'
+            is_legacy_uri = True
+        else:
+            scheme_prefix = 'jinaai'
+            is_legacy_uri = False
+
+        if visibility == 'public' or not secret:
+            executor_name = name
+        else:
+            executor_name = f'{name}:{secret}'
+
+        if owner_name:
+            executor_name = f'{owner_name}/{executor_name}'
+
+        if tag:
+            executor_name += f'/{tag}' if is_legacy_uri else f':{tag}'
 
         if not self.args.no_usage:
-            self._prettyprint_usage(console, usage)
+            self._prettyprint_usage(
+                console, scheme_prefix=scheme_prefix, executor_name=executor_name
+            )
 
         return uuid8, secret
 
-    def _prettyprint_usage(self, console, executor_name):
+    def _prettyprint_usage(self, console, *, scheme_prefix, executor_name):
         from rich import box
         from rich.panel import Panel
         from rich.syntax import Syntax
@@ -744,36 +768,36 @@ metas:
         param_str.add_row(
             'Container',
             'YAML',
-            Syntax(f"uses: jinahub+docker://{executor_name}", 'yaml'),
+            Syntax(f"uses: {scheme_prefix}+docker://{executor_name}", 'yaml'),
         )
         param_str.add_row(
             None,
             'Python',
-            Syntax(f".add(uses='jinahub+docker://{executor_name}')", 'python'),
+            Syntax(f".add(uses='{scheme_prefix}+docker://{executor_name}')", 'python'),
         )
 
         param_str.add_row()
         param_str.add_row(
             'Sandbox',
             'YAML',
-            Syntax(f"uses: jinahub+sandbox://{executor_name}", 'yaml'),
+            Syntax(f"uses: {scheme_prefix}+sandbox://{executor_name}", 'yaml'),
         )
         param_str.add_row(
             '',
             'Python',
-            Syntax(f".add(uses='jinahub+sandbox://{executor_name}')", 'python'),
+            Syntax(f".add(uses='{scheme_prefix}+sandbox://{executor_name}')", 'python'),
         )
 
         param_str.add_row()
         param_str.add_row(
             'Source',
             'YAML',
-            Syntax(f"uses: jinahub://{executor_name}", 'yaml'),
+            Syntax(f"uses: {scheme_prefix}://{executor_name}", 'yaml'),
         )
         param_str.add_row(
             '',
             'Python',
-            Syntax(f".add(uses='jinahub://{executor_name}')", 'python'),
+            Syntax(f".add(uses='{scheme_prefix}://{executor_name}')", 'python'),
         )
 
         console.print(
@@ -1253,12 +1277,13 @@ metas:
         cached_zip_file = None
         executor_name = None
         build_env = None
+        scheme = None
 
         try:
             need_pull = self.args.force_update
             with console.status(f'Pulling {self.args.uri}...') as st:
                 scheme, name, tag, secret = parse_hub_uri(self.args.uri)
-                image_required = scheme == 'jinahub+docker'
+                image_required = scheme.endswith('+docker')
 
                 st.update(f'Fetching [bold]{name}[/bold] from Jina Hub ...')
                 executor, from_cache = HubIO.fetch_meta(
@@ -1271,14 +1296,16 @@ metas:
 
                 build_env = executor.build_env
 
-                presented_id = executor.name if executor.name else executor.uuid
-                executor_name = (
-                    f'{presented_id}'
-                    if executor.visibility == 'public' or not secret
-                    else f'{presented_id}:{secret}'
-                ) + (f'/{tag}' if tag else '')
+                if executor.visibility == 'public' or not secret:
+                    executor_name = name
+                else:
+                    executor_name = f'{name}:{secret}'
 
-                if scheme == 'jinahub+docker':
+                is_legacy_uri = scheme.startswith('jinahub')
+                if tag:
+                    executor_name += f'/{tag}' if is_legacy_uri else f':{tag}'
+
+                if scheme.endswith('+docker'):
                     self._load_docker_client()
                     import docker
 
@@ -1298,7 +1325,7 @@ metas:
                             console,
                         )
                     return f'docker://{executor.image_name}'
-                elif scheme == 'jinahub':
+                elif scheme == 'jinahub' or scheme == 'jinaai':
                     import filelock
 
                     if build_env:
@@ -1374,4 +1401,7 @@ metas:
                 cached_zip_file.unlink()
 
             if not self.args.no_usage and executor_name:
-                self._prettyprint_usage(console, executor_name)
+                scheme_prefix = 'jinaai' if scheme.startswith('jinaai') else 'jinahub'
+                self._prettyprint_usage(
+                    console, scheme_prefix=scheme_prefix, executor_name=executor_name
+                )
