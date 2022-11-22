@@ -80,7 +80,7 @@ NOTEBOOK_SUCCESS_HTML = f"""
             You are logged in to Jina AI!
         </p>
         <p>
-            If you want to log in again, run <code>notebook_login(force=True)</code>.
+            To log in again, run <code>login(force=True)</code>.
         </p>
     </center>
 </div>
