@@ -556,12 +556,22 @@ The function also requires `ipywidgets`.
             ) as response:
                 json_response = await response.json()
                 if json_response['code'] == 401:
+                    from hubble.dockerauth import (
+                        remove_all_hubble_docker_credential_helper,
+                    )
+
+                    remove_all_hubble_docker_credential_helper()
                     rich_print(
                         ':unlock: You are not logged in locally. There is no need to log out.'
                     )
                 elif json_response['code'] == 200:
-                    rich_print(':unlock: You have successfully logged out.')
+                    from hubble.dockerauth import (
+                        remove_all_hubble_docker_credential_helper,
+                    )
+
+                    remove_all_hubble_docker_credential_helper()
                     config.delete('auth_token')
+                    rich_print(':unlock: You have successfully logged out.')
                 else:
                     rich_print(
                         f':rotating_light: Failed to log out. {json_response["message"]}'

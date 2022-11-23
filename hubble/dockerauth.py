@@ -34,6 +34,41 @@ def deploy_hubble_docker_credential_helper_for(*registries: str):
         f.write('\n')
 
 
+def remove_all_hubble_docker_credential_helper():
+    """
+    Remove hubble docker credential helper for all the registries.
+    """
+    docker_config_dir = os.environ.get('DOCKER_CONFIG', '~/.docker')
+    docker_config_file_path = Path(
+        os.path.expanduser(docker_config_dir + '/config.json')
+    )
+
+    if not docker_config_file_path.exists():
+        return
+
+    target_conf = {}
+
+    with docker_config_file_path.open('r+') as f:
+        target_conf = json.load(f)
+    if 'credHelpers' not in target_conf:
+        return
+
+    registries_to_remove = []
+    for registry, helper in target_conf['credHelpers'].items():
+        if helper == 'jina-hubble':
+            registries_to_remove.append(registry)
+
+    for registry in registries_to_remove:
+        del target_conf['credHelpers'][registry]
+
+    if len(target_conf['credHelpers']) == 0:
+        del target_conf['credHelpers']
+
+    with docker_config_file_path.open('w') as f:
+        json.dump(target_conf, f, sort_keys=True, indent=2)
+        f.write('\n')
+
+
 def get_credentials_for(_registry: str):
     """
     Get credentials for the registry.
@@ -70,7 +105,10 @@ def main():
         description='Hubble docker credential helper for the registry.'
     )
     parser.add_argument(
-        'action', nargs='?', default='get', help='Action: get, store, erase, or deploy'
+        'action',
+        nargs='?',
+        default='get',
+        help='Action: get, store, erase, clear, or deploy',
     )
     parser.add_argument(
         'registry', nargs='?', help='The registry to deploy helper for.'
@@ -88,6 +126,9 @@ def main():
             auto_deploy_hubble_docker_credential_helper()
             sys.exit(1)
         deploy_hubble_docker_credential_helper_for(args.registry)
+        sys.exit(0)
+    elif args.action == 'clear':
+        remove_all_hubble_docker_credential_helper()
         sys.exit(0)
     else:
         sys.exit(1)
