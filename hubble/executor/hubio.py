@@ -840,7 +840,7 @@ metas:
         )
 
         param_str.add_column(
-            'If you don\'t want to wait for the build result, feel free to interrupt with \'C-C\'. '
+            'If you don\'t want to wait for the build result, feel free to interrupt with \'Ctrl + C\'. '
             'You can resume following the build progress any time.'
         )
         param_str.add_row(
