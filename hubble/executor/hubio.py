@@ -844,8 +844,8 @@ metas:
             'You can resume the build progress at any time.'
         )
         param_str.add_row(
-            f'Do `jina hub status {work_path}` to check for latest build status of the '
-            'Executor in current working directory',
+            f'Run `jina hub status {work_path}` to check the latest build status of the '
+            'Executor in the current working directory',
         )
 
         if task_id:
