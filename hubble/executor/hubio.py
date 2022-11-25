@@ -840,24 +840,25 @@ metas:
         )
 
         param_str.add_column(
-            'If you don\'t want to wait for the Executor\'s build status, you can use \'Ctrl + C\'. '
-            'After that you can get the status of the Executor any time using the command.'
+            'If you don\'t want to wait for the build result, feel free to interrupt with \'C-C\'. '
+            'You can resume following the build progress any time.'
         )
         param_str.add_row(
-            f'Use `jina hub status {work_path}` to get the last build status of the Executor',
+            f'Do `jina hub status {work_path}` to check for latest build status of the '
+            'Executor in current working directory',
         )
 
         if task_id:
             param_str.add_row('')
             param_str.add_row(
-                f'You can also use `jina hub status --id {task_id}` '
-                'to get the specified build status of the Executor.',
+                f'You can also do `jina hub status --id {task_id} --replay --verbose` '
+                'to get the full log of this particular build.',
             )
 
         console.print(
             Panel(
                 param_str,
-                title='Status',
+                title='Building',
                 expand=False,
                 width=100,
             )
