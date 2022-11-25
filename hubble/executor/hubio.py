@@ -851,7 +851,7 @@ metas:
         if task_id:
             param_str.add_row('')
             param_str.add_row(
-                f'You can also do `jina hub status --id {task_id} --replay --verbose` '
+                f'You can also run `jina hub status --id {task_id} --replay --verbose` '
                 'to get the full log of this particular build.',
             )
 
