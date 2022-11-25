@@ -840,8 +840,8 @@ metas:
         )
 
         param_str.add_column(
-            'If you don\'t want to wait for the build result, feel free to interrupt with \'Ctrl + C\'. '
-            'You can resume following the build progress any time.'
+            'If you don\'t want to wait for the build result, you can interrupt it with \'Ctrl + C\'. '
+            'You can resume the build progress at any time.'
         )
         param_str.add_row(
             f'Do `jina hub status {work_path}` to check for latest build status of the '
