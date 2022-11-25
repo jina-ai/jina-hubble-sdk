@@ -361,7 +361,7 @@ metas:
         work_path,
         task_id,
     ):
-
+        image = None
         verbose = form_data.get('verbose', False)
         session_id = req_header.get('jinameta-session-id')
 
@@ -424,6 +424,8 @@ metas:
 
         else:
             raise Exception(f'Error: can\'t get task_id session_id: {session_id}')
+
+        return image
 
     def _sync_push(
         self, console, st, req_header, content, form_data, work_path, uuid8, secret
@@ -510,6 +512,9 @@ metas:
         else:
             raise Exception(f'Unknown Error, session_id: {session_id}')
 
+        return image
+
+    @hubble.login_required
     def push(self) -> None:
         """Push the Executor package to Jina Hub."""
 
@@ -517,6 +522,8 @@ metas:
 
         exec_tags = None
         exec_immutable_tags = None
+        image = None
+
         if self.args.tag:
             exec_tags = ','.join(self.args.tag)
         if self.args.protected_tag:
@@ -639,7 +646,7 @@ metas:
 
                 logged_in = True if hubble.is_logged_in() else False
                 if logged_in:  # if user logged in use async upload api
-                    self._async_push(
+                    image = self._async_push(
                         console,
                         st,
                         req_header,
@@ -651,7 +658,7 @@ metas:
 
                 else:
                     # if user not logged in use async upload api
-                    self._sync_push(
+                    image = self._sync_push(
                         console,
                         st,
                         req_header,
@@ -671,6 +678,8 @@ metas:
                     'to https://github.com/jina-ai/jina-hubble-sdk/issues'
                 )
                 raise e
+
+        return image
 
     def _prettyprint_result(
         self, console, image, *, warnings: Optional[List[str]] = None

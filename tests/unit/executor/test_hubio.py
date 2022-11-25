@@ -389,7 +389,8 @@ def test_push(
 
     with monkeypatch.context() as m:
         m.setattr(hubble, 'is_logged_in', lambda: is_login)
-        HubIO(args).push()
+        image = HubIO(args).push()
+        assert type(image['id']) is str
 
     exec_config_path = get_secret_path(os.stat(exec_path).st_ino)
     shutil.rmtree(exec_config_path)
