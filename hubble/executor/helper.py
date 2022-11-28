@@ -333,6 +333,37 @@ def is_valid_huburi(uri: str) -> bool:
         return False
 
 
+def is_valid_docker_uri(uri: str) -> bool:
+    """Return True if the URI has something to do with docker
+
+    :param uri: the uri to test
+    :return: True or False
+    """
+    try:
+        if uri.startswith('docker://'):
+            return True
+
+        scheme, _, _ = parse_hub_uri(uri)
+
+        return True if scheme.endswith('+docker') else False
+    except ValueError:
+        return False
+
+
+def is_valid_sandbox_uri(uri: str) -> bool:
+    """Return True if the URI has something to do with sandbox
+
+    :param uri: the uri to test
+    :return: True or False
+    """
+    try:
+        scheme, _, _ = parse_hub_uri(uri)
+
+        return True if scheme.endswith('+sandbox') else False
+    except ValueError:
+        return False
+
+
 def md5file(file_path: 'Path') -> str:
     """Return the MD5 checksum of the file
 
