@@ -68,14 +68,14 @@ def test_replace_secret_of_hub_uri():
 
 
 def test_is_valid_docker_uri():
-    assert helper.is_valid_docker_uri('jinaai+docker://hello') is True
+    assert helper.is_valid_docker_uri('jinaai+docker://usr/hello') is True
     assert helper.is_valid_docker_uri('docker://hello') is True
     assert helper.is_valid_docker_uri('jinahub+docker://hello') is True
     assert helper.is_valid_docker_uri('+docker://hello') is False
     assert helper.is_valid_docker_uri('jina+docker://hello') is False
-    assert helper.is_valid_docker_uri('jinaai+dock://hello') is False
+    assert helper.is_valid_docker_uri('jinaai+dock://usr/hello') is False
     assert helper.is_valid_docker_uri('jinahub://hello') is False
-    assert helper.is_valid_docker_uri('jina-ai://hello') is False
+    assert helper.is_valid_docker_uri('jina-ai://usr/hello') is False
     assert helper.is_valid_docker_uri('https://www.google.com') is False
     assert helper.is_valid_docker_uri('jinahub+sandbox://hello') is False
     assert helper.is_valid_docker_uri('') is False
@@ -83,9 +83,9 @@ def test_is_valid_docker_uri():
 
 
 def test_is_valid_sandbox_uri():
-    assert helper.is_valid_sandbox_uri('jinaai+sandbox://hello') is True
+    assert helper.is_valid_sandbox_uri('jinaai+sandbox://usr/hello') is True
     assert helper.is_valid_sandbox_uri('jinahub+sandbox://hello') is True
-    assert helper.is_valid_sandbox_uri('sandbox://hello') is False
+    assert helper.is_valid_sandbox_uri('sandbox://usr/hello') is False
     assert helper.is_valid_sandbox_uri('jinaai://hello') is False
     assert helper.is_valid_sandbox_uri('jinahub://hello') is False
     assert helper.is_valid_sandbox_uri('jinahub+docker://hello') is False
