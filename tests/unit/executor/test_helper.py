@@ -79,7 +79,6 @@ def test_is_valid_docker_uri():
     assert helper.is_valid_docker_uri('https://www.google.com') is False
     assert helper.is_valid_docker_uri('jinahub+sandbox://hello') is False
     assert helper.is_valid_docker_uri('') is False
-    assert helper.is_valid_docker_uri() is False
 
 
 def test_is_valid_sandbox_uri():
@@ -91,7 +90,6 @@ def test_is_valid_sandbox_uri():
     assert helper.is_valid_sandbox_uri('jinahub+docker://hello') is False
     assert helper.is_valid_sandbox_uri('https://www.google.com') is False
     assert helper.is_valid_sandbox_uri('') is False
-    assert helper.is_valid_sandbox_uri() is False
 
 
 def test_md5file(dummy_zip_file):

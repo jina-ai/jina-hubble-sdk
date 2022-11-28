@@ -343,7 +343,7 @@ def is_valid_docker_uri(uri: str) -> bool:
         if uri.startswith('docker://'):
             return True
 
-        scheme, _, _ = parse_hub_uri(uri)
+        scheme, _, _, _ = parse_hub_uri(uri)
 
         return True if scheme.endswith('+docker') else False
     except ValueError:
@@ -357,7 +357,7 @@ def is_valid_sandbox_uri(uri: str) -> bool:
     :return: True or False
     """
     try:
-        scheme, _, _ = parse_hub_uri(uri)
+        scheme, _, _, _ = parse_hub_uri(uri)
 
         return True if scheme.endswith('+sandbox') else False
     except ValueError:
