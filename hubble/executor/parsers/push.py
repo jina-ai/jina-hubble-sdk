@@ -45,7 +45,7 @@ def mixin_hub_push_parser(parser):
         help='''
 A list of tags. One can use it to distinguish architecture (e.g. `cpu`, `gpu`) or versions (e.g. `v1`, `v2`).
 
-One can later fetch a tagged Executor via `jinahub[+docker]://MyExecutor/gpu`
+One can later fetch a tagged Executor via `jinaai[+docker]://<username>/MyExecutor:gpu`
 ''',
     )
 
