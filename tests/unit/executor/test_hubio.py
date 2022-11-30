@@ -380,7 +380,8 @@ def test_push(
         _args_list.append('--no-cache')
 
     if build_env:
-        _args_list.extend(['--build-env', build_env])
+        for env in build_env:
+            _args_list.extend(['--build-env', env])
 
     if verbose:
         _args_list.append('--verbose')
@@ -678,7 +679,8 @@ def test_push_with_error(
     _args_list = [exec_path, mode]
 
     if build_env:
-        _args_list.extend(['--build-env', build_env])
+        for env in build_env:
+            _args_list.extend(['--build-env', env])
 
     args = set_hub_push_parser().parse_args(_args_list)
 
