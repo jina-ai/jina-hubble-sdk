@@ -321,7 +321,7 @@ class StatusPostMockResponse:
 @pytest.mark.parametrize('force', [None, 'UUID8'])
 @pytest.mark.parametrize('path', ['dummy_executor'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
-@pytest.mark.parametrize('build_env', ['DOMAIN=github.com DOWNLOAD=download'])
+@pytest.mark.parametrize('build_env', ['DOMAIN=github.com', 'DOWNLOAD=download'])
 @pytest.mark.parametrize('is_login', [True, False])
 @pytest.mark.parametrize('verbose', [False, True])
 def test_push(
@@ -484,7 +484,8 @@ def test_push_wrong_build_env(
     _args_list = [exec_path, mode]
 
     if build_env:
-        _args_list.extend(['--build-env', build_env])
+        for env in build_env:
+            _args_list.extend(['--build-env', env])
 
     args = set_hub_push_parser().parse_args(_args_list)
 
@@ -573,7 +574,8 @@ def test_push_diff_env_variables(
     exec_path = os.path.join(cur_dir, path)
     _args_list = [exec_path, mode]
     if build_env:
-        _args_list.extend(['--build-env', build_env])
+        for env in build_env:
+            _args_list.extend(['--build-env', env])
 
     args = set_hub_push_parser().parse_args(_args_list)
 
@@ -648,7 +650,7 @@ def test_push_wrong_dockerfile(
 )
 @pytest.mark.parametrize('path', ['dummy_executor'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
-@pytest.mark.parametrize('build_env', ['DOMAIN=github.com DOWNLOAD=download'])
+@pytest.mark.parametrize('build_env', ['DOMAIN=github.com', 'DOWNLOAD=download'])
 @pytest.mark.parametrize('response_error_status', ['image_not_exits', 'response_error'])
 def test_push_with_error(
     mocker,
