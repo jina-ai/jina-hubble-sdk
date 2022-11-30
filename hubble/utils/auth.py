@@ -317,6 +317,11 @@ The function also requires `ipywidgets`.
                     Auth.validate_token(token)
                     config.set('auth_token', token)
                     _success_callback()
+
+                    post_succes = kwargs.get('post_succes')
+                    if post_succes:
+                        post_succes()
+
                     return
                 except AuthenticationFailedError:
                     pass
@@ -338,6 +343,11 @@ The function also requires `ipywidgets`.
             try:
                 Auth.validate_token(token)
                 display(success_widget)
+
+                post_succes = kwargs.get('post_succes')
+                if post_succes:
+                    post_succes()
+
                 return
             except AuthenticationFailedError:
                 pass
