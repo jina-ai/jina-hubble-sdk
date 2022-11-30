@@ -459,6 +459,7 @@ def test_push(
 @pytest.mark.parametrize('path', ['dummy_executor_fail'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
 @pytest.mark.parametrize('build_env', [['TEST_TOKEN_ccc=ghp_I1cCzUY', 'NO123123']])
+@pytest.mark.parametrize('bad_env', ['TEST_TOKEN_ccc'])
 def test_push_wrong_build_env(
     mocker,
     monkeypatch,
@@ -468,6 +469,7 @@ def test_push_wrong_build_env(
     env_variable_format_error,
     env_variable_consist_error,
     build_env,
+    bad_env,
 ):
     mock = mocker.Mock()
 
@@ -492,13 +494,9 @@ def test_push_wrong_build_env(
     with pytest.raises(Exception) as info:
         HubIO(args).push()
 
-    assert env_variable_format_error.format(build_env=build_env) in str(
+    assert env_variable_format_error.format(build_env=bad_env) in str(
         info.value
-    ) or env_variable_consist_error.format(
-        build_env_key=build_env.split('=')[0]
-    ) in str(
-        info.value
-    )
+    ) or env_variable_consist_error.format(build_env_key=bad_env) in str(info.value)
 
 
 @pytest.mark.parametrize(
@@ -557,8 +555,16 @@ def test_push_requirements_file_require_set_env_variables(
 @pytest.mark.parametrize('path', ['dummy_executor_fail'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
 @pytest.mark.parametrize('build_env', [['TOKEN=ghp_I1cCzUY']])
+@pytest.mark.parametrize('bad_env', ['TOKEN=ghp_I1cCzUY'])
 def test_push_diff_env_variables(
-    mocker, monkeypatch, path, mode, tmpdir, diff_env_variables_error, build_env
+    mocker,
+    monkeypatch,
+    path,
+    mode,
+    tmpdir,
+    diff_env_variables_error,
+    build_env,
+    bad_env,
 ):
     mock = mocker.Mock()
 
@@ -584,7 +590,7 @@ def test_push_diff_env_variables(
         Path(requirements_file)
     )
     diff_env_variables = list(
-        set(requirements_file_env_variables).difference(set([build_env]))
+        set(requirements_file_env_variables).difference(set(bad_env))
     )
 
     with pytest.raises(Exception) as info:
