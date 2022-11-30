@@ -321,7 +321,7 @@ class StatusPostMockResponse:
 @pytest.mark.parametrize('force', [None, 'UUID8'])
 @pytest.mark.parametrize('path', ['dummy_executor'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
-@pytest.mark.parametrize('build_env', ['DOMAIN=github.com', 'DOWNLOAD=download'])
+@pytest.mark.parametrize('build_env', [['DOMAIN=github.com', 'DOWNLOAD=download']])
 @pytest.mark.parametrize('is_login', [True, False])
 @pytest.mark.parametrize('verbose', [False, True])
 def test_push(
@@ -458,7 +458,7 @@ def test_push(
 )
 @pytest.mark.parametrize('path', ['dummy_executor_fail'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
-@pytest.mark.parametrize('build_env', ['TEST_TOKEN_ccc=ghp_I1cCzUY', 'NO123123'])
+@pytest.mark.parametrize('build_env', [['TEST_TOKEN_ccc=ghp_I1cCzUY', 'NO123123']])
 def test_push_wrong_build_env(
     mocker,
     monkeypatch,
@@ -556,7 +556,7 @@ def test_push_requirements_file_require_set_env_variables(
 )
 @pytest.mark.parametrize('path', ['dummy_executor_fail'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
-@pytest.mark.parametrize('build_env', ['TOKEN=ghp_I1cCzUY'])
+@pytest.mark.parametrize('build_env', [['TOKEN=ghp_I1cCzUY']])
 def test_push_diff_env_variables(
     mocker, monkeypatch, path, mode, tmpdir, diff_env_variables_error, build_env
 ):
@@ -650,7 +650,7 @@ def test_push_wrong_dockerfile(
 )
 @pytest.mark.parametrize('path', ['dummy_executor'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
-@pytest.mark.parametrize('build_env', ['DOMAIN=github.com', 'DOWNLOAD=download'])
+@pytest.mark.parametrize('build_env', [['DOMAIN=github.com', 'DOWNLOAD=download']])
 @pytest.mark.parametrize('response_error_status', ['image_not_exits', 'response_error'])
 def test_push_with_error(
     mocker,
