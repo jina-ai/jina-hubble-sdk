@@ -64,6 +64,7 @@ One can later fetch a tagged Executor via `jinaai[+docker]://<username>/MyExecut
     gp.add_argument(
         '--build-env',
         type=str,
+        action='append',
         help='A list of environment variables. It will be used in project build phase.',
     )
     gp.add_argument(
