@@ -318,9 +318,9 @@ The function also requires `ipywidgets`.
                     config.set('auth_token', token)
                     _success_callback()
 
-                    post_succes = kwargs.get('post_succes')
-                    if post_succes:
-                        post_succes()
+                    post_success = kwargs.get('post_success')
+                    if post_success:
+                        post_success()
 
                     return
                 except AuthenticationFailedError:
@@ -344,9 +344,9 @@ The function also requires `ipywidgets`.
                 Auth.validate_token(token)
                 display(success_widget)
 
-                post_succes = kwargs.get('post_succes')
-                if post_succes:
-                    post_succes()
+                post_success = kwargs.get('post_success')
+                if post_success:
+                    post_success()
 
                 return
             except AuthenticationFailedError:
