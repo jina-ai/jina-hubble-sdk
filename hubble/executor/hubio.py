@@ -542,11 +542,10 @@ metas:
             dockerfile = dockerfile.relative_to(work_path)
 
         build_env = None
-        if self.args.build_env:
-            build_envs = self.args.build_env.strip().split()
+        if type(self.args.build_env) is list:
             build_env_dict = {}
-            for index, env in enumerate(build_envs):
-                env_list = env.split('=')
+            for index, env in enumerate(self.args.build_env):
+                env_list = env.strip().split('=')
                 if len(env_list) != 2:
                     raise Exception(
                         f'The `--build-env` parameter: `{env}` is in the wrong format. '

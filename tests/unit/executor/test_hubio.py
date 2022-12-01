@@ -321,7 +321,7 @@ class StatusPostMockResponse:
 @pytest.mark.parametrize('force', [None, 'UUID8'])
 @pytest.mark.parametrize('path', ['dummy_executor'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
-@pytest.mark.parametrize('build_env', ['DOMAIN=github.com DOWNLOAD=download'])
+@pytest.mark.parametrize('build_env', [['DOMAIN=github.com', 'DOWNLOAD=download']])
 @pytest.mark.parametrize('is_login', [True, False])
 @pytest.mark.parametrize('verbose', [False, True])
 def test_push(
@@ -380,7 +380,8 @@ def test_push(
         _args_list.append('--no-cache')
 
     if build_env:
-        _args_list.extend(['--build-env', build_env])
+        for env in build_env:
+            _args_list.extend(['--build-env', env])
 
     if verbose:
         _args_list.append('--verbose')
@@ -457,7 +458,8 @@ def test_push(
 )
 @pytest.mark.parametrize('path', ['dummy_executor_fail'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
-@pytest.mark.parametrize('build_env', ['TEST_TOKEN_ccc=ghp_I1cCzUY', 'NO123123'])
+@pytest.mark.parametrize('build_env', [['TEST_TOKEN_ccc=ghp_I1cCzUY', 'NO123123']])
+@pytest.mark.parametrize('bad_env', ['TEST_TOKEN_ccc'])
 def test_push_wrong_build_env(
     mocker,
     monkeypatch,
@@ -467,6 +469,7 @@ def test_push_wrong_build_env(
     env_variable_format_error,
     env_variable_consist_error,
     build_env,
+    bad_env,
 ):
     mock = mocker.Mock()
 
@@ -483,20 +486,17 @@ def test_push_wrong_build_env(
     _args_list = [exec_path, mode]
 
     if build_env:
-        _args_list.extend(['--build-env', build_env])
+        for env in build_env:
+            _args_list.extend(['--build-env', env])
 
     args = set_hub_push_parser().parse_args(_args_list)
 
     with pytest.raises(Exception) as info:
         HubIO(args).push()
 
-    assert env_variable_format_error.format(build_env=build_env) in str(
+    assert env_variable_format_error.format(build_env=bad_env) in str(
         info.value
-    ) or env_variable_consist_error.format(
-        build_env_key=build_env.split('=')[0]
-    ) in str(
-        info.value
-    )
+    ) or env_variable_consist_error.format(build_env_key=bad_env) in str(info.value)
 
 
 @pytest.mark.parametrize(
@@ -554,9 +554,17 @@ def test_push_requirements_file_require_set_env_variables(
 )
 @pytest.mark.parametrize('path', ['dummy_executor_fail'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
-@pytest.mark.parametrize('build_env', ['TOKEN=ghp_I1cCzUY'])
+@pytest.mark.parametrize('build_env', [['TOKEN=ghp_I1cCzUY']])
+@pytest.mark.parametrize('bad_env', ['TOKEN=ghp_I1cCzUY'])
 def test_push_diff_env_variables(
-    mocker, monkeypatch, path, mode, tmpdir, diff_env_variables_error, build_env
+    mocker,
+    monkeypatch,
+    path,
+    mode,
+    tmpdir,
+    diff_env_variables_error,
+    build_env,
+    bad_env,
 ):
     mock = mocker.Mock()
 
@@ -572,7 +580,8 @@ def test_push_diff_env_variables(
     exec_path = os.path.join(cur_dir, path)
     _args_list = [exec_path, mode]
     if build_env:
-        _args_list.extend(['--build-env', build_env])
+        for env in build_env:
+            _args_list.extend(['--build-env', env])
 
     args = set_hub_push_parser().parse_args(_args_list)
 
@@ -581,7 +590,7 @@ def test_push_diff_env_variables(
         Path(requirements_file)
     )
     diff_env_variables = list(
-        set(requirements_file_env_variables).difference(set([build_env]))
+        set(requirements_file_env_variables).difference(set(bad_env))
     )
 
     with pytest.raises(Exception) as info:
@@ -647,7 +656,7 @@ def test_push_wrong_dockerfile(
 )
 @pytest.mark.parametrize('path', ['dummy_executor'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
-@pytest.mark.parametrize('build_env', ['DOMAIN=github.com DOWNLOAD=download'])
+@pytest.mark.parametrize('build_env', [['DOMAIN=github.com', 'DOWNLOAD=download']])
 @pytest.mark.parametrize('response_error_status', ['image_not_exits', 'response_error'])
 def test_push_with_error(
     mocker,
@@ -678,7 +687,8 @@ def test_push_with_error(
     _args_list = [exec_path, mode]
 
     if build_env:
-        _args_list.extend(['--build-env', build_env])
+        for env in build_env:
+            _args_list.extend(['--build-env', env])
 
     args = set_hub_push_parser().parse_args(_args_list)
 
