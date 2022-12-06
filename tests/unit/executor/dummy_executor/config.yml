@@ -2,4 +2,5 @@ jtype: dummy_executor
 with:
   match_args: {}
 metas:
+  name: dummy_executor
   workspace: workspace/

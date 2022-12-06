@@ -736,8 +736,8 @@ def test_status(mocker, monkeypatch, path, verbose, replay, task_id, is_login):
         if not task_id:
             m.setattr(
                 hubio,
-                'load_secret',
-                lambda exec_path: ('pathw7qckiqy', None, '6316e9ac8e'),
+                'get_async_tasks',
+                lambda name: [{'_id': '6316e9ac8e'}],
             )
         HubIO(args).status()
 

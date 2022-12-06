@@ -4,7 +4,7 @@ import json
 import os
 import shutil
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Dict, Optional, Tuple
 
 import yaml
 from hubble.executor import HubExecutor
@@ -263,3 +263,22 @@ def load_config(path: Path) -> Dict:
         tmp = yaml.safe_load(fp)
 
     return tmp
+
+
+def extract_executor_name(path: Path) -> Optional[str]:
+    """Extract the executor name from the config.yaml (or manifest.yml).
+
+    :param path: the path of the local executor
+    :return: the name of the executor
+    """
+
+    if (path / 'config.yml').exists():
+        with open(path / 'config.yml') as fp:
+            tmp = yaml.safe_load(fp)
+            return tmp.get('metas', {}).get('name')
+    elif (path / 'manifest.yml').exists():
+        with open(path / 'manifest.yml') as fp:
+            tmp = yaml.safe_load(fp)
+            return tmp.get('name')
+
+    return None

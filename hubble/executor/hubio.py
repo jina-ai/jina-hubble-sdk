@@ -20,6 +20,7 @@ from hubble.executor.helper import (
     check_requirements_env_variable,
     disk_cache_offline,
     download_with_resume,
+    get_async_tasks,
     get_cache_db,
     get_download_cache_dir,
     get_hub_packages_dir,
@@ -35,6 +36,7 @@ from hubble.executor.helper import (
 )
 from hubble.executor.hubapi import (
     dump_secret,
+    extract_executor_name,
     get_dist_path_of_executor,
     get_lockfile,
     install_local,
@@ -994,8 +996,20 @@ metas:
             task_id = self.args.id
         else:
             work_path = Path(self.args.path)
-            uuid8, secret, exists_task_id = load_secret(work_path)
-            task_id = exists_task_id
+            name = extract_executor_name(work_path)
+            if not name:
+                raise Exception(
+                    f'No Executor found in {work_path}. Please make sure you are in the right path.'
+                )
+
+            tasks = get_async_tasks(name=name)
+            if not tasks:
+                raise Exception(
+                    f'No build task found for {name}. Please make sure you have built it before.'
+                )
+
+            task_id = tasks[0].get('_id')
+            print(f'Found task_id: {task_id} for {name}')
 
         if not task_id:
             raise Exception(
