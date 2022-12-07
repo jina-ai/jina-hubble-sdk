@@ -35,7 +35,6 @@ from hubble.executor.helper import (
     upload_file,
 )
 from hubble.executor.hubapi import (
-    dump_secret,
     extract_executor_name,
     get_dist_path_of_executor,
     get_lockfile,
@@ -43,7 +42,6 @@ from hubble.executor.hubapi import (
     install_package_dependencies,
     list_local,
     load_config,
-    load_secret,
 )
 from hubble.utils.api_utils import get_json_from_response
 
@@ -353,94 +351,10 @@ metas:
         )
         console.print(p)
 
-    def _async_push(
-        self,
-        console,
-        st,
-        req_header,
-        content,
-        form_data,
-        work_path,
-        task_id,
-    ):
-        image = None
-        verbose = form_data.get('verbose', False)
-        session_id = req_header.get('jinameta-session-id')
-
-        if task_id and not form_data.get('id'):
-            image = self._status_with_progress(console, st, task_id, False, False)
-
-            if image:
-                new_uuid8 = image['id']
-                form_data['id'] = new_uuid8
-
-                dump_secret(work_path, new_uuid8, form_data.get('secret'), task_id)
-            else:
-                raise Exception(f'Unknown Error, session_id: {session_id}')
-
-        if form_data.get('id'):
-            hubble_url = urljoin(hubble.utils.get_base_url(), 'executor.updateAsync')
-        else:
-            hubble_url = urljoin(hubble.utils.get_base_url(), 'executor.createAsync')
-
-        # upload the archived Executor to Jina Hub
-        st.update('Async Uploading...')
-        resp = upload_file(
-            hubble_url,
-            'filename',
-            content,
-            dict_data=form_data,
-            headers=req_header,
-            stream=True,
-            method='post',
-        )
-
-        verbose = form_data.get('verbose', False)
-        push_task = None
-        for stream_line in resp.iter_lines():
-            stream_msg = json.loads(stream_line)
-            if stream_msg.get('code') == 202:
-                push_task = stream_msg['data']
-            else:
-                msg = stream_msg.get('message')
-                raise Exception(f'{ msg or "Unknown Error"} session_id: {session_id}')
-
-        new_task_id = push_task.get('_id')
-        if new_task_id:
-            dump_secret(
-                work_path, form_data.get('id'), form_data.get('secret'), new_task_id
-            )
-            self._prettyprint_status_usage(console, work_path, new_task_id)
-            st.update('Async Uploaded!')
-
-            image = self._status_with_progress(console, st, new_task_id, False, verbose)
-            if image:
-                # `new_secret` is always None
-                new_uuid8, new_secret = self._prettyprint_result(console, image)
-                if new_uuid8 != form_data.get('id'):
-                    dump_secret(
-                        work_path, new_uuid8, form_data.get('secret'), new_task_id
-                    )
-            else:
-                raise Exception(f'Unknown Error, session_id: {session_id}')
-
-        else:
-            raise Exception(f'Error: can\'t get task_id session_id: {session_id}')
-
-        return image
-
-    def _sync_push(
-        self, console, st, req_header, content, form_data, work_path, uuid8, secret
-    ):
-        # upload the archived Executor to Jina Hub
-        if form_data.get('id'):
-            hubble_url = urljoin(hubble.utils.get_base_url(), 'executor.update')
-        else:
-            hubble_url = urljoin(hubble.utils.get_base_url(), 'executor.create')
-
+    def _send_push_request(self, console, st, url, req_header, content, form_data):
         st.update('Uploading...')
         resp = upload_file(
-            hubble_url,
+            url,
             'filename',
             content,
             dict_data=form_data,
@@ -506,11 +420,7 @@ metas:
                     st.update(f'Cloud building ... [dim]{subject}: {t} {payload}[/dim]')
 
         if image:
-            new_uuid8, new_secret = self._prettyprint_result(
-                console, image, warnings=warnings
-            )
-            if new_uuid8 != uuid8 or new_secret != secret:
-                dump_secret(work_path, new_uuid8, new_secret or '', None)
+            self._prettyprint_result(console, image, warnings=warnings)
         else:
             raise Exception(f'Unknown Error, session_id: {session_id}')
 
@@ -599,6 +509,12 @@ metas:
                     error_str += f' {item}=YOUR_VALUE'
                 raise Exception(f'{error_str}` to add it.')
 
+        executor_name = extract_executor_name(work_path)
+        if not executor_name and (not self.args.force_update or not self.args.secret):
+            raise Exception(
+                f'Can not extract executor from {work_path}. Please create config.yml or add "metas.name" to it.'
+            )
+
         console = get_rich_console()
         with console.status(f'Pushing `{self.args.path}` ...') as st:
             req_header = get_request_header()
@@ -637,38 +553,25 @@ metas:
                 if build_env:
                     form_data['buildEnv'] = json.dumps(build_env)
 
-                uuid8, secret, task_id = load_secret(work_path)
-                if self.args.force_update or uuid8:
-                    form_data['id'] = self.args.force_update or uuid8
-                if self.args.secret or secret:
-                    form_data['secret'] = self.args.secret or secret
-
                 st.update('Connecting to Jina Hub ...')
 
-                logged_in = True if hubble.is_logged_in() else False
-                if logged_in:  # if user logged in use async upload api
-                    image = self._async_push(
-                        console,
-                        st,
-                        req_header,
-                        content,
-                        form_data,
-                        work_path,
-                        task_id,
-                    )
-
+                if self.args.force_update and self.args.secret:
+                    # for backward compatibility updating/pushing with secret
+                    form_data['id'] = self.args.force_update
+                    form_data['secret'] = self.args.secret
+                    hubble_url = urljoin(hubble.utils.get_base_url(), 'executor.update')
                 else:
-                    # if user not logged in use async upload api
-                    image = self._sync_push(
-                        console,
-                        st,
-                        req_header,
-                        content,
-                        form_data,
-                        work_path,
-                        uuid8,
-                        secret,
-                    )
+                    form_data['id'] = executor_name
+                    hubble_url = urljoin(hubble.utils.get_base_url(), 'executor.push')
+
+                image = self._send_push_request(
+                    console,
+                    st,
+                    hubble_url,
+                    req_header,
+                    content,
+                    form_data,
+                )
 
             except KeyboardInterrupt:
                 pass
@@ -999,7 +902,7 @@ metas:
             name = extract_executor_name(work_path)
             if not name:
                 raise Exception(
-                    f'No Executor found in {work_path}. Please make sure you are in the right path.'
+                    f'Can not extract executor from {work_path}. Please create config.yml or add "metas.name" to it.'
                 )
 
             tasks = get_async_tasks(name=name)

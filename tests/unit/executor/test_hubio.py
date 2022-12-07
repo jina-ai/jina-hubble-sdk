@@ -2,7 +2,6 @@ import cgi
 import itertools
 import json
 import os
-import shutil
 import urllib
 from argparse import Namespace
 from io import BytesIO
@@ -15,7 +14,6 @@ import requests
 import yaml
 from hubble.executor import hubio
 from hubble.executor.helper import disk_cache_offline, get_requirements_env_variables
-from hubble.executor.hubapi import get_secret_path
 from hubble.executor.hubio import HubExecutor, HubIO
 from hubble.executor.parsers import (
     set_hub_list_parser,
@@ -392,9 +390,6 @@ def test_push(
         m.setattr(hubble, 'is_logged_in', lambda: is_login)
         image = HubIO(args).push()
         assert type(image['id']) is str
-
-    exec_config_path = get_secret_path(os.stat(exec_path).st_ino)
-    shutil.rmtree(exec_config_path)
 
     _, mock_kwargs = mock.call_args_list[0]
     c_type, c_data = cgi.parse_header(mock_kwargs['headers']['Content-Type'])

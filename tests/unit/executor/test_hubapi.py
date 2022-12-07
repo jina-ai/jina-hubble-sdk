@@ -33,38 +33,6 @@ def test_install_local(executor_zip_file, test_executor, install_deps):
     assert not hubapi.exist_local(test_executor.uuid, test_executor.tag)
 
 
-def test_load_dump_secret():
-    import tempfile
-
-    uuid8 = 'hello'
-    secret = 'world'
-    task_id = 'UUID'
-    with tempfile.TemporaryDirectory() as tmp_dirname:
-        hubapi.dump_secret(Path(tmp_dirname), uuid8, secret, task_id)
-        new_uuid8, new_secret, new_task_id = hubapi.load_secret(Path(tmp_dirname))
-    assert new_uuid8 == uuid8
-    assert new_secret == secret
-    assert task_id == new_task_id
-
-
-def test_load_dump_secret_existing_encryption_key():
-    import tempfile
-
-    uuid8 = 'hello'
-    secret = 'world'
-    task_id = 'UUID'
-    with tempfile.TemporaryDirectory() as tmp_dirname:
-        # creates an encryption key
-        hubapi.dump_secret(Path(tmp_dirname), 'dummy', 'dummy', 'dummy')
-
-        # dump secret using existing encryption key
-        hubapi.dump_secret(Path(tmp_dirname), uuid8, secret, task_id)
-        new_uuid8, new_secret, new_task_id = hubapi.load_secret(Path(tmp_dirname))
-    assert new_uuid8 == uuid8
-    assert new_secret == secret
-    assert task_id == new_task_id
-
-
 @pytest.mark.parametrize('path', ['dummy_executor'])
 @pytest.mark.parametrize('name', ['dummy_executor'])
 def test_load_config(mocker, path, name):
