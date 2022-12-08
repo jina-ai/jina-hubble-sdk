@@ -170,13 +170,16 @@ def extract_executor_name(path: Path) -> Optional[str]:
     :return: the name of the executor
     """
 
+    name = None
+
     if (path / 'config.yml').exists():
         with open(path / 'config.yml') as fp:
             tmp = yaml.safe_load(fp)
-            return tmp.get('metas', {}).get('name')
-    elif (path / 'manifest.yml').exists():
+            name = tmp.get('metas', {}).get('name')
+
+    if not name and (path / 'manifest.yml').exists():
         with open(path / 'manifest.yml') as fp:
             tmp = yaml.safe_load(fp)
-            return tmp.get('name')
+            name = tmp.get('name')
 
-    return None
+    return name
