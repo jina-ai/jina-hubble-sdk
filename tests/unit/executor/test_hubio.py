@@ -22,6 +22,7 @@ from hubble.executor.parsers import (
     set_hub_push_parser,
     set_hub_status_parser,
 )
+from hubble.utils.api_utils import get_base_url
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -146,123 +147,6 @@ class FetchMetaMockResponse:
         return self.response_code
 
 
-class LoggedInPostMockResponse:
-    def __init__(self, response_code: int = 202):
-        self.response_code = response_code
-
-    def json(self):
-        return {
-            '_id': '6316ede56501',
-            'topic': 'executor:buildAndCreateNewCommit',
-            'data': {
-                'executor': 'bebbf22d20',
-                'visibility': 'private',
-                'commitTags': ['v0'],
-                'immutableCommitTags': [],
-                'jinaEnv': {
-                    'meta': {
-                        'jina': '3.8.2',
-                        'docarray': '0.16.1',
-                        'jcloud': '0.0.35',
-                        'jina-hubble-sdk': '0.16.1',
-                        'jina-proto': '0.1.13',
-                        'protobuf': '3.20.1',
-                        'proto-backend': 'python',
-                        'grpcio': '1.47.0',
-                        'pyyaml': '6.0',
-                        'python': '3.9.13',
-                        'platform': 'Darwin',
-                        'platform-release': '21.4.0',
-                        'platform-version': (
-                            'Darwin Kernel Version 21.4.0: Mon Feb 21 20:36:53 PST 2022; '
-                            'root:xnu-8020.101.4~2/RELEASE_ARM64_T8101'
-                        ),
-                        'architecture': 'arm64',
-                        'processor': 'arm',
-                        'uid': '86450951707024',
-                        'session-id': '4c2810ea-2db0-11ed-9481-4ea06e445990',
-                        'uptime': '2022-09-06T14:51:12.849445',
-                        'ci-vendor': '(unset)',
-                    },
-                    'env': {
-                        'default_host': '(unset)',
-                        'default_timeout_ctrl': '500',
-                        'deployment_name': '(unset)',
-                        'disable_uvloop': '(unset)',
-                        'early_stop': '(unset)',
-                        'full_cli': '(unset)',
-                        'gateway_image': '(unset)',
-                        'grpc_recv_bytes': '(unset)',
-                        'grpc_send_bytes': '(unset)',
-                        'hub_no_image_rebuild': '(unset)',
-                        'log_config': '(unset)',
-                        'log_level': 'DEBUG',
-                        'log_no_color': '(unset)',
-                        'mp_start_method': '(unset)',
-                        'optout_telemetry': 'True',
-                        'random_port_max': '(unset)',
-                        'random_port_min': '(unset)',
-                    },
-                    'clientIp': '58.152.48.222',
-                },
-                'buildParams': {
-                    'noCache': True,
-                    'buildArgs': {'ARG_BUILD_DATE': '2022-09-06T06:51:17.376Z'},
-                    'buildSecrets': ['6316ede46501894889a8a36d'],
-                },
-                'normalizationResult': {
-                    'executor': 'MyExecutor',
-                    'docstring': None,
-                    'init': {
-                        'args': [{'arg': 'self', 'annotation': None}],
-                        'kwargs': [],
-                        'docstring': None,
-                    },
-                    'endpoints': [
-                        {
-                            'args': [{'arg': 'self', 'annotation': None}],
-                            'kwargs': [],
-                            'docstring': None,
-                            'name': 'foo',
-                            'requests': 'ALL',
-                        }
-                    ],
-                    'hubble_score_metrics': {
-                        'dockerfile_exists': False,
-                        'manifest_exists': True,
-                        'config_exists': False,
-                        'readme_exists': False,
-                        'requirements_exists': True,
-                        'tests_exists': False,
-                        'gpu_dockerfile_exists': False,
-                    },
-                    'filepath': '/data/jina-hubble-temp/4e34f1a0-2db0-11ed-a502-abf1ab488543/exec.py',
-                },
-                'normalizedZipFile': 'normalized.zip',
-                'uploadedZipFile': 'uploaded.zip',
-            },
-            'owner': '62b49155b31010',
-            'createdAt': '2022-09-06T06:51:17.456Z',
-            'updatedAt': '2022-09-06T06:51:17.376Z',
-            'status': 'created',
-            'triesLeft': 1,
-            'traceId': '4c2810ea-2db0-11ed-9481-4ea06e445990',
-        }
-
-    @property
-    def text(self):
-        return json.dumps(self.json())
-
-    @property
-    def status_code(self):
-        return self.response_code
-
-    def iter_lines(self):
-        logs = ['{"code":202,"status":20200,"data":{"_id":"6316ede56501"}}']
-
-        return itertools.chain(logs)
-
-
 class StatusPostMockResponse:
     def __init__(self, response_code: int = 202, response_error: bool = False):
         self.response_code = response_code
@@ -317,59 +201,40 @@ class StatusPostMockResponse:
 @pytest.mark.parametrize('no_cache', [True, False])
 @pytest.mark.parametrize('tag', ['v0', None])
 @pytest.mark.parametrize('force', [None, 'UUID8'])
+@pytest.mark.parametrize('secret', [None, 'test_secret'])
 @pytest.mark.parametrize('path', ['dummy_executor'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
 @pytest.mark.parametrize('build_env', [['DOMAIN=github.com', 'DOWNLOAD=download']])
-@pytest.mark.parametrize('is_login', [True, False])
 @pytest.mark.parametrize('verbose', [False, True])
 def test_push(
     mocker,
     monkeypatch,
     path,
     mode,
-    tmpdir,
     force,
+    secret,
     tag,
     no_cache,
     build_env,
-    is_login,
     verbose,
 ):
     mock = mocker.Mock()
 
-    if is_login:
+    def _mock_post(url, data, headers=None, stream=True):
+        mock(url=url, data=data, headers=headers)
+        return PostMockResponse(response_code=requests.codes.created)
 
-        def _mock_logged_post(url, data, headers=None, stream=True):
-            mock(url=url, data=data, headers=headers)
-            return LoggedInPostMockResponse(response_code=requests.codes.created)
-
-        monkeypatch.setattr(requests, 'post', _mock_logged_post)
-        # Second push will use --force --secret because of .jina/secret.key
-        # Then it will use put method
-        monkeypatch.setattr(requests, 'put', _mock_logged_post)
-
-        def _mock_status_post(self, console, st, task_id, verbose, replay):
-            mock(self, console, st, task_id, verbose, replay)
-            return StatusPostMockResponse(response_code=requests.codes.created).json()
-
-        monkeypatch.setattr(HubIO, '_status_with_progress', _mock_status_post)
-
-    else:
-
-        def _mock_post(url, data, headers=None, stream=True):
-            mock(url=url, data=data, headers=headers)
-            return PostMockResponse(response_code=requests.codes.created)
-
-        monkeypatch.setattr(requests, 'post', _mock_post)
-        # Second push will use --force --secret because of .jina/secret.key
-        # Then it will use put method
-        monkeypatch.setattr(requests, 'put', _mock_post)
+    monkeypatch.setattr(requests, 'post', _mock_post)
+    monkeypatch.setattr(requests, 'put', _mock_post)
 
     exec_path = os.path.join(cur_dir, path)
     _args_list = [exec_path, mode]
 
     if force:
         _args_list.extend(['--force', force])
+
+    if secret:
+        _args_list.extend(['--secret', secret])
 
     if tag:
         _args_list.extend(['-t', tag])
@@ -387,7 +252,7 @@ def test_push(
     args = set_hub_push_parser().parse_args(_args_list)
 
     with monkeypatch.context() as m:
-        m.setattr(hubble, 'is_logged_in', lambda: is_login)
+        m.setattr(hubble, 'is_logged_in', lambda: True)
         image = HubIO(args).push()
         assert type(image['id']) is str
 
@@ -403,10 +268,12 @@ def test_push(
     assert 'file' in form_data
     assert 'md5sum' in form_data
 
-    if force:
-        assert form_data['id'] == ['UUID8']
+    if force and secret:
+        assert form_data.get('id') == ['UUID8']
+        mock_kwargs['url'] == get_base_url() + '/executor.update'
     else:
-        assert form_data.get('id') is None
+        assert form_data.get('id') == ['dummy_executor']
+        mock_kwargs['url'] == get_base_url() + '/executor.push'
 
     if build_env:
         assert form_data['buildEnv'] == [
@@ -803,6 +670,12 @@ def test_status_with_error(
 
     if task_id:
         _args_list.extend(['--id', task_id])
+    else:
+        monkeypatch.setattr(
+            hubio,
+            'get_async_tasks',
+            lambda name: [{'_id': '6316e9ac8e'}],
+        )
 
     if verbose:
         _args_list.append('--verbose')
