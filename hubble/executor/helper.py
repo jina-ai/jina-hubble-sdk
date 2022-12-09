@@ -19,7 +19,7 @@ from enum import IntEnum
 from functools import lru_cache, wraps
 from pathlib import Path
 from typing import Dict, Optional, Tuple
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 
 from hubble import get_token
 from hubble.executor.requirements import (
@@ -28,6 +28,7 @@ from hubble.executor.requirements import (
     get_env_variables,
     parse_requirement,
 )
+from hubble.utils.api_utils import get_base_url
 from rich.console import Console
 
 default_logger = logging.getLogger(__name__)
@@ -128,24 +129,6 @@ def retry(
         return wrapper
 
     return decorator
-
-
-def random_identity(use_uuid1: bool = False) -> str:
-    """
-    Generate random UUID.
-
-    ..note::
-        A MAC address or time-based ordering (UUID1) can afford increased database performance, since it's less work
-        to sort numbers closer-together than those distributed randomly (UUID4) (see here).
-
-        A second related issue, is that using UUID1 can be useful in debugging, even if origin data is lost or not
-        explicitly stored.
-
-    :param use_uuid1: use UUID1 instead of UUID4. This is the default Document ID generator.
-    :return: A random UUID.
-
-    """
-    return random_uuid(use_uuid1).hex
 
 
 def random_uuid(use_uuid1: bool = False) -> uuid.UUID:
@@ -572,6 +555,53 @@ def status_task(
     # asyncTask.getDetail
     response = getattr(requests, method)(url, data=data, headers=headers, stream=stream)
     return response
+
+
+def get_async_tasks(
+    name: str,
+    *,
+    url: str = None,
+    headers: Dict = None,
+    data: Dict = None,
+    method: str = 'post',
+):
+    """Query building status progress of the executor
+
+    :param name: executor name
+    :param url: target url
+    :param headers: the request header
+    :param data: the dict-style data
+    :param method: the request method
+    :return: the response of request
+    """
+
+    import requests
+
+    if url is None:
+        url = urljoin(get_base_url(), 'executor.listAsyncTasks')
+    if headers is None:
+        headers = get_request_header()
+
+    if data is None:
+        data = {}
+    data = {'id': name, 'sort': '-createdAt', 'pageSize': 1, **data}
+
+    session_id = headers.get('jinameta-session-id')
+    try:
+        response = requests.request(
+            method=method,
+            url=url,
+            data=data,
+            headers=headers,
+        ).json()
+
+        return response.get('data', [])
+    except Exception as e:
+        default_logger.error(
+            f'Please report this session_id: [yellow bold]{session_id}[/] '
+            'to https://github.com/jina-ai/jina-hubble-sdk/issues'
+        )
+        raise e
 
 
 def disk_cache_offline(

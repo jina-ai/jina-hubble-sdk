@@ -1,19 +1,15 @@
 """Module wrapping interactions with the local executor packages."""
 
-import json
-import os
 import shutil
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Dict, Optional, Tuple
 
 import yaml
 from hubble.executor import HubExecutor
 from hubble.executor.helper import (
-    __cache_path__,
     get_hub_packages_dir,
     install_requirements,
     is_requirements_installed,
-    random_identity,
     unpack_package,
 )
 
@@ -48,109 +44,11 @@ def get_dist_path_of_executor(executor: 'HubExecutor') -> Tuple[Path, Path]:
         return pkg_path, pkg_dist_path
 
 
-def get_config_path(local_id: str) -> 'Path':
-    """Get the local configure file
-    :param local_id: the random local ID of the executor
-    :return: json config path
-    """
-    return get_hub_packages_dir() / f'{local_id}.json'
-
-
 def get_lockfile() -> str:
     """Get the path of file locker
     :return: the path of file locker
     """
     return str(get_hub_packages_dir() / 'LOCK')
-
-
-def get_secret_path(inode: str) -> 'Path':
-    """Get the path of secrets
-    :param inode: the inode of the executor path
-    :return: the path of secrets
-    """
-
-    pre_path = Path(f'{__cache_path__}/{SECRET_PATH}/{inode}')
-
-    return pre_path
-
-
-def load_secret(work_path: 'Path') -> Tuple[str, str]:
-    """Get the UUID, Secret and Task id from local cache
-    :param work_path: the work path of the executor
-    :return: the UUID, secret and task_id
-    """
-
-    from cryptography.fernet import Fernet
-
-    preConfig = work_path / '.jina'
-    config = get_secret_path(os.stat(work_path).st_ino)
-    config.mkdir(parents=True, exist_ok=True)
-
-    local_id_file = config / 'secret.key'
-    pre_secret_file = preConfig / 'secret.key'
-
-    if pre_secret_file.exists() and not local_id_file.exists():
-        shutil.copyfile(pre_secret_file, local_id_file)
-
-    uuid8 = None
-    secret = None
-    task_id = None
-    if local_id_file.exists():
-        with local_id_file.open() as f:
-            local_id, local_key = f.readline().strip().split('\t')
-            fernet = Fernet(local_key.encode())
-
-        local_config_file = get_config_path(local_id)
-        if local_config_file.exists():
-            with local_config_file.open() as f:
-                local_config = json.load(f)
-                uuid8 = local_config.get('uuid8', None)
-                encrypted_secret = local_config.get('encrypted_secret', None)
-                if encrypted_secret:
-                    secret = fernet.decrypt(encrypted_secret.encode()).decode()
-                task_id = local_config.get('task_id', None)
-    return uuid8, secret, task_id
-
-
-def dump_secret(work_path: 'Path', uuid8: str, secret: str, task_id: str):
-    """Dump the UUID, Secret and Task_id into local file
-    :param work_path: the work path of the executor
-    :param uuid8: the ID of the executor
-    :param secret: the access secret
-    :param task_id: the ID of the executor's building task
-    """
-    from cryptography.fernet import Fernet
-
-    config = get_secret_path(os.stat(work_path).st_ino)
-    config.mkdir(parents=True, exist_ok=True)
-
-    local_id_file = config / 'secret.key'
-    if local_id_file.exists():
-        try:
-            with local_id_file.open() as f:
-                local_id, local_key = f.readline().strip().split('\t')
-                fernet = Fernet(local_key.encode())
-        except Exception:
-            return
-    else:
-        local_id = str(random_identity())
-        with local_id_file.open('w') as f:
-            local_key = Fernet.generate_key()
-            fernet = Fernet(local_key)
-            f.write(f'{local_id}\t{local_key.decode()}')
-
-    local_config_file = get_config_path(local_id)
-
-    secret_data = {}
-    if uuid8:
-        secret_data['uuid8'] = uuid8
-    if secret:
-        secret_data['encrypted_secret'] = fernet.encrypt(secret.encode()).decode()
-    if task_id:
-        secret_data['task_id'] = task_id
-
-    with local_config_file.open('w') as f:
-        f.write(json.dumps(secret_data))
 
 
 def install_local(
@@ -263,3 +161,25 @@ def load_config(path: Path) -> Dict:
         tmp = yaml.safe_load(fp)
 
     return tmp
+
+
+def extract_executor_name(path: Path) -> Optional[str]:
+    """Extract the executor name from the config.yaml (or manifest.yml).
+
+    :param path: the path of the local executor
+    :return: the name of the executor
+    """
+
+    name = None
+
+    if (path / 'config.yml').exists():
+        with open(path / 'config.yml') as fp:
+            tmp = yaml.safe_load(fp)
+            name = tmp.get('metas', {}).get('name')
+
+    if not name and (path / 'manifest.yml').exists():
+        with open(path / 'manifest.yml') as fp:
+            tmp = yaml.safe_load(fp)
+            name = tmp.get('name')
+
+    return name
