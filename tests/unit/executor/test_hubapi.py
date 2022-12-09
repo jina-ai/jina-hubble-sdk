@@ -4,12 +4,12 @@ from pathlib import Path
 import pytest
 from hubble.executor import HubExecutor, hubapi
 
-cur_dir = os.path.dirname(os.path.abspath(__file__))
+_resource_dir = Path(__file__).parent.parent.parent / 'resources' / 'executor'
 
 
 @pytest.fixture
 def executor_zip_file():
-    return Path(__file__).parent / 'dummy_executor.zip'
+    return _resource_dir / 'dummy_executor.zip'
 
 
 @pytest.fixture
@@ -36,7 +36,7 @@ def test_install_local(executor_zip_file, test_executor, install_deps):
 @pytest.mark.parametrize('path', ['dummy_executor'])
 @pytest.mark.parametrize('name', ['dummy_executor'])
 def test_load_config(mocker, path, name):
-    exec_path = os.path.join(cur_dir, path)
-    config = hubapi.load_config(Path(exec_path))
+    exec_path = _resource_dir / path
+    config = hubapi.load_config(exec_path)
 
     assert config['jtype'] == name

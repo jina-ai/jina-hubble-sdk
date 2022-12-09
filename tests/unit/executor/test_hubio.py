@@ -24,7 +24,7 @@ from hubble.executor.parsers import (
 )
 from hubble.utils.api_utils import get_base_url
 
-cur_dir = os.path.dirname(os.path.abspath(__file__))
+_resource_dir = Path(__file__).parent.parent.parent / 'resources' / 'executor'
 
 
 class PostMockResponse:
@@ -227,7 +227,7 @@ def test_push(
     monkeypatch.setattr(requests, 'post', _mock_post)
     monkeypatch.setattr(requests, 'put', _mock_post)
 
-    exec_path = os.path.join(cur_dir, path)
+    exec_path = str(_resource_dir / path)
     _args_list = [exec_path, mode]
 
     if force:
@@ -344,7 +344,7 @@ def test_push_wrong_build_env(
     # Then it will use put method
     monkeypatch.setattr(requests, 'put', _mock_post)
 
-    exec_path = os.path.join(cur_dir, path)
+    exec_path = str(_resource_dir / path)
     _args_list = [exec_path, mode]
 
     if build_env:
@@ -390,7 +390,7 @@ def test_push_requirements_file_require_set_env_variables(
     # Then it will use put method
     monkeypatch.setattr(requests, 'put', _mock_post)
 
-    exec_path = os.path.join(cur_dir, path)
+    exec_path = str(_resource_dir / path)
     _args_list = [exec_path, mode]
 
     args = set_hub_push_parser().parse_args(_args_list)
@@ -439,7 +439,7 @@ def test_push_diff_env_variables(
     # Then it will use put method
     monkeypatch.setattr(requests, 'put', _mock_post)
 
-    exec_path = os.path.join(cur_dir, path)
+    exec_path = str(_resource_dir / path)
     _args_list = [exec_path, mode]
     if build_env:
         for env in build_env:
@@ -478,7 +478,7 @@ def test_push_diff_env_variables(
 def test_push_wrong_dockerfile(
     mocker, monkeypatch, path, mode, tmpdir, dockerfile, expected_error
 ):
-    dockerfile = os.path.join(cur_dir, path, dockerfile)
+    dockerfile = str(_resource_dir / path / dockerfile)
     mock = mocker.Mock()
 
     def _mock_post(url, data, headers=None, stream=True):
@@ -490,7 +490,7 @@ def test_push_wrong_dockerfile(
     # Then it will use put method
     monkeypatch.setattr(requests, 'put', _mock_post)
 
-    exec_path = os.path.join(cur_dir, path)
+    exec_path = str(_resource_dir / path)
     _args_list = [exec_path, mode]
 
     args = set_hub_push_parser().parse_args(_args_list)
@@ -545,7 +545,7 @@ def test_push_with_error(
     # Then it will use put method
     monkeypatch.setattr(requests, 'put', _mock_post)
 
-    exec_path = os.path.join(cur_dir, path)
+    exec_path = str(_resource_dir / path)
     _args_list = [exec_path, mode]
 
     if build_env:
@@ -579,7 +579,7 @@ def test_status(mocker, monkeypatch, path, verbose, replay, task_id, is_login):
 
     monkeypatch.setattr(requests, 'post', _mock_post)
 
-    exec_path = os.path.join(cur_dir, path)
+    exec_path = str(_resource_dir / path)
     _args_list = [exec_path]
 
     if task_id:
@@ -665,7 +665,7 @@ def test_status_with_error(
 
     monkeypatch.setattr(requests, 'get', _mock_post)
 
-    exec_path = os.path.join(cur_dir, path)
+    exec_path = str(_resource_dir / path)
     _args_list = [exec_path]
 
     if task_id:
@@ -836,7 +836,7 @@ class DownloadMockResponse:
         self.response_code = response_code
 
     def iter_content(self, buffer=32 * 1024):
-        zip_file = Path(__file__).parent / 'dummy_executor.zip'
+        zip_file = _resource_dir / 'dummy_executor.zip'
         with zip_file.open('rb') as f:
             yield f.read(buffer)
 
@@ -1066,7 +1066,7 @@ def test_pull_with_progress():
     args = set_hub_pull_parser().parse_args(['jinahub+docker://dummy_mwu_encoder'])
 
     def _log_stream_generator():
-        with open(os.path.join(cur_dir, 'docker_pull.logs')) as fin:
+        with open(_resource_dir / 'docker_pull.logs') as fin:
             for line in fin:
                 if line.strip():
                     yield json.loads(line)
@@ -1303,9 +1303,9 @@ def test_list(mocker, monkeypatch, path, name):
             HubIO, '_prettyprint_list_usage', _mock_prettyprint_list_usage
         )
 
-    exec_path = os.path.join(cur_dir, path)
+    exec_path = _resource_dir / path
     args = set_hub_list_parser().parse_args([])
 
     with monkeypatch.context() as m:
-        m.setattr(hubio, 'list_local', lambda: [Path(f'{exec_path}/latest.dist-info')])
+        m.setattr(hubio, 'list_local', lambda: [exec_path / 'latest.dist-info'])
         HubIO(args).list()
