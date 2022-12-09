@@ -1,0 +1,7 @@
+jtype: IntegrationTestExecutor
+py_modules:
+  - executor.py
+metas:
+  name: IntegrationTestExecutor
+  description: Integration test for Executor
+  keywords: ['test', 'integration-test']
