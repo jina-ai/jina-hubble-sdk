@@ -220,13 +220,34 @@ class Client(BaseClient):
             data={'id': id} if id else {'name': name},
         )
 
+    def delete_multiple_artifacts(
+        self, *, ids: Optional[List[str]] = None, names: Optional[List[str]] = None
+    ) -> Union[requests.Response, dict]:
+        """Delete multiple artifacts from Hubble Artifact Storage.
+
+        :param ids: A list of the IDs of the artifacts to be deleted.
+        :param names: A list of the names of the artifacts to be deleted.
+        :returns: `requests.Response` object as returned value
+            or indented json if jsonify.
+        """
+        data = {}
+        if ids:
+            data['ids'] = ids
+        if names:
+            data['names'] = names
+
+        return self.handle_request(
+            url=self._base_url + EndpointsV2.delete_multiple_artifacts,
+            data=data,
+        )
+
     def get_artifact_info(
         self, id: Optional[str] = None, name: Optional[str] = None
     ) -> Union[requests.Response, dict]:
         """Get the metadata of the artifact.
 
-        :param id: The id of the artifact to be deleted.
-        :param name: The name of the artifact to be deleted.
+        :param id: The id of the artifact.
+        :param name: The name of the artifact.
         :returns: `requests.Response` object as returned value
             or indented json if jsonify.
         """

@@ -18,6 +18,7 @@ class EndpointsV2(object):
     upload_artifact: str = 'artifact.upload'
     download_artifact: str = 'artifact.getDownloadUrl'
     delete_artifact: str = 'artifact.delete'
+    delete_multiple_artifacts: str = 'artifact.deleteMany'
     get_artifact_info: str = 'artifact.getDetail'
     list_artifacts: str = 'artifact.list'
     update_artifact: str = 'artifact.update'
