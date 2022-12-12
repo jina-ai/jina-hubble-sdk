@@ -4,6 +4,11 @@ import uuid
 
 import pytest
 from hubble.client.client import Client
+from hubble.excepts import (
+    IdentifierNamespaceOccupiedError,
+    OperationNotAllowedError,
+    RequestedEntityNotFoundError,
+)
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -100,6 +105,44 @@ def test_upload_get_delete_artifact(client, tmpdir):
         resp = client.delete_artifact(id=artifact_id)
 
         assert_response(resp)
+
+
+@pytest.mark.parametrize('client', [{'jsonify': True}], indirect=True)
+def test_delete_multiple_artifacts(client: Client):
+    file_path = os.path.join(cur_dir, '../resources/model')
+
+    ids = [
+        resp['data']['_id']
+        for resp in [
+            client.upload_artifact(f=file_path),
+            client.upload_artifact(f=file_path),
+            client.upload_artifact(f=file_path),
+            client.upload_artifact(f=file_path),
+        ]
+    ]
+
+    names = ['delete_multiple_artifacts_1', 'delete_multiple_artifacts_2']
+    for name in names:
+        try:
+            client.update_artifact(id=ids[0], name=name)
+            ids.pop(0)
+        except IdentifierNamespaceOccupiedError:
+            pass
+
+    resp = client.get_artifact_info(id=ids[0])
+    assert_response(resp)
+
+    resp = client.get_artifact_info(name=names[0])
+    assert_response(resp)
+
+    resp = client.delete_multiple_artifacts(ids=ids, names=names)
+    assert_response(resp)
+
+    with pytest.raises(RequestedEntityNotFoundError):
+        client.get_artifact_info(id=ids[0])
+
+    with pytest.raises((RequestedEntityNotFoundError, OperationNotAllowedError)):
+        client.get_artifact_info(name=names[0])
 
 
 def test_upload_download_artifact_bytes(client):

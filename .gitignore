@@ -134,3 +134,6 @@ dmypy.json
 
 # Test files
 toy*
+
+# macOS
+.DS_Store
