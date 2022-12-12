@@ -4,7 +4,11 @@ import uuid
 
 import pytest
 from hubble.client.client import Client
-from hubble.excepts import RequestedEntityNotFoundError
+from hubble.excepts import (
+    IdentifierNamespaceOccupiedError,
+    OperationNotAllowedError,
+    RequestedEntityNotFoundError,
+)
 
 cur_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -118,22 +122,26 @@ def test_delete_multiple_artifacts(client: Client):
     ]
 
     names = ['delete_multiple_artifacts_1', 'delete_multiple_artifacts_2']
-    for idx, name in enumerate(names):
-        client.update_artifact(id=ids[idx], name=name)
+    for name in names:
+        try:
+            client.update_artifact(id=ids[0], name=name)
+            ids.pop(0)
+        except IdentifierNamespaceOccupiedError:
+            pass
 
-    resp = client.get_artifact_info(id=ids[2])
+    resp = client.get_artifact_info(id=ids[0])
     assert_response(resp)
 
     resp = client.get_artifact_info(name=names[0])
     assert_response(resp)
 
-    resp = client.delete_multiple_artifacts(ids=ids[2:], names=names)
+    resp = client.delete_multiple_artifacts(ids=ids, names=names)
     assert_response(resp)
 
     with pytest.raises(RequestedEntityNotFoundError):
-        client.get_artifact_info(id=ids[2])
+        client.get_artifact_info(id=ids[0])
 
-    with pytest.raises(RequestedEntityNotFoundError):
+    with pytest.raises((RequestedEntityNotFoundError, OperationNotAllowedError)):
         client.get_artifact_info(name=names[0])
 
 
