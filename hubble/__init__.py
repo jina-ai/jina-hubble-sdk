@@ -47,10 +47,28 @@ def login_required(func):
             Client(jsonify=True).get_user_info()
             return func(*args, **kwargs)
         except AuthenticationRequiredError:
+            import sys
+
+            if sys.__stdin__.isatty():
+                from rich import print
+                from rich.prompt import Confirm
+
+                print(
+                    ':closed_lock_with_key: [yellow bold]You are not logged in to Jina AI. [/]'
+                    f'[yellow bold]However, {func!r} requires login to Jina AI[/].'
+                )
+                if Confirm.ask('Do you want to login now?'):
+                    login()
+                    return func(*args, **kwargs)
+                print(
+                    '[yellow]You can login later by running [bold]jina auth login[/] '
+                    'or set env variable [bold]JINA_AUTH_TOKEN[/][/].'
+                )
+
             raise AuthenticationRequiredError(
                 response={},
                 message=f'Jina auth token is not provided or has expired. {func!r} requires login to Jina AI, '
-                f'please do `jina auth login -f` or set env variable `JINA_AUTH_TOKEN` with correct token',
+                f'please run `jina auth login -f` or set env variable `JINA_AUTH_TOKEN` with correct token',
             ) from None
 
     return arg_wrapper
