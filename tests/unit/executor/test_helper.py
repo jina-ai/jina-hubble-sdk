@@ -6,10 +6,12 @@ import pytest
 from hubble.executor import helper
 from hubble.executor.helper import disk_cache_offline
 
+_resource_dir = Path(__file__).parent.parent.parent / 'resources' / 'executor'
+
 
 @pytest.fixture
 def dummy_zip_file():
-    return Path(__file__).parent / 'dummy_executor.zip'
+    return _resource_dir / 'dummy_executor.zip'
 
 
 @pytest.mark.parametrize('plus_scheme', ['', '+docker', '+sandbox'])
@@ -98,7 +100,7 @@ def test_md5file(dummy_zip_file):
 
 
 def test_archive_package(tmpdir):
-    pkg_path = Path(__file__).parent / 'dummy_executor'
+    pkg_path = _resource_dir / 'dummy_executor'
 
     stream_data = helper.archive_package(pkg_path)
     with open(tmpdir / 'dummy_test.zip', 'wb') as temp_zip_file:
@@ -108,9 +110,9 @@ def test_archive_package(tmpdir):
 @pytest.mark.parametrize(
     'package_file',
     [
-        Path(__file__).parent / 'dummy_executor.zip',
-        Path(__file__).parent / 'dummy_executor.tar',
-        Path(__file__).parent / 'dummy_executor.tar.gz',
+        _resource_dir / 'dummy_executor.zip',
+        _resource_dir / 'dummy_executor.tar',
+        _resource_dir / 'dummy_executor.tar.gz',
     ],
 )
 def test_unpack_package(tmpdir, package_file):
@@ -120,7 +122,7 @@ def test_unpack_package(tmpdir, package_file):
 def test_unpack_package_unsupported(tmpdir):
     with pytest.raises(ValueError):
         helper.unpack_package(
-            Path(__file__).parent / "dummy_executor.unsupported",
+            _resource_dir / "dummy_executor.unsupported",
             tmpdir / 'dummy_executor',
         )
 
@@ -128,9 +130,7 @@ def test_unpack_package_unsupported(tmpdir):
 def test_install_requirements(monkeypatch):
     monkeypatch.setenv('DOMAIN', 'github.com')
     monkeypatch.setenv('DOWNLOAD', 'download')
-    helper.install_requirements(
-        Path(__file__).parent / 'dummy_executor' / 'requirements.txt'
-    )
+    helper.install_requirements(_resource_dir / 'dummy_executor' / 'requirements.txt')
 
 
 @pytest.mark.parametrize(
@@ -231,7 +231,7 @@ def test_disk_cache(tmpfile):
 def test_replace_env_variables(mocker, monkeypatch):
     monkeypatch.setenv("DOMAIN", 'github.com')
     helper.replace_requirements_env_variables(
-        Path(__file__).parent / 'dummy_executor_fail' / 'requirements.txt'
+        _resource_dir / 'dummy_executor_fail' / 'requirements.txt'
     )
 
 
@@ -246,7 +246,7 @@ def test_fail_replace_env_variables(mocker, monkeypatch, env_variable_error, bui
 
     with pytest.raises(Exception) as info:
         helper.replace_requirements_env_variables(
-            Path(__file__).parent / 'dummy_executor_fail' / 'requirements.txt'
+            _resource_dir / 'dummy_executor_fail' / 'requirements.txt'
         )
     assert env_variable_error.format(var_name=build_env) in str(info.value)
 
@@ -254,7 +254,7 @@ def test_fail_replace_env_variables(mocker, monkeypatch, env_variable_error, bui
 @pytest.mark.parametrize('tag', ['latest'])
 def test_load_config(mocker, tag):
     info_tag = helper.get_tag_from_dist_info_path(
-        Path(__file__).parent / 'dummy_executor' / 'latest.dist-info'
+        _resource_dir / 'dummy_executor' / 'latest.dist-info'
     )
 
     assert info_tag == tag
