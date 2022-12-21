@@ -81,6 +81,7 @@ class Client(BaseClient):
         self,
         f: Union[str, io.BytesIO],
         id: Optional[str] = None,
+        name: Optional[str] = None,
         metadata: Optional[dict] = None,
         is_public: bool = False,
         show_progress: bool = False,
@@ -89,6 +90,7 @@ class Client(BaseClient):
 
         :param f: The full path or the `io.BytesIO` of the file to be uploaded.
         :param id: Optional value, the id of the artifact.
+        :param name: Optional value, the name of the artifact.
         :param metadata: Optional value, the metadata of the artifact.
         :param is_public: Optional value, if this artifact is public or not,
           default not public.
@@ -137,6 +139,8 @@ class Client(BaseClient):
 
         if id:
             dict_data['id'] = id
+        if name:
+            dict_data['name'] = name
         if metadata:
             dict_data['metaData'] = json.dumps(metadata)
 
