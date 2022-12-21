@@ -87,6 +87,9 @@ def test_upload_get_delete_artifact(client, tmpdir):
         name='test-da',
     )
 
+    if not client._jsonify:
+        resp = resp.json()
+
     data = resp['data']
     assert data['name'] == 'test-da'
 
