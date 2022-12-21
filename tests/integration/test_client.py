@@ -82,8 +82,13 @@ def test_upload_get_delete_artifact(client, tmpdir):
 
     # upload from bytesio
     resp = client.upload_artifact(
-        f=io.BytesIO(b"some initial binary data: \x00\x01"), show_progress=True
+        f=io.BytesIO(b"some initial binary data: \x00\x01"),
+        show_progress=True,
+        name='test-da',
     )
+
+    data = resp['data']
+    assert data['name'] == 'test-da'
 
     assert_response(resp)
 
