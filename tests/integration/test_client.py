@@ -55,7 +55,9 @@ def test_get_user_info(client):
 def test_upload_get_delete_artifact(client, tmpdir):
     # upload from path.
     artifact_file = os.path.join(cur_dir, '../resources/model')
-    resp = client.upload_artifact(f=artifact_file, show_progress=True)
+    resp = client.upload_artifact(
+        f=artifact_file, show_progress=True, name='my-artifact'
+    )
 
     assert_response(resp)
 
@@ -67,9 +69,10 @@ def test_upload_get_delete_artifact(client, tmpdir):
 
     assert data['visibility'] == 'private'
     assert data.get('metaData', None) is None
+    assert data['name'] == 'my-artifact'
 
     resp = client.update_artifact(
-        id=artifact_id1, is_public=True, metadata={'a': 1}, name='test-da'
+        id=artifact_id1, is_public=True, metadata={'a': 1}, name='my-artifact'
     )
     if not client._jsonify:
         resp = resp.json()
@@ -78,11 +81,12 @@ def test_upload_get_delete_artifact(client, tmpdir):
 
     assert data['visibility'] == 'public'
     assert data['metaData'] == {'a': 1}
-    assert data['name'] == 'test-da'
+    assert data['name'] == 'my-artifact'
 
     # upload from bytesio
     resp = client.upload_artifact(
-        f=io.BytesIO(b"some initial binary data: \x00\x01"), show_progress=True
+        f=io.BytesIO(b"some initial binary data: \x00\x01"),
+        show_progress=True,
     )
 
     assert_response(resp)
