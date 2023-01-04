@@ -205,6 +205,7 @@ class StatusPostMockResponse:
 @pytest.mark.parametrize('path', ['dummy_executor'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
 @pytest.mark.parametrize('build_env', [['DOMAIN=github.com', 'DOWNLOAD=download']])
+@pytest.mark.parametrize('platform', ['linux/amd64', 'linux/amd64,linux/arm64'])
 @pytest.mark.parametrize('verbose', [False, True])
 def test_push(
     mocker,
@@ -216,6 +217,7 @@ def test_push(
     tag,
     no_cache,
     build_env,
+    platform,
     verbose,
 ):
     mock = mocker.Mock()
@@ -245,6 +247,9 @@ def test_push(
     if build_env:
         for env in build_env:
             _args_list.extend(['--build-env', env])
+
+    if platform:
+        _args_list.extend(['--platform', platform])
 
     if verbose:
         _args_list.append('--verbose')

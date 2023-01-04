@@ -471,6 +471,10 @@ metas:
                 build_env_dict[env_list[0]] = env_list[1]
             build_env = build_env_dict if build_env_dict else None
 
+        platform = None
+        if self.args.platform:
+            platform = self.args.platform
+
         requirements_file = work_path / 'requirements.txt'
 
         requirements_env_variables = []
@@ -552,6 +556,9 @@ metas:
 
                 if build_env:
                     form_data['buildEnv'] = json.dumps(build_env)
+
+                if platform:
+                    form_data['platform'] = platform
 
                 st.update('Connecting to Jina Hub ...')
 

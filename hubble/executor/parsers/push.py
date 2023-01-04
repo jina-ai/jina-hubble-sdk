@@ -68,6 +68,12 @@ One can later fetch a tagged Executor via `jinaai[+docker]://<username>/MyExecut
         help='A list of environment variables. It will be used in project build phase.',
     )
     gp.add_argument(
+        '--platform',
+        type=str,
+        help='A comma separated list of target Docker platforms. Explicitly set target platform(s) for build. '
+        '(e.g. "linux/amd64,linux/arm64")',
+    )
+    gp.add_argument(
         '--secret',
         type=str,
         help='The secret for overwrite a Hub executor',
