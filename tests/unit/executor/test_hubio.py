@@ -700,7 +700,8 @@ def test_status_with_error(
 
 
 @pytest.mark.parametrize('rebuild_image', [True, False])
-def test_fetch(mocker, monkeypatch, rebuild_image):
+@pytest.mark.parametrize('prefer_platform', ['arm64', 'amd64'])
+def test_fetch(mocker, monkeypatch, rebuild_image, prefer_platform):
     mock = mocker.Mock()
 
     def _mock_post(url, json, headers=None):
@@ -714,6 +715,7 @@ def test_fetch(mocker, monkeypatch, rebuild_image):
         'dummy_mwu_encoder',
         None,
         rebuild_image=rebuild_image,
+        prefer_platform=prefer_platform,
         force=True,
     )
 

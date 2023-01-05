@@ -1001,6 +1001,7 @@ metas:
         tag: str,
         image_required: bool = True,
         rebuild_image: bool = True,
+        prefer_platform: Optional[str] = None,
         *,
         secret: Optional[str] = None,
         force: bool = False,
@@ -1021,12 +1022,31 @@ metas:
         """
         import requests
 
+        req_header = get_request_header()
+
         @retry(num_retry=3)
         def _send_request_with_retry(url, **kwargs):
             resp = requests.post(url, **kwargs)
             if resp.status_code != 200:
-                if resp.text:
+                if resp.json():
+                    hubble_err = resp.json()
+                    overridden_msg = ''
+                    detail_msg = ''
+                    msg = ''
+                    if isinstance(hubble_err, dict):
+                        (overridden_msg, detail_msg) = get_hubble_error_message(
+                            hubble_err
+                        )
+                        if not msg:
+                            msg = detail_msg
+
+                    raise Exception(
+                        f'{overridden_msg or msg or "Unknown Error"} '
+                        f'session_id: {req_header.get("jinameta-session-id")}'
+                    )
+                elif resp.text:
                     raise Exception(resp.text)
+
                 resp.raise_for_status()
 
             return resp
@@ -1040,8 +1060,8 @@ metas:
             payload['secret'] = secret
         if tag:
             payload['tag'] = tag
-
-        req_header = get_request_header()
+        if prefer_platform:
+            payload['preferPlatform'] = prefer_platform
 
         resp = _send_request_with_retry(pull_url, json=payload, headers=req_header)
         resp = get_json_from_response(resp)['data']
@@ -1223,6 +1243,8 @@ metas:
                     name,
                     tag,
                     image_required,
+                    True,
+                    self.args.prefer_platform if self.args.prefer_platform else None,
                     secret=secret,
                     force=need_pull,
                 )
