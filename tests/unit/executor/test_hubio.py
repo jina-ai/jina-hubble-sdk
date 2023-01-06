@@ -945,6 +945,7 @@ def test_offline_pull(mocker, monkeypatch, tmpfile):
         tag,
         image_required=True,
         rebuild_image=True,
+        prefer_platform=None,
         *,
         secret=None,
         force=False,
