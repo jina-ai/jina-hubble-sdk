@@ -714,8 +714,9 @@ def test_fetch(mocker, monkeypatch, rebuild_image, prefer_platform):
     executor, _ = HubIO(args).fetch_meta(
         'dummy_mwu_encoder',
         None,
-        rebuild_image=rebuild_image,
-        prefer_platform=prefer_platform,
+        True,
+        rebuild_image,
+        prefer_platform,
         force=True,
     )
 
@@ -809,7 +810,7 @@ def test_fetch_with_retry(mocker, monkeypatch):
         # failing 3 times, so it should raise an error
         HubIO.fetch_meta('dummy_mwu_encoder', tag=None, force=True)
 
-    assert exc_info.match('{"message": "Internal server error"}')
+    assert exc_info.match('Internal server error')
 
     mock_response = FetchMetaMockResponse(response_code=200, fail_count=2)
 
@@ -866,6 +867,7 @@ def test_pull(mocker, monkeypatch, executor_name, build_env, executor_uri):
         tag=None,
         image_required=True,
         rebuild_image=True,
+        prefer_platform=None,
         *,
         secret=None,
         force=False,
