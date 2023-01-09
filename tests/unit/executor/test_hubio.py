@@ -205,6 +205,7 @@ class StatusPostMockResponse:
 @pytest.mark.parametrize('path', ['dummy_executor'])
 @pytest.mark.parametrize('mode', ['--public', '--private'])
 @pytest.mark.parametrize('build_env', [['DOMAIN=github.com', 'DOWNLOAD=download']])
+@pytest.mark.parametrize('platform', ['linux/amd64', 'linux/amd64,linux/arm64'])
 @pytest.mark.parametrize('verbose', [False, True])
 def test_push(
     mocker,
@@ -216,6 +217,7 @@ def test_push(
     tag,
     no_cache,
     build_env,
+    platform,
     verbose,
 ):
     mock = mocker.Mock()
@@ -245,6 +247,9 @@ def test_push(
     if build_env:
         for env in build_env:
             _args_list.extend(['--build-env', env])
+
+    if platform:
+        _args_list.extend(['--platform', platform])
 
     if verbose:
         _args_list.append('--verbose')
@@ -695,7 +700,8 @@ def test_status_with_error(
 
 
 @pytest.mark.parametrize('rebuild_image', [True, False])
-def test_fetch(mocker, monkeypatch, rebuild_image):
+@pytest.mark.parametrize('prefer_platform', ['arm64', 'amd64'])
+def test_fetch(mocker, monkeypatch, rebuild_image, prefer_platform):
     mock = mocker.Mock()
 
     def _mock_post(url, json, headers=None):
@@ -708,7 +714,9 @@ def test_fetch(mocker, monkeypatch, rebuild_image):
     executor, _ = HubIO(args).fetch_meta(
         'dummy_mwu_encoder',
         None,
-        rebuild_image=rebuild_image,
+        True,
+        rebuild_image,
+        prefer_platform,
         force=True,
     )
 
@@ -802,7 +810,7 @@ def test_fetch_with_retry(mocker, monkeypatch):
         # failing 3 times, so it should raise an error
         HubIO.fetch_meta('dummy_mwu_encoder', tag=None, force=True)
 
-    assert exc_info.match('{"message": "Internal server error"}')
+    assert exc_info.match('Internal server error')
 
     mock_response = FetchMetaMockResponse(response_code=200, fail_count=2)
 
@@ -859,6 +867,7 @@ def test_pull(mocker, monkeypatch, executor_name, build_env, executor_uri):
         tag=None,
         image_required=True,
         rebuild_image=True,
+        prefer_platform=None,
         *,
         secret=None,
         force=False,
@@ -936,6 +945,7 @@ def test_offline_pull(mocker, monkeypatch, tmpfile):
         tag,
         image_required=True,
         rebuild_image=True,
+        prefer_platform=None,
         *,
         secret=None,
         force=False,

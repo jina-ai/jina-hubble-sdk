@@ -626,7 +626,6 @@ def disk_cache_offline(
             import filelock
 
             call_hash = f'{func.__name__}({", ".join(map(str, args))})'
-
             pickle_protocol = 4
             file_lock = nullcontext()
 
