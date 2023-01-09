@@ -63,6 +63,8 @@ class HubIO:
     """
 
     def __init__(self, args: argparse.Namespace):
+        # !!! `args` here are not only parsed by `jina-hub` but also `jina` itself (e.g. `jina pod`)
+        # So you need to check self.args with `hasattr`
         self.args = args
         self.logger = logging.getLogger(self.__class__.__name__)
 
@@ -472,7 +474,7 @@ metas:
             build_env = build_env_dict if build_env_dict else None
 
         platform = None
-        if self.args.platform:
+        if hasattr(self.args, 'platform'):
             platform = self.args.platform
 
         requirements_file = work_path / 'requirements.txt'
@@ -994,6 +996,8 @@ metas:
         console = get_rich_console()
         self._prettyprint_list_usage(console, executors, base_path)
 
+    # !!! Warning: changing parameters here causes tests in jina to fail.
+    # You need to change the tests in jina as well.
     @staticmethod
     @disk_cache_offline(cache_file=str(get_cache_db()))
     def fetch_meta(
@@ -1231,6 +1235,10 @@ metas:
         executor_name = None
         build_env = None
         scheme = None
+        prefer_platform = None
+
+        if hasattr(self.args, 'prefer_platform'):
+            prefer_platform = self.args.prefer_platform
 
         try:
             need_pull = self.args.force_update
@@ -1244,7 +1252,7 @@ metas:
                     tag,
                     image_required,
                     True,
-                    self.args.prefer_platform if self.args.prefer_platform else None,
+                    prefer_platform,
                     secret=secret,
                     force=need_pull,
                 )
