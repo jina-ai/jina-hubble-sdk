@@ -862,18 +862,8 @@ class DownloadMockResponse:
 def test_pull(mocker, monkeypatch, executor_name, build_env, executor_uri):
     mock = mocker.Mock()
 
-    def _mock_fetch(
-        name,
-        tag=None,
-        image_required=True,
-        rebuild_image=True,
-        prefer_platform=None,
-        *,
-        secret=None,
-        force=False,
-        build_env=build_env,
-    ):
-        mock(name=name)
+    def _mock_fetch(*args, **kwargs):
+        mock(name=args[0])
         return (
             HubExecutor(
                 uuid='dummy_mwu_encoder',
@@ -940,18 +930,10 @@ def test_offline_pull(mocker, monkeypatch, tmpfile):
     no_image = False
 
     @disk_cache_offline(cache_file=str(tmpfile))
-    def _mock_fetch(
-        name,
-        tag,
-        image_required=True,
-        rebuild_image=True,
-        prefer_platform=None,
-        *,
-        secret=None,
-        force=False,
-    ):
-        mock(name=name)
-        fixed_tag = tag or 'latest'
+    def _mock_fetch(*args, **kwargs):
+        mock(name=args[0])
+        fixed_tag = args[1] or 'latest'
+        image_required = args[2] or True
         if fail_meta_fetch:
             raise urllib.error.URLError('Failed fetching meta')
         elif no_image and image_required:
