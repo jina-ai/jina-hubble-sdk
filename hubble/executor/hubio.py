@@ -1005,8 +1005,8 @@ metas:
         tag: str,
         image_required: bool = True,
         rebuild_image: bool = True,
-        prefer_platform: Optional[str] = None,
         *,
+        prefer_platform: Optional[str] = None,
         secret: Optional[str] = None,
         force: bool = False,
     ) -> HubExecutor:
@@ -1252,7 +1252,7 @@ metas:
                     tag,
                     image_required,
                     True,
-                    prefer_platform,
+                    prefer_platform=prefer_platform,
                     secret=secret,
                     force=need_pull,
                 )
