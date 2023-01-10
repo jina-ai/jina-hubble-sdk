@@ -1252,7 +1252,7 @@ metas:
                     tag,
                     image_required,
                     True,
-                    prefer_platform,
+                    prefer_platform=prefer_platform,
                     secret=secret,
                     force=need_pull,
                 )

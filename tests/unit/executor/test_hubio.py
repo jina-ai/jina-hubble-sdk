@@ -716,7 +716,7 @@ def test_fetch(mocker, monkeypatch, rebuild_image, prefer_platform):
         None,
         True,
         rebuild_image,
-        prefer_platform,
+        prefer_platform=prefer_platform,
         force=True,
     )
 
