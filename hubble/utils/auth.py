@@ -393,9 +393,7 @@ The function also requires `ipywidgets`.
         # authorize user
         url = urljoin(
             api_host,
-            'user.identity.proxiedAuthorize?{}'.format(
-                urlencode({'provider': 'jina-login'})
-            ),
+            'user.identity.proxiedAuthorize?{}'.format(urlencode(kwargs)),
         )
 
         response = requests.get(url, stream=True)
@@ -487,7 +485,6 @@ The function also requires `ipywidgets`.
         api_host = get_base_url()
         auth_info = None
         async with aiohttp.ClientSession(trust_env=True) as session:
-            kwargs['provider'] = kwargs.get('provider', 'jina-login')
 
             async with session.get(
                 url=urljoin(

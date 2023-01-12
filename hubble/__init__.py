@@ -58,7 +58,7 @@ def login_required(func):
                     f'[yellow bold]However, {func!r} requires login to Jina AI[/].'
                 )
                 if Confirm.ask('Do you want to login now?'):
-                    login()
+                    login(prompt='login')
                     return func(*args, **kwargs)
                 print(
                     '[yellow]You can login later by running [bold]jina auth login[/] '
@@ -143,7 +143,7 @@ def show_hint(interactive: bool = False) -> Optional[str]:  # noqa: E501
             from rich.prompt import Confirm
 
             if Confirm.ask('Do you want to login now?'):
-                login()
+                login(prompt='login')
 
             return show_hint(interactive=interactive)
     except Exception as ex:
