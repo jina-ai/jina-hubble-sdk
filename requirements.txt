@@ -6,3 +6,4 @@ filelock
 pathspec
 docker
 pyyaml
+python-jose
