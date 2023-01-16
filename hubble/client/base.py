@@ -101,7 +101,7 @@ class BaseClient(object):
             if log_error:
                 self.logger.error(
                     f'Please report this session_id: [yellow bold]{session_id}[/] '
-                    'to https://github.com/jina-ai/jina-hubble-sdk/issues.'
+                    'to https://github.com/jina-ai/jina-hubble-sdk/issues'
                 )
             raise e
 
