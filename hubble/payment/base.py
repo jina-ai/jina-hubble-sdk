@@ -54,7 +54,6 @@ class PaymentBaseClient(object):
         :param url: The url of the request.
         :param method: The request type, for v2 always set to POST.
         :param data: Optional data payloads to be send along with request.
-        :param files: Optional files to be uploaded.
         :returns: dict.
         """
 
