@@ -75,8 +75,6 @@ class PaymentBaseClient(object):
                 json=json if json else None,
             )
 
-            print(resp)
-
             if resp.status_code >= 400:
                 self._handle_error_request(resp)
 
