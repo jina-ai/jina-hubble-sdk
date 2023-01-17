@@ -22,10 +22,10 @@ class HubblePaymentAPISession(requests.Session):
             }
         )
 
-    def init_app_auth(self, token: str):
+    def init_app_auth(self, m2m_token: str):
         """Initialize the jwt token.
 
         :param token: The api token user get from webpage.
         """
-        auth_header = f'Basic {token}'
+        auth_header = f'Basic {m2m_token}'
         self.headers.update({'Authorization': auth_header})

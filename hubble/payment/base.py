@@ -17,11 +17,11 @@ from .session import HubblePaymentAPISession
 class PaymentBaseClient(object):
     """Hubble Payment Python API client."""
 
-    def __init__(self, token: str):
+    def __init__(self, m2m_token: str):
         self._base_url = get_base_url()
         # initalize session using app token
         self._session = HubblePaymentAPISession()
-        self._session.init_app_auth(token=token)
+        self._session.init_app_auth(m2m_token=m2m_token)
         self.logger = logging.getLogger(self.__class__.__name__)
 
     def _handle_error_request(self, resp: dict):
@@ -81,11 +81,11 @@ class PaymentBaseClient(object):
             resp = get_json_from_response(resp)
 
         except Exception as e:
-            # logging error
+
+            # this might not be necessary
             if log_error:
                 self.logger.error(
-                    f'Please report this session_id: [yellow bold]{session_id}[/] '
-                    'to https://github.com/jina-ai/jina-hubble-sdk/issues'
+                    f'Please report this session_id: {session_id} to Hubble'
                 )
 
             raise e
