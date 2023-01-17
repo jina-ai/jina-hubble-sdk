@@ -10,7 +10,7 @@ from jose import jwt
 # TODO: add payment specific errorcodes
 from ..excepts import errorcodes
 from ..utils.api_utils import get_base_url, get_json_from_response
-from .jwks import JWKS
+from .jwks import JSONWebKeySet
 from .session import HubblePaymentAPISession
 
 
@@ -114,7 +114,7 @@ class PaymentBaseClient(object):
         header = self.decode_jwt(components[0] + "========")
         if header['alg'] != 'ES256':
             raise Exception(f"Algorithm not supported {header['alg']}")
-        keys = JWKS.get_jwks(header['kid'])
+        keys = JSONWebKeySet.get_keys(header['kid'])
         if len(keys) <= 0:
             raise Exception(f"Signing key not found {header['kid']}")
         try:

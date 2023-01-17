@@ -1,3 +1,5 @@
+import uuid
+
 from .base import PaymentBaseClient
 from .endpoints import PaymentEndpoints
 
@@ -16,7 +18,7 @@ class PaymentClient(PaymentBaseClient):
 
         :param user_id: The _id of the user.
         :param expiration_seconds: Number of seconds until the JWT expires.
-        :returns: JWT as string.
+        :returns: Object.
         """
         return self.handle_request(
             url=self._base_url + PaymentEndpoints.get_authorized_jwt,
@@ -36,3 +38,30 @@ class PaymentClient(PaymentBaseClient):
             return is_authorized
         except Exception:
             return False
+
+    def get_summary(self, token: str, app_id: str) -> object:
+        """Get a list of a user's subscriptions and consumption for a given app.
+
+        :param token: User token.
+        :param app_id: ID of the application.
+        :returns: Object
+        """
+
+        return self.handle_request(
+            url=self._base_url + PaymentEndpoints.get_summary,
+            data={'token': token, 'internalAppId': app_id},
+        )
+
+    def report_usage(
+        self, token: str, app_id: str, product_id: str, quantity: int
+    ) -> object:
+        return self.handle_request(
+            url=self._base_url + PaymentEndpoints.report_usage,
+            data={
+                'token': token,
+                'id': str(uuid.uuid4()),
+                'internalAppId': app_id,
+                'internalProductId': product_id,
+                'quantity': quantity,
+            },
+        )
