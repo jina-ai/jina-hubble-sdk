@@ -6,11 +6,11 @@ __all__ = ['HubblePaymentAPISession']
 class HubblePaymentAPISession(requests.Session):
     """The customized `requests.Session` object.
 
-    ``HubbleAPISession`` helps the ``hubble.client.Client`` create a default
-    ``header`` and validate the jwt token when calling ``init_jwt_auth``.
+    ``HubblePaymentAPISession`` helps the ``hubble.payment.PaymentClient``
+    create a default ``header``.
 
-    The ``HubbleAPISession`` is initialized in the ``hubble.client.Client``
-    constructor.
+    The ``HubblePaymentAPISession`` is initialized in the
+    ``hubble.payment.PaymentClient`` constructor.
     """
 
     def __init__(self):
