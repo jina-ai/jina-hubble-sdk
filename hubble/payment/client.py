@@ -55,6 +55,15 @@ class PaymentClient(PaymentBaseClient):
     def report_usage(
         self, token: str, app_id: str, product_id: str, quantity: int
     ) -> object:
+
+        """Report usage for a given app.
+
+        :param token: User token.
+        :param app_id: ID of the application.
+        :param product_id: ID of the product.
+        :returns: Object
+        """
+
         return self.handle_request(
             url=self._base_url + PaymentEndpoints.report_usage,
             data={
