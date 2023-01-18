@@ -2,8 +2,6 @@ import pytest
 from hubble.excepts import AuthenticationRequiredError
 from hubble.payment.client import PaymentClient
 from jose import jwt
-
-# trunk-ignore(flake8/F401)
 from mock import patch  # noqa: F401
 
 PRIVATE_KEY = {
