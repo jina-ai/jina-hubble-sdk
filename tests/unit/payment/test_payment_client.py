@@ -35,6 +35,15 @@ OTHER_PUBLIC_KEY = {
     "alg": "ES256",
 }
 
+HEADERS = {'kid': PUBLIC_KEY['kid']}
+
+PAYLOAD = {
+    'iss': 'http://localhost:3000',
+    'aud': 'random_audience_id',
+    'sub': 'random_user_id',
+    'token': 'random_user_token',
+}
+
 
 def test_handle_error_request():
     payment_client = PaymentClient(m2m_token='random_m2m_token')
@@ -45,56 +54,33 @@ def test_handle_error_request():
 def test_decode_jwt():
     payment_client = PaymentClient(m2m_token='random_m2m_token')
 
-    payload = {
-        'iss': 'http://localhost:3000',
-        'aud': 'random_audience_id',
-        'sub': 'random_user_id',
-        'token': 'random_user_token',
-    }
-
-    token = jwt.encode(payload, 'secret', algorithm='HS256')
+    token = jwt.encode(PAYLOAD, 'secret', algorithm='HS256')
     token_components = token.split('.')
     token_payload = payment_client.decode_jwt(token_components[1] + "========")
-    assert token_payload == payload
+    assert token_payload == PAYLOAD
 
 
-@pytest.mark.parametrize(
-    'args',
-    [
-        {
-            'private_key': PRIVATE_KEY,
-            'public_key': PUBLIC_KEY,
-            'should_throw_error': False,
-        },
-        {
-            'private_key': PRIVATE_KEY,
-            'public_key': OTHER_PUBLIC_KEY,
-            'should_throw_error': True,
-        },
-    ],
-)
-def test_validate_jwt(mocker, args):
+def test_validate_jwt_success(mocker):
 
     mocker.patch(
-        'hubble.payment.jwks.JSONWebKeySet.get_keys', return_value=[args['public_key']]
+        'hubble.payment.jwks.JSONWebKeySet.get_keys', return_value=[PUBLIC_KEY]
     )
 
     payment_client = PaymentClient(m2m_token='random_m2m_token')
 
-    headers = {'kid': PUBLIC_KEY['kid']}
+    token = jwt.encode(PAYLOAD, PRIVATE_KEY, algorithm='ES256', headers=HEADERS)
+    decoded_token = payment_client.validate_jwt(token=token)
+    assert decoded_token == PAYLOAD
 
-    payload = {
-        'iss': 'http://localhost:3000',
-        'aud': 'random_audience_id',
-        'sub': 'random_user_id',
-        'token': 'random_user_token',
-    }
 
-    token = jwt.encode(payload, args['private_key'], algorithm='ES256', headers=headers)
+def test_validate_jwt_failure(mocker):
 
-    if args['should_throw_error']:
-        with pytest.raises(Exception):
-            payment_client.validate_jwt(token=token)
-    else:
-        decoded_token = payment_client.validate_jwt(token=token)
-        assert decoded_token == payload
+    mocker.patch(
+        'hubble.payment.jwks.JSONWebKeySet.get_keys', return_value=[OTHER_PUBLIC_KEY]
+    )
+
+    payment_client = PaymentClient(m2m_token='random_m2m_token')
+
+    token = jwt.encode(PAYLOAD, PRIVATE_KEY, algorithm='ES256', headers=HEADERS)
+    with pytest.raises(Exception):
+        payment_client.validate_jwt(token=token)
