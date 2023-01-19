@@ -1235,13 +1235,13 @@ metas:
         executor_name = None
         build_env = None
         scheme = None
-        prefer_platform = None
 
-        if hasattr(self.args, 'prefer_platform'):
-            prefer_platform = self.args.prefer_platform
+        arg_prefer_platform = getattr(self.args, 'prefer_platform', None)
+        arg_force_update = getattr(self.args, 'force_update', False)
+        arg_install_requirements = getattr(self.args, 'install_requirements', False)
 
         try:
-            need_pull = self.args.force_update
+            need_pull = arg_force_update
             with console.status(f'Pulling {self.args.uri}...') as st:
                 scheme, name, tag, secret = parse_hub_uri(self.args.uri)
                 image_required = scheme.endswith('+docker')
@@ -1252,7 +1252,7 @@ metas:
                     tag,
                     image_required,
                     True,
-                    prefer_platform=prefer_platform,
+                    prefer_platform=arg_prefer_platform,
                     secret=secret,
                     force=need_pull,
                 )
@@ -1314,7 +1314,7 @@ metas:
                                 'Installing dependencies from [bold]requirements.txt[/bold]...'
                             )
                             install_package_dependencies(
-                                install_deps=self.args.install_requirements,
+                                install_deps=arg_install_requirements,
                                 pkg_dist_path=pkg_dist_path,
                                 pkg_path=pkg_dist_path,
                             )
