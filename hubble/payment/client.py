@@ -6,6 +6,12 @@ from .endpoints import PaymentEndpoints
 
 class PaymentClient(PaymentBaseClient):
     def get_user_token(self, user_id) -> dict:
+        """Create a user session and token for a user.
+
+        :param user_id: The _id of the user
+        :returns: Object
+        """
+
         return self.handle_request(
             url=self._base_url + PaymentEndpoints.get_user_token,
             data={'userId': user_id},
@@ -16,9 +22,9 @@ class PaymentClient(PaymentBaseClient):
     ) -> dict:
         """Create a payment authorized JWT for user.
 
-        :param user_id: The _id of the user.
-        :param expiration_seconds: Number of seconds until the JWT expires.
-        :returns: Object.
+        :param user_id: The _id of the user
+        :param expiration_seconds: Number of seconds until the JWT expires
+        :returns: Object
         """
         return self.handle_request(
             url=self._base_url + PaymentEndpoints.get_authorized_jwt,
@@ -28,7 +34,7 @@ class PaymentClient(PaymentBaseClient):
     def verify_authorized_jwt(self, token: str) -> bool:
         """Verify if a token is a payment authorized JWT
 
-        :param token: User token.
+        :param token: User token
         :returns: Boolean (true if payment authorized, false otherwise)
         """
 
@@ -42,8 +48,8 @@ class PaymentClient(PaymentBaseClient):
     def get_summary(self, token: str, app_id: str) -> object:
         """Get a list of a user's subscriptions and consumption for a given app.
 
-        :param token: User token.
-        :param app_id: ID of the application.
+        :param token: User token
+        :param app_id: ID of the application
         :returns: Object
         """
 
@@ -58,9 +64,9 @@ class PaymentClient(PaymentBaseClient):
 
         """Report usage for a given app.
 
-        :param token: User token.
-        :param app_id: ID of the application.
-        :param product_id: ID of the product.
+        :param token: User token
+        :param app_id: ID of the application
+        :param product_id: ID of the product
         :returns: Object
         """
 
