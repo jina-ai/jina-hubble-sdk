@@ -21,7 +21,7 @@ def m2m_token():
 # fixture for acquiring a 'cached' instance of StripeClient
 @pytest.fixture(scope='session')
 def stripe_client():
-    api_key = os.environ.get('stripe_secret_key', None)
+    api_key = os.environ.get('STRIPE_SECRET_KEY', None)
     client = StripeClient(api_key)
     yield client
     client.cleanup()
@@ -29,11 +29,12 @@ def stripe_client():
 
 @pytest.fixture()
 def payment_client(m2m_token):
+    print(m2m_token)
     payment_client = PaymentClient(m2m_token=m2m_token)
     yield payment_client
 
 
 @pytest.fixture()
-def user_token(payment_client, user_id):
-    user_token = payment_client.get_user_token(user_id=user_id)
+def user_token(payment_client, request):
+    user_token = payment_client.get_user_token(user_id=request.param)['data']
     yield user_token
