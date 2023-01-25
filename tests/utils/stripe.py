@@ -94,4 +94,6 @@ class StripeClient(object):
 
     # TODO: finish this function
     def cleanup(self):
-        pass
+        for _, customer in self.cache.items():
+            self.delete_clock(test_clock_id=customer['test_clock_id'])
+        self.cache = {}

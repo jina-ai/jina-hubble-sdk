@@ -1,6 +1,8 @@
 import time
+from datetime import datetime
 
 import pytest
+from dateutil.relativedelta import relativedelta
 from mock import patch  # noqa: F401
 
 INTERNAL_APP_ID = 'hubble-sdk'
@@ -64,12 +66,11 @@ def test_submit_usage_report(stripe_client, payment_client, user_token):
         token=user_token,
         app_id=INTERNAL_APP_ID,
         product_id=INTERNAL_PRODUCT_ID,
-        quantity=1,
+        quantity=100,
     )
 
     # NOTE: sleeping to wait for the usage report to be processed
-    # TODO: PR Hubble to process usage faster on the staging environment (every 10-15 seconds)
-    time.sleep(15)
+    time.sleep(75)
 
     summary = payment_client.get_summary(token=user_token, app_id=INTERNAL_APP_ID)
 
@@ -78,7 +79,28 @@ def test_submit_usage_report(stripe_client, payment_client, user_token):
             {
                 'internalAppId': INTERNAL_APP_ID,
                 'internalProductId': INTERNAL_PRODUCT_ID,
-                'usageQuantity': 1,
+                'usageQuantity': 100,
+            }
+        ],
+        'hasPaymentMethod': True,
+    }
+
+    assert summary['data'] == expected_result
+
+    # advancing test clock by one month
+    # this will trigger a new subscription period
+    now = datetime.now()
+    later = now + relativedelta(days=+32)
+    stripe_client.advance_clock(test_clock_id=customer['test_clock_id'], date=later)
+
+    summary = payment_client.get_summary(token=user_token, app_id=INTERNAL_APP_ID)
+
+    expected_result = {
+        'subscriptionItems': [
+            {
+                'internalAppId': INTERNAL_APP_ID,
+                'internalProductId': INTERNAL_PRODUCT_ID,
+                'usageQuantity': 0,
             }
         ],
         'hasPaymentMethod': True,
