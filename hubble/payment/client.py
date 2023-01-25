@@ -18,7 +18,7 @@ class PaymentClient(PaymentBaseClient):
         )
 
     def get_authorized_jwt(
-        self, user_token: str, expiration_seconds: int = 15 * 60 * 1000
+        self, token: str, expiration_seconds: int = 15 * 60 * 1000
     ) -> dict:
         """Create a payment authorized JWT for user.
 
@@ -28,7 +28,7 @@ class PaymentClient(PaymentBaseClient):
         """
         return self.handle_request(
             url=self._base_url + PaymentEndpoints.get_authorized_jwt,
-            data={'token': user_token, 'ttl': expiration_seconds},
+            data={'token': token, 'ttl': expiration_seconds},
         )
 
     def verify_authorized_jwt(self, token: str) -> bool:

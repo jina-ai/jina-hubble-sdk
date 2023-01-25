@@ -109,5 +109,10 @@ def test_submit_usage_report(stripe_client, payment_client, user_token):
     assert summary['data'] == expected_result
 
 
-# def test_get_authorized_jwt():
-#     pass
+@pytest.mark.parametrize(
+    'user_token', [PAYING_USER_ID_1, PAYING_USER_ID_2], indirect=True
+)
+def test_get_authorized_jwt(payment_client, user_token):
+    jwt = payment_client.get_authorized_jwt(token=user_token)
+    is_authorized = payment_client.verify_authorized_jwt(token=jwt)
+    assert is_authorized is True
