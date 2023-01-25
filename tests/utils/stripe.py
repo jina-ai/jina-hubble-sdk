@@ -2,6 +2,8 @@ import time
 from datetime import datetime
 from typing import List
 
+DEFAULT_SLEEP_TIME = 10
+
 
 def wait(secs):
     def decorator(func):
@@ -29,7 +31,7 @@ class StripeClient(object):
 
         self.cache = {}
 
-    @wait(2)
+    @wait(DEFAULT_SLEEP_TIME)
     def create_clock(self):
         now = datetime.now()
         unix_time = now.timestamp()
@@ -37,7 +39,7 @@ class StripeClient(object):
 
         return self._stripe.test_helpers.TestClock.create(frozen_time=unix_time)
 
-    @wait(2)
+    @wait(DEFAULT_SLEEP_TIME)
     def advance_clock(self, test_clock_id: str, date: datetime):
         # https://stripe.com/docs/api/test_clocks/advance?lang=python
         unix_time = date.timestamp()
@@ -54,17 +56,17 @@ class StripeClient(object):
 
         return test_clock
 
-    @wait(2)
+    @wait(DEFAULT_SLEEP_TIME)
     def delete_clock(self, test_clock_id: str):
         return self._stripe.test_helpers.TestClock.delete(test_clock_id)
 
-    @wait(2)
+    @wait(DEFAULT_SLEEP_TIME)
     def create_customer(self, email: str, test_clock_id: str, payment_method=None):
         return self._stripe.Customer.create(
             email=email, test_clock=test_clock_id, payment_method=payment_method
         )
 
-    @wait(2)
+    @wait(DEFAULT_SLEEP_TIME)
     def create_subscription(self, customer_id: str, items: List[str]):
         # https://stripe.com/docs/api/subscriptions/create?lang=python
         subscription_items = [{'price': item} for item in items]

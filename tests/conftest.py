@@ -29,7 +29,6 @@ def stripe_client():
 
 @pytest.fixture()
 def payment_client(m2m_token):
-    print(m2m_token)
     payment_client = PaymentClient(m2m_token=m2m_token)
     yield payment_client
 
