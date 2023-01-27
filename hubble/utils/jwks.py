@@ -1,7 +1,7 @@
 import requests
 
-from ..utils.api_utils import get_domain_url, get_json_from_response
-from ..utils.config import config
+from .api_utils import get_domain_url, get_json_from_response
+from .config import config
 
 
 class JSONWebKeySet:
@@ -18,7 +18,7 @@ class JSONWebKeySet:
     @staticmethod
     def get_keys_from_config():
         """Get cached JWK list from config file."""
-        jwks = config.get('jwks')
+        jwks = config.get('jwks', [])
         return jwks
 
     @staticmethod

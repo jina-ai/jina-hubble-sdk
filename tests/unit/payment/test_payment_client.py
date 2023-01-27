@@ -1,8 +1,8 @@
 import pytest
 from hubble.excepts import AuthenticationRequiredError
 from hubble.payment.client import PaymentClient
+from hubble.utils.jwt_parser import decode_jwt, validate_jwt
 from jose import jwt
-from mock import patch  # noqa: F401
 
 PRIVATE_KEY = {
     "kty": "EC",
@@ -52,35 +52,27 @@ def test_handle_error_request():
 
 
 def test_decode_jwt():
-    payment_client = PaymentClient(m2m_token='random_m2m_token')
-
     token = jwt.encode(PAYLOAD, 'secret', algorithm='HS256')
     token_components = token.split('.')
-    token_payload = payment_client.decode_jwt(token_components[1] + "========")
+    token_payload = decode_jwt(token_components[1] + "========")
     assert token_payload == PAYLOAD
 
 
 def test_validate_jwt_success(mocker):
 
-    mocker.patch(
-        'hubble.payment.jwks.JSONWebKeySet.get_keys', return_value=[PUBLIC_KEY]
-    )
-
-    payment_client = PaymentClient(m2m_token='random_m2m_token')
+    mocker.patch('hubble.utils.jwks.JSONWebKeySet.get_keys', return_value=[PUBLIC_KEY])
 
     token = jwt.encode(PAYLOAD, PRIVATE_KEY, algorithm='ES256', headers=HEADERS)
-    decoded_token = payment_client.validate_jwt(token=token)
+    decoded_token = validate_jwt(token=token)
     assert decoded_token == PAYLOAD
 
 
 def test_validate_jwt_failure(mocker):
 
     mocker.patch(
-        'hubble.payment.jwks.JSONWebKeySet.get_keys', return_value=[OTHER_PUBLIC_KEY]
+        'hubble.utils.jwks.JSONWebKeySet.get_keys', return_value=[OTHER_PUBLIC_KEY]
     )
-
-    payment_client = PaymentClient(m2m_token='random_m2m_token')
 
     token = jwt.encode(PAYLOAD, PRIVATE_KEY, algorithm='ES256', headers=HEADERS)
     with pytest.raises(Exception):
-        payment_client.validate_jwt(token=token)
+        validate_jwt(token=token)
