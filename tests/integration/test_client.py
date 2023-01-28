@@ -52,8 +52,8 @@ def test_get_user_info(client):
 @pytest.mark.parametrize(
     'client', [{'jsonify': True}, {'jsonify': False}], indirect=True
 )
-def test_get_user_raw_info(client):
-    resp = client.get_user_raw_info()
+def test_get_raw_session(client):
+    resp = client.get_raw_session()
     assert_response(resp)
 
 

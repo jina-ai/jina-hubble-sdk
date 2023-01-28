@@ -64,16 +64,14 @@ class Client(BaseClient):
             url=self._base_url + EndpointsV2.get_user_info, log_error=log_error
         )
 
-    def get_user_raw_info(
-        self, log_error: bool = True
-    ) -> Union[requests.Response, dict]:
-        """Get raw information of user.
+    def get_raw_session(self, log_error: bool = True) -> Union[requests.Response, dict]:
+        """Get raw information of the session.
 
         :returns: `requests.Response` object as returned value
             or indented json if jsonify.
         """
         return self.handle_request(
-            url=self._base_url + EndpointsV2.get_user_raw_info, log_error=log_error
+            url=self._base_url + EndpointsV2.get_raw_session, log_error=log_error
         )
 
     @property
