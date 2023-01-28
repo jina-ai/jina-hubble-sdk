@@ -52,6 +52,14 @@ def test_get_user_info(client):
 @pytest.mark.parametrize(
     'client', [{'jsonify': True}, {'jsonify': False}], indirect=True
 )
+def test_get_user_raw_info(client):
+    resp = client.get_user_raw_info()
+    assert_response(resp)
+
+
+@pytest.mark.parametrize(
+    'client', [{'jsonify': True}, {'jsonify': False}], indirect=True
+)
 def test_upload_get_delete_artifact(client, tmpdir):
     # upload from path.
     artifact_file = os.path.join(cur_dir, '../resources/model')

@@ -9,6 +9,7 @@ class EndpointsV2(object):
     initiate_proxied_authorize: str = 'user.identity.proxiedAuthorize'
     auto_grant_user_identity: str = 'user.identity.grant.auto'
     get_user_info: str = 'user.identity.whoami'
+    get_user_raw_info: str = 'user.session.getRaw'
     dismiss_user_session: str = 'user.session.dismiss'
 
     create_pat: str = 'user.pat.create'
