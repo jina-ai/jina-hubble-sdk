@@ -10,23 +10,21 @@ INTERNAL_PRODUCT_ID = 'hubble-sdk'
 
 PRICE_STRIPE_ID = 'price_1MTl37AkuPxeor9kLZxJ5lfd'
 
-PAYING_USER_ID_1 = '63d0dd0ef4b40caaaf7edc12'
-PAYING_USER_EMAIL_1 = 'hubble_sdk_user_1@jina.ai'
+NON_PAYING_USER_ID_1 = '63d6061fba3bfab3d4bf93b9'
+NON_PAYING_USER_EMAIL_1 = 'hubble_sdk_user_3@jina.ai'
 
-PAYING_USER_ID_2 = '63d0dd28f4b40caaaf7edc14'
-PAYING_USER_EMAIL_2 = 'hubble_sdk_user_2@jina.ai'
+NON_PAYING_USER_ID_2 = '63d6062bba3bfab3d4bf93bb'
+NON_PAYING_USER_EMAIL_2 = 'hubble_sdk_user_4@jina.ai'
 
 
-@pytest.mark.parametrize('user_token', [PAYING_USER_ID_1], indirect=True)
+@pytest.mark.parametrize('user_token', [NON_PAYING_USER_ID_1], indirect=True)
 def test_get_summary(stripe_client, payment_client, user_token):
 
     # creating stripe customer for user
-    customer = stripe_client.get_customer(
-        email=PAYING_USER_EMAIL_1, payment_method='pm_card_visa'
-    )
+    customer = stripe_client.get_customer(email=NON_PAYING_USER_EMAIL_1)
 
     summary = payment_client.get_summary(token=user_token, app_id=INTERNAL_APP_ID)
-    expected_result = {'subscriptionItems': [], 'hasPaymentMethod': True}
+    expected_result = {'subscriptionItems': [], 'hasPaymentMethod': False}
     assert summary['data'] == expected_result
 
     # creating subscription
@@ -44,19 +42,17 @@ def test_get_summary(stripe_client, payment_client, user_token):
                 'usageQuantity': 0,
             }
         ],
-        'hasPaymentMethod': True,
+        'hasPaymentMethod': False,
     }
 
     assert summary['data'] == expected_result
 
 
-@pytest.mark.parametrize('user_token', [PAYING_USER_ID_2], indirect=True)
+@pytest.mark.parametrize('user_token', [NON_PAYING_USER_ID_2], indirect=True)
 def test_submit_usage_report(stripe_client, payment_client, user_token):
 
     # try to submit a usage report
-    customer = stripe_client.get_customer(
-        email=PAYING_USER_EMAIL_2, payment_method='pm_card_visa'
-    )
+    customer = stripe_client.get_customer(email=NON_PAYING_USER_EMAIL_2)
 
     stripe_client.create_subscription(
         customer_id=customer['customer_id'], items=[PRICE_STRIPE_ID]
@@ -82,7 +78,7 @@ def test_submit_usage_report(stripe_client, payment_client, user_token):
                 'usageQuantity': 100,
             }
         ],
-        'hasPaymentMethod': True,
+        'hasPaymentMethod': False,
     }
 
     assert summary['data'] == expected_result
@@ -95,22 +91,13 @@ def test_submit_usage_report(stripe_client, payment_client, user_token):
 
     summary = payment_client.get_summary(token=user_token, app_id=INTERNAL_APP_ID)
 
-    expected_result = {
-        'subscriptionItems': [
-            {
-                'internalAppId': INTERNAL_APP_ID,
-                'internalProductId': INTERNAL_PRODUCT_ID,
-                'usageQuantity': 0,
-            }
-        ],
-        'hasPaymentMethod': True,
-    }
+    expected_result = {'subscriptionItems': [], 'hasPaymentMethod': False}
 
     assert summary['data'] == expected_result
 
 
 @pytest.mark.parametrize(
-    'user_token', [PAYING_USER_ID_1, PAYING_USER_ID_2], indirect=True
+    'user_token', [NON_PAYING_USER_ID_1, NON_PAYING_USER_ID_2], indirect=True
 )
 def test_get_authorized_jwt(payment_client, user_token):
     jwt = payment_client.get_authorized_jwt(token=user_token)['data']
