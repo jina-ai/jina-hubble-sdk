@@ -25,9 +25,12 @@ class JSONWebKeySet:
     def get_keys_from_hubble():
         """Get JWK list from hubble API and cache."""
         url = get_domain_url() + 'v2/.well-known/jwks.json'
+        print(url)
         response = requests.get(url)
         response.raise_for_status()
         json_response = get_json_from_response(response)
+        print(json_response)
         keys = json_response.get('keys', [])
+        print(keys)
         config.set('jwks', keys)
         return keys
