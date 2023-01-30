@@ -10,10 +10,10 @@ INTERNAL_PRODUCT_ID = 'hubble-sdk'
 
 PRICE_STRIPE_ID = 'price_1MTl37AkuPxeor9kLZxJ5lfd'
 
-NON_PAYING_USER_ID_1 = '63d6061fba3bfab3d4bf93b9'
+NON_PAYING_USER_ID_1 = '63d75509234f12b36dbd8b36'
 NON_PAYING_USER_EMAIL_1 = 'hubble_sdk_user_3@jina.ai'
 
-NON_PAYING_USER_ID_2 = '63d6062bba3bfab3d4bf93bb'
+NON_PAYING_USER_ID_2 = '63d7551c234f12b36dbd8dca'
 NON_PAYING_USER_EMAIL_2 = 'hubble_sdk_user_4@jina.ai'
 
 

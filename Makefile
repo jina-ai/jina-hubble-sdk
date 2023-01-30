@@ -61,12 +61,14 @@ init:
 
 # ---------------------------------------------------------------- Test related targets
 
-PYTEST_ARGS = --show-capture no --full-trace --verbose --cov hubble/ --cov-report term-missing --cov-report xml
+PYTEST_ARGS = --show-capture no --full-trace --verbose --cov hubble/ --cov-report term-missing --cov-report xml --ignore=payment/
 
 ## Run tests
 test:
 	pytest $(PYTEST_ARGS) $(TESTS_PATH)
 
+test-payment:
+	pytest tests/unit/payment/ tests/integration/payment
 
 # ---------------------------------------------------------- Code style related targets
 
