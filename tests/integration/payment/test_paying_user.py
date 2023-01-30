@@ -114,5 +114,8 @@ def test_submit_usage_report(stripe_client, payment_client, user_token):
 )
 def test_get_authorized_jwt(payment_client, user_token):
     jwt = payment_client.get_authorized_jwt(token=user_token)['data']
+    print(jwt)
+    decoded = payment_client.validate_jwt(jwt)
+    print(decoded)
     is_authorized = payment_client.verify_authorized_jwt(token=jwt)
     assert is_authorized is True
