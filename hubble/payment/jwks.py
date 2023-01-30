@@ -19,7 +19,7 @@ class JSONWebKeySet:
     def get_keys_from_config():
         """Get cached JWK list from config file."""
         jwks = config.get('jwks')
-        return jwks
+        return jwks if jwks is not None else []
 
     @staticmethod
     def get_keys_from_hubble():
