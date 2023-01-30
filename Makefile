@@ -65,7 +65,7 @@ PYTEST_ARGS = --show-capture no --full-trace --verbose --cov hubble/ --cov-repor
 
 ## Run tests
 test:
-	pytest $(PYTEST_ARGS) --ignore-glob **/payment/** $(TESTS_PATH)
+	pytest $(PYTEST_ARGS) --ignore-glob=**/payment/* $(TESTS_PATH)
 
 test-payment:
 	pytest $(PYTEST_ARGS) tests/unit/payment/ tests/integration/payment
