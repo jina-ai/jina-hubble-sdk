@@ -24,11 +24,12 @@ def validate_jwt(token: str):
 
     :param token: jwt string (as received from Hubble)
     """
+    supported_algorithms = ['RS256', 'ES256']
     components = token.split('.')
     # NOTE: this is needed because of some base64 decoding errors
     header = decode_jwt(components[0] + "========")
 
-    if header['alg'] != 'ES256':
+    if header['alg'] not in supported_algorithms:
         raise Exception(f"Algorithm not supported {header['alg']}")
 
     keys = JSONWebKeySet.get_keys(header['kid'])
@@ -38,7 +39,7 @@ def validate_jwt(token: str):
     decoded = jwt.decode(
         token,
         json.dumps(keys[0]),
-        algorithms=["ES256"],
+        algorithms=supported_algorithms,
         options={"verify_signature": True, "verify_aud": False, "exp": True},
     )
     return decoded
