@@ -46,3 +46,18 @@ def test_auth_required_decorator_wrong_or_expired_token():
 
     with pytest.raises(AuthenticationRequiredError):
         foo()
+
+
+def test_get_user_info_via_jwt(generate_jwt):
+    user_payload = {
+        '_id': 'random_user_id',
+        'status': 'active',
+    }
+
+    client = Client(token=generate_jwt({'user': user_payload}))
+
+    user = client.get_user_info()
+    assert user == {
+        '_id': 'random_user_id',
+        'status': 'active',
+    }
