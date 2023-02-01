@@ -45,8 +45,9 @@ def test_create_list_delete_personal_access_token(client):
     'client', [{'jsonify': True}, {'jsonify': False}], indirect=True
 )
 def test_get_user_info(client):
-    resp = client.get_user_info()
-    assert_response(resp)
+    user = client.get_user_info()
+    assert isinstance(user, dict)
+    assert type(user['_id']) is str
 
 
 @pytest.mark.parametrize(
