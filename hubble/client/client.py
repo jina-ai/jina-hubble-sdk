@@ -65,7 +65,7 @@ class Client(BaseClient):
             decoded = validate_jwt(self._token)
             if isinstance(decoded, dict) and decoded.get('user'):
                 user = decoded.get('user')
-                if user.get('status') == 'deletion-in-progress':
+                if ['active', 'deletion-in-progress'] in user.get('status'):
                     return user
         except Exception:
             pass
