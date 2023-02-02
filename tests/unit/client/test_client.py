@@ -56,7 +56,7 @@ def test_get_user_info_via_jwt(generate_jwt):
 
     client = Client(token=generate_jwt({'user': user_payload}))
 
-    user = client.get_user_info()
+    user = client.get_user_info(variant='data')
     assert user == {
         '_id': 'random_user_id',
         'status': 'active',

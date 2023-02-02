@@ -55,7 +55,7 @@ class Client(BaseClient):
             data={'name': name},
         )
 
-    def get_user_info(self, log_error: bool = True, variant: str = 'data') -> dict:
+    def get_user_info(self, log_error: bool = True, variant: str = 'response') -> dict:
         """Get current logged in user information.
 
         :returns: dict user information.

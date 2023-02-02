@@ -18,7 +18,7 @@ def test_push_pull_status():
 
     c = Client(jsonify=True)
 
-    user = c.get_user_info(log_error=False)
+    user = c.get_user_info(variant='data', log_error=False)
     username = user.get('name')
 
     args = set_hub_push_parser().parse_args(
