@@ -55,7 +55,7 @@ class Client(BaseClient):
             data={'name': name},
         )
 
-    def get_user_info(self, log_error: bool = True) -> dict:
+    def get_user_info(self, log_error: bool = True, variant: str = 'data') -> dict:
         """Get current logged in user information.
 
         :returns: dict user information.
@@ -77,6 +77,12 @@ class Client(BaseClient):
             json_resp = get_json_from_response(resp)
         else:
             json_resp = resp
+
+        if variant == 'full':
+            return json_resp
+        elif variant == 'response':
+            return resp
+
         return json_resp.get('data', {})
 
     def get_raw_session(self, log_error: bool = True) -> Union[requests.Response, dict]:
