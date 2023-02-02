@@ -1,5 +1,11 @@
 import pytest
-from hubble.utils.jwt_parser import decode_jwt, validate_jwt
+from hubble.utils.jwt_parser import (
+    JWTValidationException,
+    decode_jwt_fragment,
+    validate_back_channel_delete_account_jwt,
+    validate_back_channel_logout_jwt,
+    validate_jwt,
+)
 from jose import jwt
 
 PRIVATE_KEY = {
@@ -43,10 +49,10 @@ PAYLOAD = {
 }
 
 
-def test_decode_jwt():
+def test_decode_jwt_fragment():
     token = jwt.encode(PAYLOAD, 'secret', algorithm='HS256')
     token_components = token.split('.')
-    token_payload = decode_jwt(token_components[1] + "========")
+    token_payload = decode_jwt_fragment(token_components[1])
     assert token_payload == PAYLOAD
 
 
@@ -66,5 +72,56 @@ def test_validate_jwt_failure(mocker):
     )
 
     token = jwt.encode(PAYLOAD, PRIVATE_KEY, algorithm='ES256', headers=HEADERS)
-    with pytest.raises(Exception):
+    with pytest.raises(JWTValidationException):
         validate_jwt(token=token)
+
+
+def test_validate_back_channel_logout_jwt(mocker):
+    mocker.patch('hubble.utils.jwks.JSONWebKeySet.get_keys', return_value=[PUBLIC_KEY])
+
+    token = jwt.encode(
+        dict(
+            PAYLOAD, events={'http://schemas.openid.net/event/backchannel-logout': {}}
+        ),
+        PRIVATE_KEY,
+        algorithm='ES256',
+        headers=HEADERS,
+    )
+    validate_back_channel_logout_jwt(token)
+    # not throw is a success
+
+
+def test_validate_back_channel_logout_jwt_failure(mocker):
+    mocker.patch('hubble.utils.jwks.JSONWebKeySet.get_keys', return_value=[PUBLIC_KEY])
+
+    token = jwt.encode(PAYLOAD, PRIVATE_KEY, algorithm='ES256', headers=HEADERS)
+    validate_jwt(token=token)
+    with pytest.raises(JWTValidationException):
+        validate_back_channel_logout_jwt(token)
+
+
+def test_validate_back_channel_delete_account_jwt(mocker):
+    mocker.patch('hubble.utils.jwks.JSONWebKeySet.get_keys', return_value=[PUBLIC_KEY])
+
+    token = jwt.encode(
+        dict(
+            PAYLOAD,
+            events={
+                'http://schemas.openid.net/event/backchannel-logout': {},
+                'http://schemas.openid.net/event/x-backchannel-delete-account': {},
+            },
+        ),
+        PRIVATE_KEY,
+        algorithm='ES256',
+        headers=HEADERS,
+    )
+    validate_back_channel_delete_account_jwt(token)
+    # not throw is a success
+
+
+def test_validate_back_channel_delete_account_failure(mocker):
+    mocker.patch('hubble.utils.jwks.JSONWebKeySet.get_keys', return_value=[PUBLIC_KEY])
+
+    token = jwt.encode(PAYLOAD, PRIVATE_KEY, algorithm='ES256', headers=HEADERS)
+    with pytest.raises(JWTValidationException):
+        validate_back_channel_delete_account_jwt(token)
