@@ -22,7 +22,7 @@ class Config:
         if not self.root.exists():
             self.root.mkdir(parents=True, exist_ok=True)
 
-    def get(self, key: str = None):
+    def get(self, key: str = None, default=None):
         """
         Get the value of the key from the config.
 
@@ -36,7 +36,7 @@ class Config:
             if key is None:
                 return config
             else:
-                return config.get(key)
+                return config.get(key, default)
 
     def set(self, key: str, value: str):
         """

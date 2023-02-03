@@ -5,6 +5,7 @@ from typing import Dict, List, Optional, Union
 import requests
 
 from ..utils.api_utils import get_json_from_response
+from ..utils.jwt_parser import validate_jwt
 from .base import BaseClient
 from .endpoints import EndpointsV2
 
@@ -54,15 +55,40 @@ class Client(BaseClient):
             data={'name': name},
         )
 
-    def get_user_info(self, log_error: bool = True) -> Union[requests.Response, dict]:
+    def get_user_info(
+        self, log_error: bool = True, variant: str = 'response'
+    ) -> Union[requests.Response, dict]:
         """Get current logged in user information.
 
-        :returns: `requests.Response` object as returned value
-            or indented json if jsonify.
+        :returns: dict user information.
         """
-        return self.handle_request(
+
+        try:
+            decoded = validate_jwt(self._token)
+            if isinstance(decoded, dict) and decoded.get('user'):
+                user = decoded.get('user')
+                if (
+                    user.get('status') in ['active', 'deletion-in-progress']
+                    and variant == 'data'
+                ):
+                    return user
+        except Exception:
+            pass
+
+        resp = self.handle_request(
             url=self._base_url + EndpointsV2.get_user_info, log_error=log_error
         )
+        if isinstance(resp, requests.Response):
+            json_resp = get_json_from_response(resp)
+        else:
+            json_resp = resp
+
+        if variant == 'full':
+            return json_resp
+        elif variant == 'response':
+            return resp
+
+        return json_resp.get('data', {})
 
     def get_raw_session(self, log_error: bool = True) -> Union[requests.Response, dict]:
         """Get raw information of the session.

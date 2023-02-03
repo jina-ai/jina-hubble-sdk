@@ -1,5 +1,7 @@
 import uuid
 
+from hubble.utils.jwt_parser import validate_jwt
+
 from .base import PaymentBaseClient
 from .endpoints import PaymentEndpoints
 
@@ -33,7 +35,7 @@ class PaymentClient(PaymentBaseClient):
         """
 
         try:
-            decoded = self.validate_jwt(token)
+            decoded = validate_jwt(token)
             is_authorized = decoded.get('paymentAuthorized', False)
             return is_authorized
         except Exception:
