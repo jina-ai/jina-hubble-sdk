@@ -55,7 +55,7 @@ class PaymentClient(PaymentBaseClient):
         )
 
     def report_usage(
-        self, token: str, app_id: str, product_id: str, quantity: int
+        self, token: str, app_id: str, product_id: str, credits: int
     ) -> object:
 
         """Report usage for a given app.
@@ -73,6 +73,6 @@ class PaymentClient(PaymentBaseClient):
                 'id': str(uuid.uuid4()),
                 'internalAppId': app_id,
                 'internalProductId': product_id,
-                'quantity': quantity,
+                'credits': credits,
             },
         )
