@@ -60,6 +60,12 @@ class Client(BaseClient):
     ) -> Union[requests.Response, dict]:
         """Get current logged in user information.
 
+        :param variant: 'response' or 'full' or 'data', defaults to 'response'.
+            When variant is 'response', it returns `requests.Response` object.
+            When variant is 'full', it returns full json response body.
+            When variant is 'data', it returns only user information.
+                And when token already possess user information, it will not resolve to
+                api call and will return the user data from the token directly.
         :returns: dict user information.
         """
 
