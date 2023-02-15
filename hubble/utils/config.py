@@ -29,7 +29,7 @@ class Config:
         :param key: The key of the config. If it's None, then return the whole config.
         """
         if not self.config_file.exists():
-            return None
+            return default
 
         with open(self.config_file) as f:
             config = json.load(f)
