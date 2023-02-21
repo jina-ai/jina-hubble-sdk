@@ -21,7 +21,7 @@ def mixin_hub_pull_options_parser(parser):
     gp.add_argument(
         '--prefer-platform',
         type=str,
-        default=platform,
+        default=preferred_platform,
         help='The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")',
     )
 
