@@ -65,7 +65,7 @@ def token(args):
             rich.print(
                 Panel(
                     f'''[b]{token}[/b]
-    
+
     You can set it as an env var [b]JINA_AUTH_TOKEN[/b]''',
                     title=':party_popper: [green]New token created[/]',
                     subtitle=':point_up:️ [yellow] This token is only shown once![/]',
