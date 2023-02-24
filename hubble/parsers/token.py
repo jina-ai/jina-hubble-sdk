@@ -27,6 +27,13 @@ def set_token_parser(parent_parser: 'ArgumentParser' = None):
     )
 
     create_parser.add_argument(
+        '--format',
+        type=str,
+        default='table',
+        help='Display format of the token, one of [table, raw]',
+    )
+
+    create_parser.add_argument(
         'name',
         type=str,
         help='Name of Personal Access Token',
