@@ -56,20 +56,22 @@ def token(args):
         response.raise_for_status()
         json_response = get_json_from_response(response)
         token = json_response['data']['token']
+        if args.format == 'raw':
+            print(token)
+        elif args.format == 'table':
+            import rich
+            from rich.panel import Panel
 
-        import rich
-        from rich.panel import Panel
+            rich.print(
+                Panel(
+                    f'''[b]{token}[/b]
 
-        rich.print(
-            Panel(
-                f'''[b]{token}[/b]
-
-You can set it as an env var [b]JINA_AUTH_TOKEN[/b]''',
-                title=':party_popper: [green]New token created[/]',
-                subtitle=':point_up:️ [yellow] This token is only shown once![/]',
-                width=50,
+    You can set it as an env var [b]JINA_AUTH_TOKEN[/b]''',
+                    title=':party_popper: [green]New token created[/]',
+                    subtitle=':point_up:️ [yellow] This token is only shown once![/]',
+                    width=50,
+                )
             )
-        )
 
     if args.operation == 'delete':
         response = client.delete_personal_access_token(name=args.name)
