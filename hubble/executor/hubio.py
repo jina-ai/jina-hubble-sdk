@@ -382,7 +382,7 @@ metas:
             stream_msg = json.loads(stream_line)
             t = stream_msg.get('type')
             subject = stream_msg.get('subject')
-            payload = escape(stream_msg.get('payload', ''))
+            payload = stream_msg.get('payload', '')
 
             if t == 'error':
                 msg = stream_msg.get('message')
@@ -419,7 +419,9 @@ metas:
 
             elif t and subject:
                 if verbose and t == 'console':
-                    console.log(f'Cloud building ... [dim]{subject}: {payload}[/dim]')
+                    console.log(
+                        f'Cloud building ... [dim]{subject}: {escape(payload)}[/dim]'
+                    )
                 else:
                     st.update(f'Cloud building ... [dim]{subject}: {t} {payload}[/dim]')
 
