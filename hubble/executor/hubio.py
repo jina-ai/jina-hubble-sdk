@@ -375,6 +375,8 @@ metas:
             msg = json_resp.get('readableMessage')
             raise Exception(f'{ msg or "Unknown Error"} session_id: {session_id}')
 
+        from rich.markup import escape
+
         for stream_line in resp.iter_lines():
 
             stream_msg = json.loads(stream_line)
@@ -417,7 +419,9 @@ metas:
 
             elif t and subject:
                 if verbose and t == 'console':
-                    console.log(f'Cloud building ... [dim]{subject}: {payload}[/dim]')
+                    console.log(
+                        f'Cloud building ... [dim]{subject}: {escape(payload)}[/dim]'
+                    )
                 else:
                     st.update(f'Cloud building ... [dim]{subject}: {t} {payload}[/dim]')
 
