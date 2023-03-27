@@ -55,7 +55,12 @@ class PaymentClient(PaymentBaseClient):
         )
 
     def report_usage(
-        self, token: str, app_id: str, product_id: str, credits: int
+        self,
+        token: str,
+        app_id: str,
+        product_id: str,
+        credits: int,
+        meta: dict = {},
     ) -> object:
 
         """Report usage for a given app.
@@ -68,11 +73,12 @@ class PaymentClient(PaymentBaseClient):
 
         return self.handle_request(
             url=self._base_url + PaymentEndpoints.report_usage,
-            data={
+            json={
                 'token': token,
                 'id': str(uuid.uuid4()),
                 'internalAppId': app_id,
                 'internalProductId': product_id,
                 'credits': credits,
+                'metaData': meta,
             },
         )
