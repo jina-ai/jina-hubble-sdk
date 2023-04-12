@@ -1217,11 +1217,10 @@ metas:
         base_url = docker_host 
         
         if base_url is None:
-            base_url = (
-                docker.constants.DEFAULT_NPIPE 
-                if __windows__
-                else docker.constants.DEFAULT_UNIX_SOCKET
-            )
+            if __windows__:
+                base_url = docker.constants.DEFAULT_NPIPE
+            else:
+                base_url = docker.constants.DEFAULT_UNIX_SOCKET
 
         try:
             self._client = docker.from_env()
