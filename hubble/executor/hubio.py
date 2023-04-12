@@ -1214,9 +1214,14 @@ metas:
         from docker import APIClient
         from hubble import __windows__
         docker_host = os.getenv('DOCKER_HOST', None)
-        base_url = docker_host or (docker.constants.DEFAULT_NPIPE
-                                if __windows__
-                                else docker.constants.DEFAULT_UNIX_SOCKET)
+        base_url = docker_host 
+        
+        if base_url is None:
+            base_url = (
+                docker.constants.DEFAULT_NPIPE 
+                if __windows__
+                else docker.constants.DEFAULT_UNIX_SOCKET
+            )
 
         try:
             self._client = docker.from_env()
