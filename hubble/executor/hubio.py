@@ -1230,7 +1230,7 @@ metas:
             )
         except docker.errors.DockerException as exception:
             self.logger.critical(
-                f'Docker daemon doesn\'t seem to be running. Please run the Docker daemon and try again. Exception: {exception}' # noqa: E501
+                f'Docker daemon doesn\'t seem to be running. Please run the Docker daemon and try again. Exception: {exception}'  # noqa: E501
             )
             exit(1)
 
