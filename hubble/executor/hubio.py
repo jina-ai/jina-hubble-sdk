@@ -1214,8 +1214,8 @@ metas:
         from docker import APIClient
         from hubble import __windows__
         docker_host = os.getenv('DOCKER_HOST', None)
-        base_url = docker_host 
-        
+        base_url = docker_host
+
         if base_url is None:
             if __windows__:
                 base_url = docker.constants.DEFAULT_NPIPE
@@ -1230,7 +1230,7 @@ metas:
             )
         except docker.errors.DockerException as exception:
             self.logger.critical(
-                f'Docker daemon doesn\'t seem to be running. Please run the Docker daemon and try again. Exception: {exception}'
+                f'Docker daemon doesn\'t seem to be running. Please run the Docker daemon and try again. Exception: {exception}' # noqa: E501
             )
             exit(1)
 
