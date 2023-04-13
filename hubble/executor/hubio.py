@@ -1213,6 +1213,7 @@ metas:
         import docker.errors
         from docker import APIClient
         from hubble import __windows__
+
         docker_host = os.getenv('DOCKER_HOST', None)
         base_url = docker_host
 
@@ -1225,9 +1226,7 @@ metas:
         try:
             self._client = docker.from_env()
             # low-level client
-            self._raw_client = APIClient(
-                base_url=base_url
-            )
+            self._raw_client = APIClient(base_url=base_url)
         except docker.errors.DockerException as exception:
             self.logger.critical(
                 f'Docker daemon doesn\'t seem to be running. Please run the Docker daemon and try again. Exception: {exception}'  # noqa: E501
