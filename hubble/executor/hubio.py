@@ -639,7 +639,7 @@ metas:
             for warning in warnings:
                 table.add_row('', f'[yellow]• {warning}')
 
-        if 'JINA_HUBBLE_HIDE_EXECUOTR_PUSH_SUCCESS_MSG' not in os.environ:
+        if 'JINA_HUBBLE_HIDE_EXECUTOR_PUSH_SUCCESS_MSG' not in os.environ:
             p1 = Panel(
                 table,
                 title='Published',
