@@ -378,7 +378,6 @@ metas:
         from rich.markup import escape
 
         for stream_line in resp.iter_lines():
-
             stream_msg = json.loads(stream_line)
             t = stream_msg.get('type')
             subject = stream_msg.get('subject')
@@ -640,13 +639,14 @@ metas:
             for warning in warnings:
                 table.add_row('', f'[yellow]• {warning}')
 
-        p1 = Panel(
-            table,
-            title='Published',
-            width=100,
-            expand=False,
-        )
-        console.print(p1)
+        if 'HUBBLE_HIDE_SUCCESS_MSG' not in os.environ:
+            p1 = Panel(
+                table,
+                title='Published',
+                width=100,
+                expand=False,
+            )
+            console.print(p1)
 
         name = image.get('name', uuid8)
         owner_name = image.get('owner', {}).get('name', None)
@@ -791,7 +791,6 @@ metas:
         )
 
     def _status_with_progress(self, console, st, task_id, replay=False, verbose=False):
-
         req_header = get_request_header()
         dict_data = {}
         dict_data['replay'] = replay
@@ -937,7 +936,6 @@ metas:
 
         console = get_rich_console()
         with console.status(f'Querying `{task_id}` ...') as st:
-
             image = self._status_with_progress(console, st, task_id, replay, verbose)
 
             if image:
