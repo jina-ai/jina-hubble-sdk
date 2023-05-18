@@ -63,7 +63,7 @@ class PaymentClient(PaymentBaseClient):
         meta: dict = {},
     ) -> object:
 
-        """Report usage for a given app.
+        """Report usage for a given app using the deprecated format.
 
         :param token: User token.
         :param app_id: ID of the application.
@@ -79,6 +79,53 @@ class PaymentClient(PaymentBaseClient):
                 'internalAppId': app_id,
                 'internalProductId': product_id,
                 'credits': credits,
+                'metaData': meta,
+            },
+        )
+
+    def verify_app_access(self, token: str, app_id: str) -> object:
+
+        """Verify whether the user has access to a given app.
+
+        :param token: User token.
+        :param app_id: ID of the application.
+        :returns: Object
+        """
+
+        return self.handle_request(
+            url=self._base_url + PaymentEndpoints.verify,
+            data={'token': token, 'internalAppId': app_id},
+        )
+
+    def report_app_usage(
+        self,
+        token: str,
+        id: str,
+        app_id: str,
+        unit: str,
+        units: int = 0,
+        meta: dict = {},
+    ) -> object:
+
+        """Report usage for a given app.
+
+        :param token: User token.
+        :param id: Unique ID of the report, needs to be UUIDv4.
+        :param app_id: ID of the application.
+        :param unit: ID of the unit to report.
+        :param units: Number of units to report.
+        :param meta: Dictionary of metadata info attached to the report.
+        :returns: Object
+        """
+
+        return self.handle_request(
+            url=self._base_url + PaymentEndpoints.report_usage,
+            json={
+                'token': token,
+                'id': id,
+                'internalAppId': app_id,
+                'unit': unit,
+                'units': units,
                 'metaData': meta,
             },
         )
