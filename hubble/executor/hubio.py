@@ -1058,8 +1058,16 @@ metas:
             return resp
 
         pull_url = urljoin(hubble.utils.get_base_url(), 'executor.getPackage')
+        try:
+            from jina import __version__ as jina_version
+        except ImportError:
+            jina_version = __unset_msg__
+        try:
+            from docarray import __version__ as docarray_version
+        except ImportError:
+            docarray_version = __unset_msg__
 
-        payload = {'id': name, 'include': ['code'], 'rebuildImage': rebuild_image}
+        payload = {'id': name, 'include': ['code'], 'rebuildImage': rebuild_image, 'jina': jina_version, 'docarray': docarray_version}
         if image_required:
             payload['include'].append('docker')
         if secret:
@@ -1091,6 +1099,8 @@ metas:
             archive_url=resp['package']['download'],
             md5sum=resp['package']['md5'],
             build_env=list(buildEnv.keys()) if buildEnv else [],
+            jina_version=jina_version,
+            docarray_version=docarray_version
         )
 
     @staticmethod
@@ -1106,6 +1116,10 @@ metas:
             from jina import __version__ as jina_version
         except ImportError:
             jina_version = __unset_msg__
+        try:
+            from docarray import __version__ as docarray_version
+        except ImportError:
+            docarray_version = __unset_msg__
 
         args_copy = copy.deepcopy(args)
         if not isinstance(args_copy, Dict):
@@ -1116,6 +1130,7 @@ metas:
             'name': name,
             'tag': tag if tag else 'latest',
             'jina': jina_version,
+            'docarray': docarray_version,
             'args': args_copy,
             'secret': secret,
         }
