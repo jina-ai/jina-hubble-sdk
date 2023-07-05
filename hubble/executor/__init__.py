@@ -15,3 +15,5 @@ class HubExecutor:
     archive_url: Optional[str] = None
     md5sum: Optional[str] = None
     build_env: Optional[list] = None
+    jina_version: Optional[str] = None
+    docarray_version: Optional[str] = None
