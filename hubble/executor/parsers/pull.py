@@ -1,6 +1,8 @@
 """Argparser module for hub push"""
 from hubble.parsers.helper import add_arg_group
 
+import platform
+
 
 def mixin_hub_pull_options_parser(parser):
     """Add the arguments for hub pull options to the parser
@@ -15,9 +17,11 @@ def mixin_hub_pull_options_parser(parser):
         default=False,
         help='If set, always pull the latest Hub Executor bundle even it exists on local',
     )
+    preferred_platform = 'linux/arm64' if platform.machine() == 'arm64' else None
     gp.add_argument(
         '--prefer-platform',
         type=str,
+        default=preferred_platform,
         help='The preferred target Docker platform. (e.g. "linux/amd64", "linux/arm64")',
     )
 
